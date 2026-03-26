@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BRRRR Calculator — ReRadar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#141414; --bg2:#1C1C1C; --bg3:#242424;
+      --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.14);
+      --text:#F0EDE8; --text2:#A8A49E; --text3:#6B6760;
+      --gold:#C9A84C; --res:#4A7C6F; --res-light:#7FB3A6; --res-dim:rgba(74,124,111,0.12);
+    }
+    html,body { min-height:100%; background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; }
+    nav { display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:var(--bg2); border-bottom:1px solid var(--border); }
+    .logo { display:flex; align-items:center; gap:8px; text-decoration:none; }
+    .logo-mark { width:28px; height:28px; border-radius:5px; background:var(--gold); display:flex; align-items:center; justify-content:center; }
+    .logo-text { font-family:'Playfair Display',serif; font-size:18px; color:var(--text); }
+    .logo-text span { color:var(--gold); }
+    .nav-tools { display:flex; gap:4px; }
+    .tool-link { padding:6px 12px; font-size:12px; color:var(--text3); border-radius:5px; text-decoration:none; transition:all .15s; }
+    .tool-link:hover { color:var(--text2); background:rgba(255,255,255,0.04); }
+    .tool-link.active { color:var(--res-light); background:var(--res-dim); }
+
+    .page { max-width:1100px; margin:0 auto; padding:40px; }
+    .page-eyebrow { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--res-light); text-transform:uppercase; letter-spacing:.1em; margin-bottom:10px; }
+    .page-title { font-family:'Playfair Display',serif; font-size:36px; color:var(--text); margin-bottom:8px; }
+    .page-sub { font-size:15px; color:var(--text2); font-weight:300; max-width:580px; line-height:1.7; margin-bottom:12px; }
+
+    .brrrr-explain {
+      display:flex; gap:0; border:1px solid var(--border); border-radius:10px;
+      overflow:hidden; margin-bottom:36px;
+    }
+    .be-step { flex:1; padding:12px 16px; border-right:1px solid var(--border); text-align:center; }
+    .be-step:last-child { border-right:none; }
+    .be-letter { font-family:'Playfair Display',serif; font-size:22px; color:var(--gold); }
+    .be-word { font-size:10px; color:var(--text3); margin-top:2px; }
+
+    .main-grid { display:grid; grid-template-columns:360px 1fr; gap:24px; align-items:start; }
+
+    .input-panel { background:var(--bg2); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+    .ip-tab-bar { display:flex; border-bottom:1px solid var(--border); }
+    .ip-tab { flex:1; padding:12px; font-size:12px; font-weight:500; text-align:center; cursor:pointer; border:none; background:transparent; color:var(--text3); font-family:'Outfit',sans-serif; transition:all .15s; border-bottom:2px solid transparent; }
+    .ip-tab.active { color:var(--res-light); border-bottom-color:var(--res); background:var(--res-dim); }
+    .ip-body { padding:24px; }
+    .ip-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+    .ip-label { font-size:13px; color:var(--text2); }
+    .ip-input { width:110px; padding:7px 10px; background:var(--bg3); border:1px solid var(--border); border-radius:6px; color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; text-align:right; outline:none; transition:border-color .2s; }
+    .ip-input:focus { border-color:var(--res); }
+    .calc-btn { width:100%; padding:13px; background:var(--res); color:var(--text); border:none; border-radius:8px; font-size:14px; font-weight:500; cursor:pointer; font-family:'Outfit',sans-serif; transition:all .2s; margin-top:8px; }
+    .calc-btn:hover { background:var(--res-light); color:var(--bg); }
+
+    .results { display:flex; flex-direction:column; gap:14px; }
+
+    .phase-flow {
+      display:grid; grid-template-columns:repeat(5,1fr); gap:0;
+      border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--bg2);
+    }
+    .phase { padding:20px 16px; border-right:1px solid var(--border); text-align:center; }
+    .phase:last-child { border-right:none; }
+    .phase-letter { font-family:'Playfair Display',serif; font-size:28px; color:var(--gold); margin-bottom:4px; }
+    .phase-name { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px; font-family:'JetBrains Mono',monospace; }
+    .phase-amount { font-size:18px; font-weight:500; color:var(--text); }
+    .phase-amount.good { color:#7FB3A6; }
+    .phase-amount.ok { color:var(--gold); }
+    .phase-sub { font-size:10px; color:var(--text3); margin-top:4px; }
+
+    .verdict-banner {
+      padding:20px 24px; border-radius:12px; border:1px solid;
+      display:flex; gap:16px; align-items:flex-start;
+    }
+    .vb-icon { font-size:28px; flex-shrink:0; }
+    .vb-title { font-size:17px; font-weight:500; color:var(--text); margin-bottom:4px; }
+    .vb-text { font-size:13px; color:var(--text2); line-height:1.6; }
+
+    .metrics-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+    .mr-card { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+    .mrc-label { font-size:10px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+    .mrc-value { font-size:20px; font-weight:500; }
+    .mrc-value.good { color:#7FB3A6; }
+    .mrc-value.ok { color:var(--gold); }
+    .mrc-value.bad { color:#B37A7A; }
+    .mrc-note { font-size:10px; color:var(--text3); margin-top:3px; }
+
+    .breakdown-card { background:var(--bg2); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+    .bc-title { padding:14px 20px; border-bottom:1px solid var(--border); font-size:11px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; }
+    .bc-row { display:flex; justify-content:space-between; padding:10px 20px; border-bottom:1px solid var(--border); font-size:13px; }
+    .bc-row:last-child { border-bottom:none; }
+    .bc-label { color:var(--text2); }
+    .bc-value { font-family:'JetBrains Mono',monospace; color:var(--text); }
+    .bc-value.good { color:#7FB3A6; }
+    .bc-value.bad { color:#B37A7A; }
+    .bc-row.highlight { background:var(--bg3); }
+    .bc-row.highlight .bc-label { color:var(--text); font-weight:500; }
+    .bc-row.highlight .bc-value { font-size:15px; font-weight:500; }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="logo">
+    <div class="logo-mark"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2.5" fill="#141414"/><circle cx="7" cy="7" r="5" stroke="#141414" stroke-width="1.2" fill="none" opacity=".6"/></svg></div>
+    <span class="logo-text">Re<span>Radar</span></span>
+  </a>
+  <div class="nav-tools">
+    <a href="/tools/property-lookup" class="tool-link">Property Lookup</a>
+    <a href="/tools/deal-analyzer" class="tool-link">Deal Analyzer</a>
+    <a href="/tools/brrrr" class="tool-link active">BRRRR Calc</a>
+    <a href="/tools/str-analyzer" class="tool-link">STR vs LTR</a>
+    <a href="/tools/neighborhood" class="tool-link">Neighborhood</a>
+    <a href="/tools/market-timing" class="tool-link">Market Timing</a>
+    <a href="/tools/maturity-radar" class="tool-link">Commercial →</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-eyebrow">Residential · Strategy</div>
+  <div class="page-title">BRRRR Calculator</div>
+  <p class="page-sub">Model the full Buy, Rehab, Rent, Refinance, Repeat cycle. See how much money you can pull out, what you leave in, and whether the deal actually works after the refinance.</p>
+
+  <div class="brrrr-explain">
+    <div class="be-step"><div class="be-letter">B</div><div class="be-word">Buy</div></div>
+    <div class="be-step"><div class="be-letter">R</div><div class="be-word">Rehab</div></div>
+    <div class="be-step"><div class="be-letter">R</div><div class="be-word">Rent</div></div>
+    <div class="be-step"><div class="be-letter">R</div><div class="be-word">Refinance</div></div>
+    <div class="be-step"><div class="be-letter">R</div><div class="be-word">Repeat</div></div>
+  </div>
+
+  <div class="main-grid">
+    <div class="input-panel">
+      <div class="ip-tab-bar">
+        <button class="ip-tab active" onclick="showTab('buy',this)">Buy & Rehab</button>
+        <button class="ip-tab" onclick="showTab('rent',this)">Rent & Refi</button>
+      </div>
+      <div class="ip-body" id="tabBuy">
+        <div class="ip-row"><span class="ip-label">Purchase price</span><input class="ip-input" id="bPrice" value="180000" type="number"/></div>
+        <div class="ip-row"><span class="ip-label">Down payment %</span><input class="ip-input" id="bDown" value="20" type="number"/></div>
+        <div class="ip-row"><span class="ip-label">Purchase loan rate %</span><input class="ip-input" id="bRate" value="8.5" type="number" step="0.1"/></div>
+        <div class="ip-row"><span class="ip-label">Closing costs</span><input class="ip-input" id="bClose" value="4500" type="number"/></div>
+        <div class="ip-row"><span class="ip-label">Rehab costs</span><input class="ip-input" id="bRehab" value="45000" type="number"/></div>
+        <div class="ip-row"><span class="ip-label">Holding costs / mo</span><input class="ip-input" id="bHold" value="1200" type="number"/></div>
+        <div class="ip-row"><span class="ip-label">Rehab months</span><input class="ip-input" id="bMonths" value="4" type="number"/></div>
+      </div>
+      <div class="ip-body" id="tabRent" style="display:none">
+        <div class="ip-row"><span class="ip-label">ARV (after repair value)</span><input class="ip-input" id="rARV" value="320000" type="number"/></div>
+        <div class="ip-row"><span class="ip-label">Refi LTV %</span><input class="ip-input" id="rLTV" value="75" type="number"/></div>
+        <div class="ip-row"><span class="ip-label">Refi rate %</span><input class="ip-input" id="rRate" value="7.0" type="number" step="0.1"/></div>
+        <div class="ip-row"><span class="ip-label">Monthly rent</span><input class="ip-input" id="rRent" value="2200" type="number"/></div>
+        <div class="ip-row"><span class="ip-label">Property taxes / mo</span><input class="ip-input" id="rTax" value="280" type="number"/></div>
+        <div class="ip-row"><span class="ip-label">Insurance / mo</span><input class="ip-input" id="rIns" value="90" type="number"/></div>
+        <div class="ip-row"><span class="ip-label">Mgmt fee %</span><input class="ip-input" id="rMgmt" value="8" type="number"/></div>
+        <div class="ip-row"><span class="ip-label">Vacancy %</span><input class="ip-input" id="rVacancy" value="5" type="number"/></div>
+      </div>
+      <div style="padding:0 24px 24px"><button class="calc-btn" onclick="calculate()">Calculate BRRRR</button></div>
+    </div>
+
+    <div class="results" id="results">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:60px 40px;text-align:center;">
+        <div style="font-size:36px;opacity:.25;margin-bottom:16px">◈</div>
+        <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--text2);margin-bottom:8px">Model your BRRRR deal</div>
+        <p style="font-size:14px;color:var(--text3);line-height:1.6">Fill in the Buy & Rehab tab, then the Rent & Refi tab, and click Calculate to see if you can pull your money out and still cash flow.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showTab(tab, btn) {
+  document.getElementById('tabBuy').style.display = tab==='buy' ? 'block' : 'none';
+  document.getElementById('tabRent').style.display = tab==='rent' ? 'block' : 'none';
+  document.querySelectorAll('.ip-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function fmt(n) { return '$' + Math.abs(Math.round(n)).toLocaleString(); }
+function fmtSign(n) { return (n>=0?'+':'-') + '$' + Math.abs(Math.round(n)).toLocaleString(); }
+
+function calculate() {
+  const price = +document.getElementById('bPrice').value || 0;
+  const downPct = +document.getElementById('bDown').value / 100;
+  const bRate = +document.getElementById('bRate').value / 100;
+  const closing = +document.getElementById('bClose').value || 0;
+  const rehab = +document.getElementById('bRehab').value || 0;
+  const holdPerMonth = +document.getElementById('bHold').value || 0;
+  const rehabMonths = +document.getElementById('bMonths').value || 0;
+  const arv = +document.getElementById('rARV').value || 0;
+  const refiLTV = +document.getElementById('rLTV').value / 100;
+  const refiRate = +document.getElementById('rRate').value / 100;
+  const rent = +document.getElementById('rRent').value || 0;
+  const tax = +document.getElementById('rTax').value || 0;
+  const ins = +document.getElementById('rIns').value || 0;
+  const mgmtPct = +document.getElementById('rMgmt').value / 100;
+  const vacancyPct = +document.getElementById('rVacancy').value / 100;
+
+  const downAmt = price * downPct;
+  const holdTotal = holdPerMonth * rehabMonths;
+  const totalCashIn = downAmt + closing + rehab + holdTotal;
+
+  const refiLoan = arv * refiLTV;
+  const originalLoan = price * (1 - downPct);
+  const cashOut = refiLoan - originalLoan;
+  const cashLeftIn = totalCashIn - cashOut;
+  const equityAfterRefi = arv * (1 - refiLTV);
+
+  const mr = refiRate / 12;
+  const n = 360;
+  const refiMortgage = mr > 0 ? Math.round(refiLoan * (mr * Math.pow(1+mr,n)) / (Math.pow(1+mr,n)-1)) : 0;
+
+  const mgmtAmt = rent * mgmtPct;
+  const maintAmt = rent * 0.08;
+  const effectiveRent = rent * (1 - vacancyPct);
+  const totalExp = tax + ins + mgmtAmt + maintAmt;
+  const noi = effectiveRent - totalExp;
+  const cashflow = noi - refiMortgage;
+  const annualCashflow = cashflow * 12;
+  const noiAnnual = noi * 12;
+  const capRate = arv > 0 ? (noiAnnual / arv * 100).toFixed(2) : 0;
+  const cocReturn = cashLeftIn > 100 ? (annualCashflow / cashLeftIn * 100).toFixed(2) : cashLeftIn <= 0 ? '∞' : '0';
+
+  const isInfinite = cashLeftIn <= 0;
+  const verdict = isInfinite ? 'perfect' : cashLeftIn < totalCashIn * 0.2 ? 'strong' : cashOut > 0 ? 'moderate' : 'weak';
+  const verdictMap = {
+    perfect: { icon:'★', title:'Perfect BRRRR — infinite returns', text:`You pulled out MORE than you put in. Your cash left in the deal is ${fmt(Math.abs(cashLeftIn))}, meaning you've recycled your capital 100% and still own the asset. This is the holy grail of BRRRR investing.`, cls:'strong' },
+    strong: { icon:'✦', title:'Strong BRRRR — most money back', text:`You pulled out ${fmt(cashOut)} on the refinance, leaving just ${fmt(cashLeftIn)} in the deal. Your money is mostly recycled and the property still cash flows ${fmt(cashflow)}/month.`, cls:'strong' },
+    moderate: { icon:'◈', title:'Decent BRRRR — partial pullout', text:`You pulled out ${fmt(cashOut)} but still have ${fmt(cashLeftIn)} left in the deal. It works, but you haven't fully recycled your capital. Consider negotiating a better purchase price or higher ARV.`, cls:'moderate' },
+    weak: { icon:'◇', title:'This BRRRR needs work', text:`You couldn't pull out enough on the refi to justify the strategy. You'd leave ${fmt(cashLeftIn)} in the deal with a ${cashflow >= 0 ? 'modest' : 'negative'} monthly cash flow of ${fmtSign(cashflow)}.`, cls:'weak' }
+  };
+  const v = verdictMap[verdict];
+  const clsMap = { strong:'good', moderate:'ok', weak:'bad', perfect:'good' };
+  const vc = clsMap[verdict];
+
+  document.getElementById('results').innerHTML = `
+    <div class="phase-flow">
+      <div class="phase"><div class="phase-letter">B</div><div class="phase-name">Buy</div><div class="phase-amount">${fmt(price)}</div><div class="phase-sub">${(downPct*100).toFixed(0)}% down</div></div>
+      <div class="phase"><div class="phase-letter">R</div><div class="phase-name">Rehab</div><div class="phase-amount">${fmt(rehab)}</div><div class="phase-sub">${rehabMonths} months</div></div>
+      <div class="phase"><div class="phase-letter">R</div><div class="phase-name">Rent</div><div class="phase-amount good">${fmt(rent)}/mo</div><div class="phase-sub">${fmt(cashflow)}/mo CF</div></div>
+      <div class="phase"><div class="phase-letter">R</div><div class="phase-name">Refi</div><div class="phase-amount ${cashOut>=0?'good':'bad'}">${fmtSign(cashOut)}</div><div class="phase-sub">ARV ${fmt(arv)}</div></div>
+      <div class="phase"><div class="phase-letter">R</div><div class="phase-name">Left In</div><div class="phase-amount ${cashLeftIn<=0?'good':cashLeftIn<totalCashIn*.3?'ok':'bad'}">${fmt(cashLeftIn)}</div><div class="phase-sub">${isInfinite?'infinite returns':pct(parseFloat(cocReturn||0))+' CoC'}</div></div>
+    </div>
+
+    <div class="verdict-banner ${v.cls}" style="background:${v.cls==='strong'?'rgba(74,124,111,0.1)':v.cls==='moderate'?'rgba(201,168,76,0.08)':'rgba(140,74,74,0.1)'};border-color:${v.cls==='strong'?'rgba(74,124,111,0.3)':v.cls==='moderate'?'rgba(201,168,76,0.25)':'rgba(140,74,74,0.3)'}">
+      <div class="vb-icon">${v.icon}</div>
+      <div><div class="vb-title">${v.title}</div><div class="vb-text">${v.text}</div></div>
+    </div>
+
+    <div class="metrics-row">
+      <div class="mr-card"><div class="mrc-label">Cash-on-Cash</div><div class="mrc-value ${vc}">${isInfinite ? '∞' : cocReturn + '%'}</div><div class="mrc-note">After refi, on cash left in</div></div>
+      <div class="mr-card"><div class="mrc-label">Monthly Cash Flow</div><div class="mrc-value ${cashflow>=0?'good':'bad'}">${fmtSign(cashflow)}</div><div class="mrc-note">After refi mortgage</div></div>
+      <div class="mr-card"><div class="mrc-label">Cash Pulled Out</div><div class="mrc-value ${cashOut>=0?'good':'bad'}">${fmt(cashOut)}</div><div class="mrc-note">On refinance</div></div>
+      <div class="mr-card"><div class="mrc-label">Equity Retained</div><div class="mrc-value">${fmt(equityAfterRefi)}</div><div class="mrc-note">${(refiLTV*100).toFixed(0)}% LTV refi</div></div>
+    </div>
+
+    <div class="breakdown-card">
+      <div class="bc-title">Full capital stack breakdown</div>
+      <div class="bc-row"><span class="bc-label">Down payment</span><span class="bc-value bad">-${fmt(downAmt)}</span></div>
+      <div class="bc-row"><span class="bc-label">Closing costs</span><span class="bc-value bad">-${fmt(closing)}</span></div>
+      <div class="bc-row"><span class="bc-label">Rehab costs</span><span class="bc-value bad">-${fmt(rehab)}</span></div>
+      <div class="bc-row"><span class="bc-label">Holding costs (${rehabMonths} months × ${fmt(holdPerMonth)})</span><span class="bc-value bad">-${fmt(holdTotal)}</span></div>
+      <div class="bc-row highlight"><span class="bc-label">Total cash invested</span><span class="bc-value bad">-${fmt(totalCashIn)}</span></div>
+      <div class="bc-row"><span class="bc-label">Cash-out refinance proceeds</span><span class="bc-value good">+${fmt(Math.max(0,cashOut))}</span></div>
+      <div class="bc-row highlight"><span class="bc-label">Net cash left in deal</span><span class="bc-value ${cashLeftIn<=0?'good':''}">${fmt(cashLeftIn)}</span></div>
+      <div class="bc-row"><span class="bc-label">Refi loan amount</span><span class="bc-value">${fmt(refiLoan)}</span></div>
+      <div class="bc-row"><span class="bc-label">New mortgage payment</span><span class="bc-value bad">-${fmt(refiMortgage)}/mo</span></div>
+      <div class="bc-row"><span class="bc-label">Monthly NOI (after expenses)</span><span class="bc-value">${fmt(noi)}/mo</span></div>
+      <div class="bc-row highlight"><span class="bc-label">Monthly cash flow post-refi</span><span class="bc-value ${cashflow>=0?'good':'bad'}">${fmtSign(cashflow)}/mo</span></div>
+    </div>`;
+}
+
+function pct(n) { return n.toFixed(1) + '%'; }
+calculate();
+</script>
+</body>
+</html>

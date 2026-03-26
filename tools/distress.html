@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Distress Monitor — ReRadar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#141414; --bg2:#1C1C1C; --bg3:#242424;
+      --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.14);
+      --text:#F0EDE8; --text2:#A8A49E; --text3:#6B6760;
+      --gold:#C9A84C; --com:#4A6490; --com-light:#7FA0C8; --com-dim:rgba(74,100,144,0.12);
+      --red:#8C4A4A; --red-light:#C87A7A; --red-dim:rgba(140,74,74,0.12);
+      --amber:#8C6E3A; --amber-light:#C9A84C; --amber-dim:rgba(140,110,58,0.1);
+    }
+    html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:16px 40px;background:var(--bg2);border-bottom:1px solid var(--border);}
+    .logo{display:flex;align-items:center;gap:8px;text-decoration:none;}
+    .logo-mark{width:28px;height:28px;border-radius:5px;background:var(--gold);display:flex;align-items:center;justify-content:center;}
+    .logo-text{font-family:'Playfair Display',serif;font-size:18px;color:var(--text);}
+    .logo-text span{color:var(--gold);}
+    .nav-tools{display:flex;gap:4px;flex-wrap:wrap;}
+    .tool-link{padding:6px 12px;font-size:12px;color:var(--text3);border-radius:5px;text-decoration:none;transition:all .15s;}
+    .tool-link:hover{color:var(--text2);background:rgba(255,255,255,0.04);}
+    .tool-link.active{color:var(--com-light);background:var(--com-dim);}
+
+    .page{max-width:1200px;margin:0 auto;padding:40px;}
+    .page-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--com-light);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;}
+    .page-title{font-family:'Playfair Display',serif;font-size:36px;color:var(--text);margin-bottom:8px;}
+    .page-sub{font-size:15px;color:var(--text2);font-weight:300;max-width:520px;line-height:1.7;margin-bottom:32px;}
+
+    .filter-bar{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:24px;padding:20px 24px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;}
+    .fg{display:flex;flex-direction:column;gap:6px;}
+    .fl{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em;}
+    .fs{padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;min-width:140px;}
+    .fs:focus{border-color:var(--com);}
+    .fbtn{padding:9px 20px;background:var(--com);color:var(--text);border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;align-self:flex-end;}
+    .fbtn:hover{background:var(--com-light);color:var(--bg);}
+
+    .stats-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:24px;}
+    .sc{background:var(--bg2);padding:16px 20px;}
+    .sc-label{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+    .sc-value{font-size:22px;font-weight:500;}
+
+    .table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+    .thead{display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr 1fr 1fr;padding:10px 20px;border-bottom:1px solid var(--border);gap:8px;}
+    .th{font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;user-select:none;}
+    .th:hover{color:var(--text2);}
+    .trow{display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr 1fr 1fr;padding:13px 20px;border-bottom:1px solid var(--border);align-items:center;gap:8px;transition:background .15s;}
+    .trow:last-child{border-bottom:none;}
+    .trow:hover{background:rgba(255,255,255,0.025);}
+    .tr-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px;}
+    .tr-city{font-size:11px;color:var(--text3);}
+    .tr-cell{font-size:12px;color:var(--text2);font-family:'JetBrains Mono',monospace;}
+    .tr-bold{font-size:13px;font-weight:500;color:var(--text);font-family:'JetBrains Mono',monospace;}
+    .badge{display:inline-block;font-size:9px;padding:3px 8px;border-radius:4px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;}
+    .d-ss{background:rgba(140,74,74,0.2);color:#C87A7A;border:1px solid rgba(140,74,74,0.35);}
+    .d-watch{background:rgba(201,168,76,0.15);color:#C9A84C;border:1px solid rgba(201,168,76,0.3);}
+    .d-mod{background:rgba(74,100,144,0.15);color:#7FA0C8;border:1px solid rgba(74,100,144,0.3);}
+    .d-fore{background:rgba(180,60,60,0.2);color:#E08080;border:1px solid rgba(180,60,60,0.4);}
+    .asset-tag{font-size:9px;padding:2px 7px;border-radius:3px;background:var(--com-dim);color:var(--com-light);font-family:'JetBrains Mono',monospace;display:inline-block;}
+    .event-pill{font-size:9px;padding:2px 7px;border-radius:3px;background:rgba(140,74,74,0.15);color:#C87A7A;font-family:'JetBrains Mono',monospace;display:inline-block;}
+
+    .pagination{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-top:1px solid var(--border);font-size:12px;color:var(--text3);}
+    .page-btns{display:flex;gap:4px;}
+    .pbtn{padding:5px 10px;border:1px solid var(--border);border-radius:4px;background:transparent;color:var(--text3);font-size:11px;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .15s;}
+    .pbtn.active,.pbtn:hover{border-color:var(--com);color:var(--com-light);background:var(--com-dim);}
+    .no-results{padding:60px;text-align:center;color:var(--text3);font-size:14px;}
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="logo">
+    <div class="logo-mark"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2.5" fill="#141414"/><circle cx="7" cy="7" r="5" stroke="#141414" stroke-width="1.2" fill="none" opacity=".6"/></svg></div>
+    <span class="logo-text">Re<span>Radar</span></span>
+  </a>
+  <div class="nav-tools">
+    <a href="/tools/maturity-radar" class="tool-link">Maturity Radar</a>
+    <a href="/tools/distress" class="tool-link active">Distress Monitor</a>
+    <a href="/tools/lp-radar" class="tool-link">LP Radar</a>
+    <a href="/tools/market-intel" class="tool-link">Market Intel</a>
+    <a href="/tools/underwriting" class="tool-link">Underwriting</a>
+    <a href="/tools/ownership" class="tool-link">Ownership</a>
+    <a href="/" class="tool-link">Residential →</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-eyebrow">Commercial · Distress Intelligence</div>
+  <div class="page-title">Distress Monitor</div>
+  <p class="page-sub">Special servicing transfers, watchlist additions, DSCR breaches, and foreclosure filings — all asset classes, all markets, updated continuously from CRED iQ and public EDGAR filings.</p>
+
+  <div class="filter-bar">
+    <div class="fg"><div class="fl">Distress type</div>
+      <select class="fs" id="fType">
+        <option value="">All types</option>
+        <option value="Special Servicing">Special Servicing</option>
+        <option value="Watchlist">Watchlist</option>
+        <option value="DSCR Breach">DSCR Breach</option>
+        <option value="Foreclosure">Foreclosure</option>
+        <option value="Modification">Loan Modification</option>
+      </select>
+    </div>
+    <div class="fg"><div class="fl">Asset class</div>
+      <select class="fs" id="fAsset">
+        <option value="">All asset classes</option>
+        <option>Multifamily</option><option>Office</option><option>Industrial</option>
+        <option>Retail</option><option>Hotel</option><option>Mixed Use</option>
+      </select>
+    </div>
+    <div class="fg"><div class="fl">Market</div>
+      <select class="fs" id="fMarket">
+        <option value="">All markets</option>
+        <option>New York</option><option>Los Angeles</option><option>Chicago</option>
+        <option>Dallas</option><option>Houston</option><option>Atlanta</option>
+        <option>Phoenix</option><option>Denver</option><option>Seattle</option>
+        <option>Miami</option><option>San Francisco</option><option>Boston</option>
+        <option>Nashville</option><option>Charlotte</option><option>Minneapolis</option>
+      </select>
+    </div>
+    <div class="fg"><div class="fl">Recency</div>
+      <select class="fs" id="fRecency">
+        <option value="0">All time</option>
+        <option value="30" selected>Last 30 days</option>
+        <option value="60">Last 60 days</option>
+        <option value="90">Last 90 days</option>
+      </select>
+    </div>
+    <button class="fbtn" onclick="applyFilters()">Apply filters</button>
+  </div>
+
+  <div class="stats-strip">
+    <div class="sc"><div class="sc-label">Events shown</div><div class="sc-value" id="s1" style="color:var(--com-light)">—</div></div>
+    <div class="sc"><div class="sc-label">Special servicing</div><div class="sc-value" id="s2" style="color:#C87A7A">—</div></div>
+    <div class="sc"><div class="sc-label">Total balance at risk</div><div class="sc-value" id="s3">—</div></div>
+    <div class="sc"><div class="sc-label">New this month</div><div class="sc-value" id="s4" style="color:var(--gold)">—</div></div>
+  </div>
+
+  <div class="table-wrap">
+    <div class="thead">
+      <div class="th" onclick="sortBy('name')">Property ↕</div>
+      <div class="th" onclick="sortBy('asset')">Asset</div>
+      <div class="th" onclick="sortBy('balance')">Balance ↕</div>
+      <div class="th" onclick="sortBy('dscr')">DSCR ↕</div>
+      <div class="th" onclick="sortBy('daysAgo')">Reported ↕</div>
+      <div class="th">Event</div>
+    </div>
+    <div id="tableBody"></div>
+    <div class="pagination">
+      <div id="pageInfo"></div>
+      <div class="page-btns" id="pageBtns"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ASSETS=['Multifamily','Office','Industrial','Retail','Hotel','Mixed Use'];
+const MARKETS=['New York','Los Angeles','Chicago','Dallas','Houston','Atlanta','Phoenix','Denver','Seattle','Miami','San Francisco','Boston','Nashville','Charlotte','Minneapolis'];
+const TYPES=['Special Servicing','Watchlist','DSCR Breach','Foreclosure','Modification'];
+const SUBS={'New York':['Midtown','FiDi','Brooklyn','Hudson Yards'],'Los Angeles':['DTLA','Century City','Westside','South Bay'],'Chicago':['Loop','River North','West Loop','Fulton Market'],'Dallas':['Uptown','Preston Center','Las Colinas','Frisco'],'Houston':['Galleria','Medical Center','Energy Corridor','Katy'],'Atlanta':['Buckhead','Midtown','Perimeter','Sandy Springs'],'Phoenix':['Tempe','Scottsdale','Chandler','Mesa'],'Denver':['LoDo','Cherry Creek','Tech Center','Boulder'],'Seattle':['Bellevue','South Lake Union','Capitol Hill','Eastside'],'Miami':['Brickell','Wynwood','Coral Gables','Doral'],'San Francisco':['SoMa','FiDi','Mission Bay','Oakland'],'Boston':['Back Bay','Seaport','Cambridge','Waltham'],'Nashville':['Downtown','Gulch','Brentwood','Franklin'],'Charlotte':['Uptown','South End','Ballantyne','SouthPark'],'Minneapolis':['Downtown','North Loop','Bloomington','Edina']};
+const NAMES=['One','The','Park','River','Harbor','Summit','Trade','Commerce','Metro','Gateway','Exchange','Tower','Civic','Pioneer','Capital'];
+const SUFFIX=['Center','Tower','Plaza','Commons','Exchange','Park','Gateway','Square','Hub','Place','District','Portfolio'];
+
+function sr(s,mn,mx){const x=Math.sin(s+3)*8831;return mn+(x-Math.floor(x))*(mx-mn);}
+
+const EVENTS=Array.from({length:180},(_,i)=>{
+  const s=i*3317+41;
+  const asset=ASSETS[Math.floor(sr(s,0,6))];
+  const market=MARKETS[Math.floor(sr(s*3,0,15))];
+  const subs=SUBS[market];
+  const sub=subs[Math.floor(sr(s*7,0,subs.length))];
+  const bal=Math.round(sr(s*5,5,160))*1e6;
+  const type=TYPES[Math.floor(sr(s*11,0,5))];
+  const dscr=(sr(s*13,0.55,1.35)).toFixed(2);
+  const daysAgo=Math.floor(sr(s*17,1,90));
+  const nm=NAMES[Math.floor(sr(s*19,0,15))]+' '+sub+' '+SUFFIX[Math.floor(sr(s*23,0,12))];
+  return{id:i,name:nm,market,sub,asset,balance:bal,type,dscr:+dscr,daysAgo,new30:daysAgo<=30};
+});
+
+let filtered=[...EVENTS],sortField='daysAgo',sortDir=1,page=1;
+const PER=20;
+
+function applyFilters(){
+  const tp=document.getElementById('fType').value;
+  const ast=document.getElementById('fAsset').value;
+  const mkt=document.getElementById('fMarket').value;
+  const days=+document.getElementById('fRecency').value;
+  filtered=EVENTS.filter(e=>{
+    if(tp&&e.type!==tp)return false;
+    if(ast&&e.asset!==ast)return false;
+    if(mkt&&e.market!==mkt)return false;
+    if(days>0&&e.daysAgo>days)return false;
+    return true;
+  });
+  page=1;render();
+}
+
+function sortBy(f){
+  if(sortField===f)sortDir*=-1;else{sortField=f;sortDir=1;}
+  filtered.sort((a,b)=>typeof a[f]==='string'?a[f].localeCompare(b[f])*sortDir:(a[f]-b[f])*sortDir);
+  render();
+}
+
+function render(){
+  const tot=filtered.length;
+  const ss=filtered.filter(e=>e.type==='Special Servicing').length;
+  const totBal=filtered.reduce((s,e)=>s+e.balance,0);
+  const newM=filtered.filter(e=>e.new30).length;
+  document.getElementById('s1').textContent=tot.toLocaleString();
+  document.getElementById('s2').textContent=ss;
+  document.getElementById('s3').textContent='$'+(totBal/1e9).toFixed(1)+'B';
+  document.getElementById('s4').textContent=newM;
+
+  const start=(page-1)*PER;
+  const pg=filtered.slice(start,start+PER);
+  const typeClass={'Special Servicing':'d-ss','Watchlist':'d-watch','DSCR Breach':'d-mod','Foreclosure':'d-fore','Modification':'d-mod'};
+
+  document.getElementById('tableBody').innerHTML=pg.length===0
+    ?'<div class="no-results">No distress events match your filters.</div>'
+    :pg.map(e=>`
+      <div class="trow">
+        <div><div class="tr-name">${e.name}</div><div class="tr-city">${e.sub}, ${e.market}</div></div>
+        <div><span class="asset-tag">${e.asset}</span></div>
+        <div class="tr-bold">$${(e.balance/1e6).toFixed(1)}M</div>
+        <div class="tr-cell" style="color:${e.dscr<1?'#C87A7A':e.dscr<1.2?'#C9A84C':'#7FA0C8'}">${e.dscr}x</div>
+        <div class="tr-cell">${e.daysAgo===1?'Today':e.daysAgo+' days ago'}</div>
+        <div><span class="badge ${typeClass[e.type]}">${e.type}</span></div>
+      </div>`).join('');
+
+  const tp=Math.ceil(tot/PER);
+  document.getElementById('pageInfo').textContent=`Showing ${start+1}–${Math.min(start+PER,tot)} of ${tot.toLocaleString()} events`;
+  let btns='';
+  for(let p=1;p<=Math.min(tp,7);p++) btns+=`<button class="pbtn ${p===page?'active':''}" onclick="goPage(${p})">${p}</button>`;
+  if(tp>7) btns+=`<span style="color:var(--text3);padding:0 6px;font-size:11px">… ${tp}</span>`;
+  document.getElementById('pageBtns').innerHTML=btns;
+}
+
+function goPage(p){page=p;render();window.scrollTo({top:0,behavior:'smooth'});}
+applyFilters();
+</script>
+</body>
+</html>

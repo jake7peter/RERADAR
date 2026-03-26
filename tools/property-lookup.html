@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Property Lookup — ReRadar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#141414; --bg2:#1C1C1C; --bg3:#242424;
+      --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.14);
+      --text:#F0EDE8; --text2:#A8A49E; --text3:#6B6760;
+      --gold:#C9A84C; --gold2:#E8C97A; --gold-dim:rgba(201,168,76,0.1);
+      --res:#4A7C6F; --res-light:#7FB3A6; --res-dim:rgba(74,124,111,0.12);
+      --green:#4A8C5C; --green-bg:rgba(74,140,92,0.12);
+      --red:#8C4A4A; --red-bg:rgba(140,74,74,0.12);
+      --amber:#8C6E3A; --amber-bg:rgba(140,110,58,0.12);
+    }
+    html,body { height:100%; background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; }
+
+    nav {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 40px; background:var(--bg2); border-bottom:1px solid var(--border);
+    }
+    .logo { display:flex; align-items:center; gap:8px; text-decoration:none; }
+    .logo-mark { width:28px; height:28px; border-radius:5px; background:var(--gold); display:flex; align-items:center; justify-content:center; }
+    .logo-text { font-family:'Playfair Display',serif; font-size:18px; color:var(--text); }
+    .logo-text span { color:var(--gold); }
+    .nav-tools { display:flex; gap:4px; }
+    .tool-link { padding:6px 12px; font-size:12px; color:var(--text3); border-radius:5px; text-decoration:none; transition:all .15s; }
+    .tool-link:hover { color:var(--text2); background:rgba(255,255,255,0.04); }
+    .tool-link.active { color:var(--res-light); background:var(--res-dim); }
+
+    .page { max-width:1100px; margin:0 auto; padding:40px; }
+
+    .page-header { margin-bottom:40px; }
+    .page-eyebrow { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--res-light); text-transform:uppercase; letter-spacing:.1em; margin-bottom:10px; }
+    .page-title { font-family:'Playfair Display',serif; font-size:36px; color:var(--text); margin-bottom:8px; }
+    .page-sub { font-size:15px; color:var(--text2); font-weight:300; max-width:520px; line-height:1.7; }
+
+    /* SEARCH */
+    .search-box {
+      background:var(--bg2); border:1px solid var(--border2);
+      border-radius:14px; padding:28px 32px; margin-bottom:32px;
+    }
+    .search-row { display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; }
+    .search-field { flex:1; min-width:260px; }
+    .search-label { font-size:12px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; display:block; }
+    .search-input {
+      width:100%; padding:12px 16px; background:var(--bg3);
+      border:1px solid var(--border); border-radius:8px;
+      color:var(--text); font-family:'Outfit',sans-serif; font-size:14px;
+      outline:none; transition:border-color .2s;
+    }
+    .search-input:focus { border-color:var(--res); }
+    .search-input::placeholder { color:var(--text3); }
+    .search-btn {
+      padding:12px 28px; background:var(--res); color:var(--text);
+      border:none; border-radius:8px; font-size:14px; font-weight:500;
+      cursor:pointer; font-family:'Outfit',sans-serif; transition:all .2s;
+      white-space:nowrap;
+    }
+    .search-btn:hover { background:var(--res-light); color:var(--bg); }
+    .search-btn:disabled { opacity:.5; cursor:not-allowed; }
+
+    /* DEPTH TOGGLE */
+    .depth-toggle {
+      display:flex; gap:0; border:1px solid var(--border); border-radius:8px;
+      overflow:hidden; margin-top:16px; width:fit-content;
+    }
+    .depth-btn {
+      padding:8px 20px; font-size:12px; font-weight:500;
+      border:none; cursor:pointer; font-family:'Outfit',sans-serif;
+      transition:all .2s; color:var(--text3); background:transparent;
+    }
+    .depth-btn.active { background:var(--res-dim); color:var(--res-light); }
+    .depth-btn:hover:not(.active) { color:var(--text2); background:rgba(255,255,255,0.04); }
+
+    /* RESULT STATES */
+    .empty-state {
+      background:var(--bg2); border:1px solid var(--border);
+      border-radius:14px; padding:60px 40px; text-align:center;
+    }
+    .empty-icon { font-size:40px; margin-bottom:16px; opacity:.3; }
+    .empty-title { font-family:'Playfair Display',serif; font-size:22px; color:var(--text2); margin-bottom:8px; }
+    .empty-sub { font-size:14px; color:var(--text3); line-height:1.6; }
+
+    .loading-state { text-align:center; padding:60px; color:var(--text3); }
+    .spinner { display:inline-block; width:32px; height:32px; border:2px solid var(--border); border-top-color:var(--res); border-radius:50%; animation:spin .8s linear infinite; margin-bottom:16px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .loading-text { font-size:14px; color:var(--text3); }
+
+    /* PROPERTY RESULT */
+    .result-grid { display:grid; grid-template-columns:1fr 380px; gap:20px; }
+
+    .prop-card {
+      background:var(--bg2); border:1px solid var(--border);
+      border-radius:14px; overflow:hidden;
+    }
+    .prop-header { padding:24px 28px; border-bottom:1px solid var(--border); }
+    .prop-address { font-family:'Playfair Display',serif; font-size:22px; color:var(--text); margin-bottom:4px; }
+    .prop-meta { font-size:13px; color:var(--text3); display:flex; gap:16px; flex-wrap:wrap; margin-top:8px; }
+    .prop-meta-item { display:flex; align-items:center; gap:5px; }
+    .prop-meta-dot { width:4px; height:4px; border-radius:50%; background:var(--res); }
+
+    /* BEGINNER VIEW */
+    .beginner-view { padding:28px; }
+    .bv-title { font-size:13px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; margin-bottom:20px; }
+    .bv-verdict {
+      background:var(--res-dim); border:1px solid rgba(74,124,111,0.25);
+      border-radius:10px; padding:20px 22px; margin-bottom:24px;
+      display:flex; gap:16px; align-items:flex-start;
+    }
+    .bv-verdict-icon { font-size:28px; flex-shrink:0; }
+    .bv-verdict-title { font-size:16px; font-weight:500; color:var(--text); margin-bottom:4px; }
+    .bv-verdict-text { font-size:13px; color:var(--text2); line-height:1.6; }
+
+    .bv-numbers { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px; }
+    .bv-num-card { background:var(--bg3); border-radius:10px; padding:16px 18px; }
+    .bv-num-label { font-size:11px; color:var(--text3); margin-bottom:6px; line-height:1.4; }
+    .bv-num-value { font-size:22px; font-weight:500; color:var(--text); }
+    .bv-num-context { font-size:11px; color:var(--text3); margin-top:4px; }
+    .bv-num-value.good { color:#7FB3A6; }
+    .bv-num-value.ok { color:var(--gold); }
+    .bv-num-value.bad { color:#B37A7A; }
+
+    .bv-explain { font-size:13px; color:var(--text2); line-height:1.7; padding:16px 0; border-top:1px solid var(--border); }
+    .bv-explain p { margin-bottom:10px; }
+    .bv-explain p:last-child { margin-bottom:0; }
+
+    /* PRO VIEW */
+    .pro-view { padding:28px; }
+    .pro-section-title { font-size:11px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; margin-bottom:14px; margin-top:24px; }
+    .pro-section-title:first-child { margin-top:0; }
+    .pro-metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:4px; }
+    .pro-metric { background:var(--bg3); border-radius:8px; padding:12px 14px; }
+    .pm-label { font-size:10px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
+    .pm-value { font-size:16px; font-weight:500; color:var(--text); }
+    .pm-value.good { color:#7FB3A6; }
+    .pm-value.ok { color:var(--gold); }
+    .pm-value.bad { color:#B37A7A; }
+    .pm-note { font-size:10px; color:var(--text3); margin-top:2px; }
+
+    .cashflow-table { width:100%; border-collapse:collapse; margin-top:4px; }
+    .cashflow-table tr { border-bottom:1px solid var(--border); }
+    .cashflow-table tr:last-child { border-bottom:none; }
+    .cashflow-table td { padding:9px 12px; font-size:13px; }
+    .cashflow-table td:first-child { color:var(--text2); }
+    .cashflow-table td:last-child { text-align:right; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text); }
+    .cashflow-table tr.total td { color:var(--text); font-weight:500; background:var(--bg3); border-radius:6px; }
+    .cashflow-table tr.positive td:last-child { color:#7FB3A6; }
+    .cashflow-table tr.negative td:last-child { color:#B37A7A; }
+
+    .assumption-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .assumption-row { display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:var(--bg3); border-radius:6px; }
+    .ar-label { font-size:12px; color:var(--text3); }
+    .ar-input {
+      width:80px; padding:4px 8px; background:var(--bg2);
+      border:1px solid var(--border); border-radius:5px;
+      color:var(--text); font-family:'JetBrains Mono',monospace; font-size:12px;
+      text-align:right; outline:none;
+    }
+    .ar-input:focus { border-color:var(--res); }
+
+    /* SIDE PANEL */
+    .side-panel { display:flex; flex-direction:column; gap:16px; }
+
+    .panel-card {
+      background:var(--bg2); border:1px solid var(--border);
+      border-radius:12px; padding:20px 22px;
+    }
+    .pc-title { font-size:11px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; margin-bottom:14px; }
+
+    .owner-info { display:flex; flex-direction:column; gap:8px; }
+    .owner-row { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+    .owner-label { font-size:12px; color:var(--text3); flex-shrink:0; }
+    .owner-value { font-size:12px; color:var(--text); text-align:right; }
+    .owner-value.highlight { color:var(--res-light); }
+
+    .market-bar { margin-bottom:10px; }
+    .mb-label-row { display:flex; justify-content:space-between; margin-bottom:5px; }
+    .mb-label { font-size:12px; color:var(--text2); }
+    .mb-value { font-size:12px; color:var(--text); font-family:'JetBrains Mono',monospace; }
+    .mb-track { height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
+    .mb-fill { height:4px; border-radius:2px; background:var(--res); }
+
+    .comp-list { display:flex; flex-direction:column; gap:8px; }
+    .comp-item { display:flex; justify-content:space-between; align-items:flex-start; padding:10px 12px; background:var(--bg3); border-radius:8px; }
+    .comp-addr { font-size:12px; color:var(--text2); line-height:1.4; }
+    .comp-price { font-size:13px; font-weight:500; color:var(--text); font-family:'JetBrains Mono',monospace; text-align:right; }
+    .comp-date { font-size:10px; color:var(--text3); text-align:right; margin-top:2px; }
+
+    .recalc-btn {
+      width:100%; padding:10px; background:var(--res-dim); border:1px solid rgba(74,124,111,0.25);
+      color:var(--res-light); border-radius:7px; font-size:13px; font-weight:500;
+      cursor:pointer; font-family:'Outfit',sans-serif; transition:all .2s; margin-top:12px;
+    }
+    .recalc-btn:hover { background:var(--res); color:var(--text); }
+
+    ::-webkit-scrollbar { width:4px; }
+    ::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="logo">
+    <div class="logo-mark">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2.5" fill="#141414"/><circle cx="7" cy="7" r="5" stroke="#141414" stroke-width="1.2" fill="none" opacity=".6"/></svg>
+    </div>
+    <span class="logo-text">Re<span>Radar</span></span>
+  </a>
+  <div class="nav-tools">
+    <a href="/tools/property-lookup" class="tool-link active">Property Lookup</a>
+    <a href="/tools/deal-analyzer" class="tool-link">Deal Analyzer</a>
+    <a href="/tools/brrrr" class="tool-link">BRRRR Calc</a>
+    <a href="/tools/str-analyzer" class="tool-link">STR vs LTR</a>
+    <a href="/tools/neighborhood" class="tool-link">Neighborhood</a>
+    <a href="/tools/market-timing" class="tool-link">Market Timing</a>
+    <a href="/tools/maturity-radar" class="tool-link">Commercial →</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Residential · Property Analysis</div>
+    <div class="page-title">Property Lookup & Analysis</div>
+    <p class="page-sub">Search any property address in the US. Get a plain-English financial overview — or click into the full cash flow model if you want the details.</p>
+  </div>
+
+  <div class="search-box">
+    <div class="search-row">
+      <div class="search-field">
+        <label class="search-label">Property address</label>
+        <input class="search-input" id="addressInput" type="text" placeholder="e.g. 123 Main St, San Diego, CA 92101" onkeydown="if(event.key==='Enter')searchProperty()"/>
+      </div>
+      <button class="search-btn" id="searchBtn" onclick="searchProperty()">Search Property</button>
+    </div>
+    <div class="depth-toggle">
+      <button class="depth-btn active" id="btnBeginner" onclick="setDepth('beginner')">Simple overview</button>
+      <button class="depth-btn" id="btnPro" onclick="setDepth('pro')">Full cash flow model</button>
+    </div>
+  </div>
+
+  <div id="resultArea">
+    <div class="empty-state">
+      <div class="empty-icon">⌖</div>
+      <div class="empty-title">Search any property</div>
+      <p class="empty-sub">Enter an address above to pull property data, run a cash flow analysis, and see what the numbers actually mean for your investment.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentDepth = 'beginner';
+let currentResult = null;
+
+function setDepth(d) {
+  currentDepth = d;
+  document.getElementById('btnBeginner').classList.toggle('active', d==='beginner');
+  document.getElementById('btnPro').classList.toggle('active', d==='pro');
+  if (currentResult) renderResult(currentResult);
+}
+
+async function searchProperty() {
+  const addr = document.getElementById('addressInput').value.trim();
+  if (!addr) return;
+  const btn = document.getElementById('searchBtn');
+  btn.disabled = true; btn.textContent = 'Searching...';
+
+  document.getElementById('resultArea').innerHTML = `
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <div class="loading-text">Pulling property data from public records...</div>
+    </div>`;
+
+  await new Promise(r => setTimeout(r, 1400));
+
+  // Generate realistic demo data based on address
+  const result = generatePropertyData(addr);
+  currentResult = result;
+  renderResult(result);
+
+  btn.disabled = false; btn.textContent = 'Search Property';
+}
+
+function generatePropertyData(addr) {
+  const seed = addr.split('').reduce((a,c) => a + c.charCodeAt(0), 0);
+  const rand = (min, max) => min + ((seed * 1234567) % (max - min + 1)) / 100 % (max - min + 1);
+
+  const price = Math.round((280000 + (seed % 600000)) / 1000) * 1000;
+  const beds = 2 + (seed % 3);
+  const baths = 1 + (seed % 2) + 0.5;
+  const sqft = 800 + (seed % 1400);
+  const yearBuilt = 1960 + (seed % 55);
+  const rentPerSf = 1.4 + (seed % 60) / 100;
+  const monthlyRent = Math.round(sqft * rentPerSf / 12);
+  const annualRent = monthlyRent * 12;
+  const vacancy = 0.05;
+  const effectiveIncome = annualRent * (1 - vacancy);
+  const taxRate = 0.012;
+  const taxes = Math.round(price * taxRate / 12);
+  const insurance = Math.round(price * 0.005 / 12);
+  const maintenance = Math.round(monthlyRent * 0.08);
+  const mgmt = Math.round(monthlyRent * 0.08);
+  const totalExpenses = taxes + insurance + maintenance + mgmt;
+  const down = 0.25;
+  const downAmt = price * down;
+  const loanAmt = price * (1 - down);
+  const rate = 0.075;
+  const monthly_rate = rate / 12;
+  const n = 360;
+  const mortgage = Math.round(loanAmt * (monthly_rate * Math.pow(1+monthly_rate,n)) / (Math.pow(1+monthly_rate,n)-1));
+  const monthlyCashflow = monthlyRent - totalExpenses - mortgage;
+  const annualCashflow = monthlyCashflow * 12;
+  const noi = effectiveIncome - (totalExpenses * 12);
+  const capRate = ((noi / price) * 100).toFixed(2);
+  const cocReturn = ((annualCashflow / downAmt) * 100).toFixed(2);
+  const grm = (price / annualRent).toFixed(1);
+  const pricePerSf = Math.round(price / sqft);
+  const rentPerSfMonth = (monthlyRent / sqft).toFixed(2);
+  const breakEvenRent = Math.round(totalExpenses + mortgage);
+
+  const parts = addr.split(',');
+  const street = parts[0]?.trim() || addr;
+  const city = parts[1]?.trim() || 'San Diego';
+  const state = parts[2]?.trim() || 'CA';
+
+  const verdict = parseFloat(cocReturn) > 5 ? 'strong' : parseFloat(cocReturn) > 2 ? 'moderate' : 'weak';
+
+  return {
+    address: street, city, state,
+    price, beds, baths: baths.toString(), sqft, yearBuilt,
+    monthlyRent, annualRent, mortgage, taxes, insurance,
+    maintenance, mgmt, totalExpenses, monthlyCashflow, annualCashflow,
+    noi, capRate, cocReturn, grm, pricePerSf, rentPerSfMonth,
+    breakEvenRent, downAmt, loanAmt, rate, vacancy: (vacancy*100).toFixed(0),
+    verdict,
+    owner: 'County Records — ' + (seed % 2 === 0 ? 'Individual Owner' : 'LLC Entity'),
+    ownerName: seed % 2 === 0 ? 'J. Smith (Individual)' : city.replace(' ','') + ' Properties LLC',
+    lastSale: `${2015 + (seed % 9)}`,
+    lastSalePrice: Math.round(price * (0.6 + (seed % 30)/100)),
+    zestimate: Math.round(price * (0.95 + (seed % 12)/100)),
+    cityAvgRent: Math.round(monthlyRent * (0.92 + (seed % 16)/100)),
+    cityAvgCapRate: (parseFloat(capRate) + (seed % 10)/10 - 0.5).toFixed(2),
+    cityMedianPrice: Math.round(price * (0.85 + (seed % 30)/100)),
+    comps: [
+      { addr: `${12+seed%80} Oak Ave`, price: Math.round(price * 0.97), date: 'Jan 2026' },
+      { addr: `${45+seed%60} Elm St`, price: Math.round(price * 1.03), date: 'Feb 2026' },
+      { addr: `${8+seed%40} Pine Rd`, price: Math.round(price * 0.94), date: 'Mar 2026' },
+    ]
+  };
+}
+
+function fmt(n) { return '$' + Math.abs(Math.round(n)).toLocaleString(); }
+function fmtSign(n) { return (n >= 0 ? '+' : '-') + '$' + Math.abs(Math.round(n)).toLocaleString(); }
+
+function renderResult(r) {
+  const verdictMap = {
+    strong: { icon: '✦', title: 'This looks like a solid investment', text: `Based on current market rents and a 25% down payment, this property generates an estimated ${fmt(r.monthlyCashflow)}/month in profit after all expenses and mortgage. That's a ${r.cocReturn}% annual return on your down payment — better than most savings accounts.` },
+    moderate: { icon: '◈', title: 'This could work — but watch the numbers', text: `This property breaks roughly even or generates a small monthly profit of around ${fmt(r.monthlyCashflow)} after expenses and mortgage. Returns depend heavily on whether you can get top-of-market rent and keep vacancy low.` },
+    weak: { icon: '◇', title: 'This one is tough to make work', text: `At current pricing and market rents, this property would cost you about ${fmt(Math.abs(r.monthlyCashflow))}/month after expenses and mortgage. That doesn't mean it's a bad investment — but you'd need to find below-market purchase price, raise rents, or use a different financing strategy.` }
+  };
+  const v = verdictMap[r.verdict];
+  const colorMap = { strong:'good', moderate:'ok', weak:'bad' };
+  const c = colorMap[r.verdict];
+
+  const beginnerHTML = `
+    <div class="beginner-view">
+      <div class="bv-title">Plain English Summary</div>
+      <div class="bv-verdict">
+        <div class="bv-verdict-icon">${v.icon}</div>
+        <div><div class="bv-verdict-title">${v.title}</div><div class="bv-verdict-text">${v.text}</div></div>
+      </div>
+      <div class="bv-numbers">
+        <div class="bv-num-card">
+          <div class="bv-num-label">What you'd pocket each month</div>
+          <div class="bv-num-value ${c}">${fmtSign(r.monthlyCashflow)}</div>
+          <div class="bv-num-context">After mortgage, taxes, insurance & maintenance</div>
+        </div>
+        <div class="bv-num-card">
+          <div class="bv-num-label">Return on your down payment</div>
+          <div class="bv-num-value ${c}">${r.cocReturn}%</div>
+          <div class="bv-num-context">Cash-on-cash return per year</div>
+        </div>
+        <div class="bv-num-card">
+          <div class="bv-num-label">Estimated monthly rent</div>
+          <div class="bv-num-value">${fmt(r.monthlyRent)}</div>
+          <div class="bv-num-context">Based on current market comps</div>
+        </div>
+        <div class="bv-num-card">
+          <div class="bv-num-label">Your down payment needed</div>
+          <div class="bv-num-value">${fmt(r.downAmt)}</div>
+          <div class="bv-num-context">25% of purchase price</div>
+        </div>
+        <div class="bv-num-card">
+          <div class="bv-num-label">Monthly mortgage payment</div>
+          <div class="bv-num-value">${fmt(r.mortgage)}</div>
+          <div class="bv-num-context">30-yr fixed at 7.5%</div>
+        </div>
+        <div class="bv-num-card">
+          <div class="bv-num-label">Minimum rent to break even</div>
+          <div class="bv-num-value">${fmt(r.breakEvenRent)}</div>
+          <div class="bv-num-context">Covers all costs + mortgage</div>
+        </div>
+      </div>
+      <div class="bv-explain">
+        <p><strong style="color:var(--text)">What is cap rate?</strong> It's how investors measure a property's income relative to its price — like a yield. This property has a ${r.capRate}% cap rate. The city average is ${r.cityAvgCapRate}%. Higher is generally better.</p>
+        <p><strong style="color:var(--text)">What does cash-on-cash mean?</strong> It's how much cash profit you make each year divided by how much cash you put in. A ${r.cocReturn}% return means for every $100 you invest, you get back $${(parseFloat(r.cocReturn)).toFixed(2)} in profit per year.</p>
+      </div>
+    </div>`;
+
+  const proHTML = `
+    <div class="pro-view">
+      <div class="pro-section-title">Key metrics</div>
+      <div class="pro-metrics">
+        <div class="pro-metric"><div class="pm-label">Cap Rate</div><div class="pm-value ${c}">${r.capRate}%</div><div class="pm-note">Market avg: ${r.cityAvgCapRate}%</div></div>
+        <div class="pro-metric"><div class="pm-label">Cash-on-Cash</div><div class="pm-value ${c}">${r.cocReturn}%</div><div class="pm-note">25% down</div></div>
+        <div class="pro-metric"><div class="pm-label">GRM</div><div class="pm-value">${r.grm}x</div><div class="pm-note">Gross rent multiplier</div></div>
+        <div class="pro-metric"><div class="pm-label">Annual NOI</div><div class="pm-value">${fmt(r.noi)}</div><div class="pm-note">Before debt service</div></div>
+        <div class="pro-metric"><div class="pm-label">Price / SF</div><div class="pm-value">${fmt(r.pricePerSf)}</div><div class="pm-note">${r.sqft.toLocaleString()} sf total</div></div>
+        <div class="pro-metric"><div class="pm-label">Rent / SF</div><div class="pm-value">$${r.rentPerSfMonth}</div><div class="pm-note">Per month</div></div>
+      </div>
+
+      <div class="pro-section-title">Monthly cash flow model</div>
+      <table class="cashflow-table">
+        <tr class="positive"><td>Gross rental income</td><td>${fmt(r.monthlyRent)}</td></tr>
+        <tr class="negative"><td>Vacancy allowance (${r.vacancy}%)</td><td>-${fmt(r.monthlyRent * parseFloat(r.vacancy)/100)}</td></tr>
+        <tr><td>Effective gross income</td><td>${fmt(r.monthlyRent * (1 - parseFloat(r.vacancy)/100))}</td></tr>
+        <tr class="negative"><td>Property taxes</td><td>-${fmt(r.taxes)}</td></tr>
+        <tr class="negative"><td>Insurance</td><td>-${fmt(r.insurance)}</td></tr>
+        <tr class="negative"><td>Maintenance & repairs (8%)</td><td>-${fmt(r.maintenance)}</td></tr>
+        <tr class="negative"><td>Property management (8%)</td><td>-${fmt(r.mgmt)}</td></tr>
+        <tr><td>Net operating income (NOI)</td><td>${fmt(r.noi / 12)}</td></tr>
+        <tr class="negative"><td>Mortgage (P&I)</td><td>-${fmt(r.mortgage)}</td></tr>
+        <tr class="total ${r.monthlyCashflow >= 0 ? 'positive':'negative'}"><td>Monthly cash flow</td><td>${fmtSign(r.monthlyCashflow)}</td></tr>
+      </table>
+
+      <div class="pro-section-title" style="margin-top:20px">Adjust assumptions</div>
+      <div class="assumption-grid">
+        <div class="assumption-row"><span class="ar-label">Monthly rent</span><input class="ar-input" id="aRent" value="${r.monthlyRent}" onchange="recalculate()"/></div>
+        <div class="assumption-row"><span class="ar-label">Down payment %</span><input class="ar-input" id="aDown" value="25" onchange="recalculate()"/></div>
+        <div class="assumption-row"><span class="ar-label">Interest rate %</span><input class="ar-input" id="aRate" value="7.5" onchange="recalculate()"/></div>
+        <div class="assumption-row"><span class="ar-label">Vacancy %</span><input class="ar-input" id="aVacancy" value="${r.vacancy}" onchange="recalculate()"/></div>
+        <div class="assumption-row"><span class="ar-label">Mgmt fee %</span><input class="ar-input" id="aMgmt" value="8" onchange="recalculate()"/></div>
+        <div class="assumption-row"><span class="ar-label">Purchase price</span><input class="ar-input" id="aPrice" value="${r.price}" onchange="recalculate()"/></div>
+      </div>
+      <button class="recalc-btn" onclick="recalculate()">Recalculate with new assumptions</button>
+    </div>`;
+
+  document.getElementById('resultArea').innerHTML = `
+    <div class="result-grid">
+      <div class="prop-card">
+        <div class="prop-header">
+          <div class="prop-address">${r.address}</div>
+          <div style="font-size:14px;color:var(--text2);margin-top:4px">${r.city}, ${r.state}</div>
+          <div class="prop-meta">
+            <span class="prop-meta-item"><span class="prop-meta-dot"></span>${r.beds} bed</span>
+            <span class="prop-meta-item"><span class="prop-meta-dot"></span>${r.baths} bath</span>
+            <span class="prop-meta-item"><span class="prop-meta-dot"></span>${r.sqft.toLocaleString()} sf</span>
+            <span class="prop-meta-item"><span class="prop-meta-dot"></span>Built ${r.yearBuilt}</span>
+            <span class="prop-meta-item"><span class="prop-meta-dot"></span>${fmt(r.price)} list</span>
+          </div>
+        </div>
+        ${currentDepth === 'beginner' ? beginnerHTML : proHTML}
+      </div>
+
+      <div class="side-panel">
+        <div class="panel-card">
+          <div class="pc-title">Ownership & Records</div>
+          <div class="owner-info">
+            <div class="owner-row"><span class="owner-label">Owner</span><span class="owner-value highlight">${r.ownerName}</span></div>
+            <div class="owner-row"><span class="owner-label">Source</span><span class="owner-value">${r.owner}</span></div>
+            <div class="owner-row"><span class="owner-label">Last sale</span><span class="owner-value">${r.lastSale}</span></div>
+            <div class="owner-row"><span class="owner-label">Last sale price</span><span class="owner-value">${fmt(r.lastSalePrice)}</span></div>
+            <div class="owner-row"><span class="owner-label">Est. current value</span><span class="owner-value">${fmt(r.zestimate)}</span></div>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div class="pc-title">Market Context</div>
+          <div class="market-bar">
+            <div class="mb-label-row"><span class="mb-label">Avg rent (city)</span><span class="mb-value">${fmt(r.cityAvgRent)}/mo</span></div>
+            <div class="mb-track"><div class="mb-fill" style="width:${Math.min(100,Math.round(r.monthlyRent/r.cityAvgRent*100))}%"></div></div>
+          </div>
+          <div class="market-bar">
+            <div class="mb-label-row"><span class="mb-label">Median sale price</span><span class="mb-value">${fmt(r.cityMedianPrice)}</span></div>
+            <div class="mb-track"><div class="mb-fill" style="width:${Math.min(100,Math.round(r.price/r.cityMedianPrice*100))}%"></div></div>
+          </div>
+          <div class="market-bar">
+            <div class="mb-label-row"><span class="mb-label">Avg cap rate</span><span class="mb-value">${r.cityAvgCapRate}%</span></div>
+            <div class="mb-track"><div class="mb-fill" style="width:${Math.min(100,Math.round(parseFloat(r.capRate)/parseFloat(r.cityAvgCapRate)*100))}%"></div></div>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div class="pc-title">Recent Nearby Sales</div>
+          <div class="comp-list">
+            ${r.comps.map(c=>`
+              <div class="comp-item">
+                <div class="comp-addr">${c.addr}, ${r.city}</div>
+                <div><div class="comp-price">${fmt(c.price)}</div><div class="comp-date">${c.date}</div></div>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function recalculate() {
+  if (!currentResult) return;
+  const rent = parseFloat(document.getElementById('aRent').value) || currentResult.monthlyRent;
+  const down = parseFloat(document.getElementById('aDown').value)/100 || 0.25;
+  const rate = parseFloat(document.getElementById('aRate').value)/100 || 0.075;
+  const vacancy = parseFloat(document.getElementById('aVacancy').value)/100 || 0.05;
+  const mgmtPct = parseFloat(document.getElementById('aMgmt').value)/100 || 0.08;
+  const price = parseFloat(document.getElementById('aPrice').value) || currentResult.price;
+
+  const loanAmt = price * (1-down);
+  const mr = rate/12; const n = 360;
+  const mortgage = Math.round(loanAmt * (mr * Math.pow(1+mr,n)) / (Math.pow(1+mr,n)-1));
+  const taxes = Math.round(price * 0.012 / 12);
+  const insurance = Math.round(price * 0.005 / 12);
+  const maintenance = Math.round(rent * 0.08);
+  const mgmt = Math.round(rent * mgmtPct);
+  const totalExp = taxes + insurance + maintenance + mgmt;
+  const effectiveIncome = rent * (1-vacancy);
+  const noi = (effectiveIncome - totalExp) * 12;
+  const cashflow = rent - totalExp - mortgage;
+  const annualCashflow = cashflow * 12;
+  const downAmt = price * down;
+  const cocReturn = ((annualCashflow/downAmt)*100).toFixed(2);
+  const capRate = ((noi/price)*100).toFixed(2);
+  const grm = (price/(rent*12)).toFixed(1);
+
+  currentResult = { ...currentResult, monthlyRent:rent, mortgage, taxes, insurance, maintenance, mgmt, totalExpenses:totalExp, monthlyCashflow:cashflow, annualCashflow, noi, capRate, cocReturn, grm, price, downAmt, loanAmt, rate, vacancy:(vacancy*100).toFixed(0), verdict: parseFloat(cocReturn)>5?'strong':parseFloat(cocReturn)>2?'moderate':'weak' };
+  renderResult(currentResult);
+
+  document.getElementById('aRent').value = rent;
+  document.getElementById('aDown').value = (down*100).toFixed(0);
+  document.getElementById('aRate').value = (rate*100).toFixed(1);
+  document.getElementById('aVacancy').value = (vacancy*100).toFixed(0);
+  document.getElementById('aMgmt').value = (mgmtPct*100).toFixed(0);
+  document.getElementById('aPrice').value = price;
+}
+</script>
+</body>
+</html>

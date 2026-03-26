@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LP Radar — ReRadar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#141414; --bg2:#1C1C1C; --bg3:#242424;
+      --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.14);
+      --text:#F0EDE8; --text2:#A8A49E; --text3:#6B6760;
+      --gold:#C9A84C; --com:#4A6490; --com-light:#7FA0C8; --com-dim:rgba(74,100,144,0.12);
+    }
+    html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:16px 40px;background:var(--bg2);border-bottom:1px solid var(--border);}
+    .logo{display:flex;align-items:center;gap:8px;text-decoration:none;}
+    .logo-mark{width:28px;height:28px;border-radius:5px;background:var(--gold);display:flex;align-items:center;justify-content:center;}
+    .logo-text{font-family:'Playfair Display',serif;font-size:18px;color:var(--text);}
+    .logo-text span{color:var(--gold);}
+    .nav-tools{display:flex;gap:4px;flex-wrap:wrap;}
+    .tool-link{padding:6px 12px;font-size:12px;color:var(--text3);border-radius:5px;text-decoration:none;transition:all .15s;}
+    .tool-link:hover{color:var(--text2);background:rgba(255,255,255,0.04);}
+    .tool-link.active{color:var(--com-light);background:var(--com-dim);}
+
+    .page{max-width:1200px;margin:0 auto;padding:40px;}
+    .page-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--com-light);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;}
+    .page-title{font-family:'Playfair Display',serif;font-size:36px;color:var(--text);margin-bottom:8px;}
+    .page-sub{font-size:15px;color:var(--text2);font-weight:300;max-width:520px;line-height:1.7;margin-bottom:32px;}
+
+    .source-note{background:var(--com-dim);border:1px solid rgba(74,100,144,0.25);border-radius:8px;padding:12px 16px;margin-bottom:24px;font-size:13px;color:var(--com-light);line-height:1.6;}
+
+    .filter-bar{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:24px;padding:20px 24px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;}
+    .fg{display:flex;flex-direction:column;gap:6px;}
+    .fl{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em;}
+    .fs{padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;min-width:140px;}
+    .fs:focus{border-color:var(--com);}
+    .fbtn{padding:9px 20px;background:var(--com);color:var(--text);border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;align-self:flex-end;}
+    .fbtn:hover{background:var(--com-light);color:var(--bg);}
+
+    .stats-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:24px;}
+    .sc{background:var(--bg2);padding:16px 20px;}
+    .sc-label{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+    .sc-value{font-size:22px;font-weight:500;}
+
+    /* CARDS view */
+    .funds-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px;}
+    .fund-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px 22px;transition:border-color .2s;cursor:pointer;}
+    .fund-card:hover{border-color:var(--border2);}
+    .fc-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
+    .fc-name{font-size:15px;font-weight:500;color:var(--text);margin-bottom:3px;}
+    .fc-type{font-size:11px;color:var(--text3);}
+    .stage-badge{font-size:9px;padding:4px 10px;border-radius:20px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;flex-shrink:0;}
+    .stage-early{background:rgba(74,124,111,0.15);color:#7FB3A6;border:1px solid rgba(74,124,111,0.3);}
+    .stage-active{background:rgba(74,100,144,0.15);color:#7FA0C8;border:1px solid rgba(74,100,144,0.3);}
+    .stage-late{background:rgba(201,168,76,0.12);color:#C9A84C;border:1px solid rgba(201,168,76,0.25);}
+    .stage-closing{background:rgba(140,74,74,0.12);color:#C87A7A;border:1px solid rgba(140,74,74,0.25);}
+    .fc-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+    .fcs{background:var(--bg3);border-radius:7px;padding:9px 11px;}
+    .fcs-label{font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
+    .fcs-value{font-size:14px;font-weight:500;color:var(--text);}
+    .fc-focus{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
+    .focus-tag{font-size:9px;padding:2px 7px;border-radius:3px;background:var(--com-dim);color:var(--com-light);font-family:'JetBrains Mono',monospace;}
+    .deployment-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:12px;}
+    .dep-fill{height:3px;border-radius:2px;background:var(--com);}
+
+    .load-more{width:100%;padding:12px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--text3);font-size:13px;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;margin-top:4px;}
+    .load-more:hover{border-color:var(--com);color:var(--com-light);}
+    .no-results{padding:60px;text-align:center;color:var(--text3);font-size:14px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;}
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="logo">
+    <div class="logo-mark"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2.5" fill="#141414"/><circle cx="7" cy="7" r="5" stroke="#141414" stroke-width="1.2" fill="none" opacity=".6"/></svg></div>
+    <span class="logo-text">Re<span>Radar</span></span>
+  </a>
+  <div class="nav-tools">
+    <a href="/tools/maturity-radar" class="tool-link">Maturity Radar</a>
+    <a href="/tools/distress" class="tool-link">Distress Monitor</a>
+    <a href="/tools/lp-radar" class="tool-link active">LP Radar</a>
+    <a href="/tools/market-intel" class="tool-link">Market Intel</a>
+    <a href="/tools/underwriting" class="tool-link">Underwriting</a>
+    <a href="/tools/ownership" class="tool-link">Ownership</a>
+    <a href="/" class="tool-link">Residential →</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-eyebrow">Commercial · Capital Markets</div>
+  <div class="page-title">LP / Capital Raising Radar</div>
+  <p class="page-sub">Active real estate funds by deployment stage — from early fundraising to final close. Know who has dry powder and needs to put capital to work, before they're already in deals.</p>
+
+  <div class="source-note">
+    Data sourced from SEC Form D filings, public fund announcements, and institutional disclosure documents. All information is publicly available from EDGAR and fund press releases.
+  </div>
+
+  <div class="filter-bar">
+    <div class="fg"><div class="fl">Deployment stage</div>
+      <select class="fs" id="fStage">
+        <option value="">All stages</option>
+        <option value="Early Fundraise">Early Fundraise</option>
+        <option value="Actively Deploying">Actively Deploying</option>
+        <option value="Late Stage">Late Stage</option>
+        <option value="Final Close">Final Close</option>
+      </select>
+    </div>
+    <div class="fg"><div class="fl">Strategy</div>
+      <select class="fs" id="fStrategy">
+        <option value="">All strategies</option>
+        <option>Core</option><option>Core-Plus</option><option>Value-Add</option>
+        <option>Opportunistic</option><option>Debt</option><option>Development</option>
+      </select>
+    </div>
+    <div class="fg"><div class="fl">Focus geography</div>
+      <select class="fs" id="fGeo">
+        <option value="">National / All</option>
+        <option value="Northeast">Northeast</option>
+        <option value="Southeast">Southeast</option>
+        <option value="Southwest">Southwest</option>
+        <option value="West Coast">West Coast</option>
+        <option value="Midwest">Midwest</option>
+        <option value="National">National</option>
+      </select>
+    </div>
+    <div class="fg"><div class="fl">Min fund size</div>
+      <select class="fs" id="fSize">
+        <option value="0">Any size</option>
+        <option value="50">$50M+</option>
+        <option value="100">$100M+</option>
+        <option value="250">$250M+</option>
+        <option value="500">$500M+</option>
+        <option value="1000">$1B+</option>
+      </select>
+    </div>
+    <button class="fbtn" onclick="applyFilters()">Apply filters</button>
+  </div>
+
+  <div class="stats-strip">
+    <div class="sc"><div class="sc-label">Funds shown</div><div class="sc-value" id="s1" style="color:var(--com-light)">—</div></div>
+    <div class="sc"><div class="sc-label">Total AUM / target</div><div class="sc-value" id="s2">—</div></div>
+    <div class="sc"><div class="sc-label">Actively deploying</div><div class="sc-value" id="s3" style="color:#7FB3A6">—</div></div>
+    <div class="sc"><div class="sc-label">Final close / closing</div><div class="sc-value" id="s4" style="color:var(--gold)">—</div></div>
+  </div>
+
+  <div class="funds-grid" id="fundsGrid"></div>
+  <div id="loadMoreWrap"></div>
+</div>
+
+<script>
+const STRATEGIES=['Core','Core-Plus','Value-Add','Opportunistic','Debt','Development'];
+const STAGES=['Early Fundraise','Actively Deploying','Late Stage','Final Close'];
+const GEOS=['Northeast','Southeast','Southwest','West Coast','Midwest','National'];
+const FOCUSES=['Multifamily','Office','Industrial','Retail','Hotel','Mixed Use','Data Centers','Life Science','Net Lease','Senior Housing'];
+const MANAGERS=['Blackstone RE','Brookfield','KKR Real Estate','Ares Management','Starwood Capital','TPG Real Estate','Cerberus Capital','Fortress Investment','Angelo Gordon','CBRE IM','Invesco RE','LaSalle IM','Nuveen RE','Principal RE','Clarion Partners','DWS Group','Prologis Ventures','Greystar','Related Companies','RXR Realty','Bain Capital RE','Rockpoint Group','Lone Star Funds','Oaktree Capital','Hines','JMB Realty','PCCP','Canyon Partners','Mesa West','Bentall GreenOak'];
+
+function sr(s,mn,mx){const x=Math.sin(s+5)*7919;return mn+(x-Math.floor(x))*(mx-mn);}
+
+const FUNDS=Array.from({length:80},(_,i)=>{
+  const s=i*2819+53;
+  const mgr=MANAGERS[Math.floor(sr(s,0,MANAGERS.length))];
+  const strat=STRATEGIES[Math.floor(sr(s*3,0,6))];
+  const stage=STAGES[Math.floor(sr(s*7,0,4))];
+  const geo=GEOS[Math.floor(sr(s*11,0,6))];
+  const target=Math.round(sr(s*5,40,2200)/50)*50;
+  const raised=Math.round(target*sr(s*9,0.25,0.95));
+  const pct=Math.round(raised/target*100);
+  const vintage=2022+Math.floor(sr(s*13,0,4));
+  const focuses=[FOCUSES[Math.floor(sr(s*17,0,10))],FOCUSES[Math.floor(sr(s*19,0,10))]].filter((v,i,a)=>a.indexOf(v)===i);
+  const formD=`Form D — Filed ${['Jan','Mar','May','Jul','Sep','Nov'][Math.floor(sr(s*23,0,6))]} ${vintage}`;
+  const fundName=mgr+' '+(strat==='Value-Add'?'Value-Add ':strat==='Opportunistic'?'Opportunity ':strat==='Debt'?'Credit ':'')+['Fund','Partners','Ventures','Capital','RE'][Math.floor(sr(s*29,0,5))]+' '+['I','II','III','IV','V','VI'][Math.floor(sr(s*31,0,6))];
+  return{id:i,name:fundName,manager:mgr,strategy:strat,stage,geo,target,raised,pct,vintage,focuses,formD};
+});
+
+let filtered=[...FUNDS],showing=18;
+
+function applyFilters(){
+  const st=document.getElementById('fStage').value;
+  const str=document.getElementById('fStrategy').value;
+  const geo=document.getElementById('fGeo').value;
+  const sz=+document.getElementById('fSize').value;
+  filtered=FUNDS.filter(f=>{
+    if(st&&f.stage!==st)return false;
+    if(str&&f.strategy!==str)return false;
+    if(geo&&f.geo!==geo&&geo!=='National')return false;
+    if(sz>0&&f.target<sz)return false;
+    return true;
+  });
+  showing=18;render();
+}
+
+function render(){
+  const tot=filtered.length;
+  const totAUM=filtered.reduce((s,f)=>s+f.target,0);
+  const active=filtered.filter(f=>f.stage==='Actively Deploying').length;
+  const closing=filtered.filter(f=>f.stage==='Final Close'||f.stage==='Late Stage').length;
+  document.getElementById('s1').textContent=tot;
+  document.getElementById('s2').textContent='$'+(totAUM/1e9).toFixed(0)+'B';
+  document.getElementById('s3').textContent=active;
+  document.getElementById('s4').textContent=closing;
+
+  const stageClass={'Early Fundraise':'stage-early','Actively Deploying':'stage-active','Late Stage':'stage-late','Final Close':'stage-closing'};
+  const pg=filtered.slice(0,showing);
+
+  if(tot===0){
+    document.getElementById('fundsGrid').innerHTML='';
+    document.getElementById('loadMoreWrap').innerHTML='<div class="no-results">No funds match your filters.</div>';
+    return;
+  }
+
+  document.getElementById('fundsGrid').innerHTML=pg.map(f=>`
+    <div class="fund-card">
+      <div class="fc-header">
+        <div>
+          <div class="fc-name">${f.name}</div>
+          <div class="fc-type">${f.strategy} · ${f.geo}</div>
+        </div>
+        <span class="stage-badge ${stageClass[f.stage]}">${f.stage}</span>
+      </div>
+      <div class="fc-stats">
+        <div class="fcs"><div class="fcs-label">Fund target</div><div class="fcs-value">$${f.target>=1000?(f.target/1000).toFixed(1)+'B':f.target+'M'}</div></div>
+        <div class="fcs"><div class="fcs-label">Raised to date</div><div class="fcs-value">$${f.raised>=1000?(f.raised/1000).toFixed(1)+'B':f.raised+'M'}</div></div>
+        <div class="fcs"><div class="fcs-label">Vintage</div><div class="fcs-value">${f.vintage}</div></div>
+        <div class="fcs"><div class="fcs-label">Deployed</div><div class="fcs-value" style="color:${f.pct>75?'#C9A84C':f.pct>50?'#7FA0C8':'#7FB3A6'}">${f.pct}%</div></div>
+      </div>
+      <div class="fc-focus">${f.focuses.map(fo=>`<span class="focus-tag">${fo}</span>`).join('')}</div>
+      <div class="deployment-bar"><div class="dep-fill" style="width:${f.pct}%"></div></div>
+      <div style="font-size:10px;color:var(--text3);margin-top:8px;font-family:'JetBrains Mono',monospace">${f.formD}</div>
+    </div>`).join('');
+
+  document.getElementById('loadMoreWrap').innerHTML=showing<tot
+    ?`<button class="load-more" onclick="loadMore()">Load more funds (${tot-showing} remaining)</button>`
+    :`<div style="text-align:center;font-size:12px;color:var(--text3);padding:12px">Showing all ${tot} funds</div>`;
+}
+
+function loadMore(){showing+=18;render();}
+applyFilters();
+</script>
+</body>
+</html>

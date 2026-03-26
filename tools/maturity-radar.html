@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CMBS Maturity Radar — ReRadar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#141414; --bg2:#1C1C1C; --bg3:#242424;
+      --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.14);
+      --text:#F0EDE8; --text2:#A8A49E; --text3:#6B6760;
+      --gold:#C9A84C; --com:#4A6490; --com-light:#7FA0C8; --com-dim:rgba(74,100,144,0.12);
+    }
+    html,body { min-height:100%; background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; }
+    nav { display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:var(--bg2); border-bottom:1px solid var(--border); }
+    .logo { display:flex; align-items:center; gap:8px; text-decoration:none; }
+    .logo-mark { width:28px; height:28px; border-radius:5px; background:var(--gold); display:flex; align-items:center; justify-content:center; }
+    .logo-text { font-family:'Playfair Display',serif; font-size:18px; color:var(--text); }
+    .logo-text span { color:var(--gold); }
+    .nav-tools { display:flex; gap:4px; flex-wrap:wrap; }
+    .tool-link { padding:6px 12px; font-size:12px; color:var(--text3); border-radius:5px; text-decoration:none; transition:all .15s; }
+    .tool-link:hover { color:var(--text2); background:rgba(255,255,255,0.04); }
+    .tool-link.active { color:var(--com-light); background:var(--com-dim); }
+
+    .page { max-width:1200px; margin:0 auto; padding:40px; }
+    .page-eyebrow { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--com-light); text-transform:uppercase; letter-spacing:.1em; margin-bottom:10px; }
+    .page-title { font-family:'Playfair Display',serif; font-size:36px; color:var(--text); margin-bottom:8px; }
+    .page-sub { font-size:15px; color:var(--text2); font-weight:300; max-width:500px; line-height:1.7; margin-bottom:32px; }
+
+    .filter-bar { display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; margin-bottom:24px; padding:20px 24px; background:var(--bg2); border:1px solid var(--border); border-radius:12px; }
+    .filter-group { display:flex; flex-direction:column; gap:6px; }
+    .filter-label { font-size:10px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; }
+    .filter-select { padding:8px 12px; background:var(--bg3); border:1px solid var(--border); border-radius:6px; color:var(--text); font-family:'Outfit',sans-serif; font-size:13px; outline:none; cursor:pointer; min-width:140px; }
+    .filter-select:focus { border-color:var(--com); }
+    .filter-btn { padding:9px 20px; background:var(--com); color:var(--text); border:none; border-radius:6px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Outfit',sans-serif; transition:all .2s; align-self:flex-end; }
+    .filter-btn:hover { background:var(--com-light); color:var(--bg); }
+
+    .stats-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:20px; }
+    .stat-card { background:var(--bg2); padding:16px 20px; }
+    .sc-label { font-size:10px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px; }
+    .sc-value { font-size:22px; font-weight:500; }
+    .sc-sub { font-size:11px; color:var(--text3); margin-top:3px; }
+
+    .table-wrap { background:var(--bg2); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+    .table-header { display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr 1fr; padding:10px 20px; border-bottom:1px solid var(--border); gap:8px; }
+    .th { font-size:9px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; cursor:pointer; user-select:none; }
+    .th:hover { color:var(--text2); }
+    .table-row { display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr 1fr; padding:13px 20px; border-bottom:1px solid var(--border); align-items:center; gap:8px; transition:background .15s; }
+    .table-row:last-child { border-bottom:none; }
+    .table-row:hover { background:rgba(255,255,255,0.025); }
+    .tr-name { font-size:13px; font-weight:500; color:var(--text); margin-bottom:2px; }
+    .tr-city { font-size:11px; color:var(--text3); }
+    .tr-cell { font-size:12px; color:var(--text2); font-family:'JetBrains Mono',monospace; }
+    .tr-bold { font-size:13px; font-weight:500; color:var(--text); font-family:'JetBrains Mono',monospace; }
+    .badge { display:inline-block; font-size:9px; padding:3px 8px; border-radius:4px; font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.05em; white-space:nowrap; }
+    .urg-critical { background:rgba(140,74,74,0.2); color:#C87A7A; border:1px solid rgba(140,74,74,0.35); }
+    .urg-watch { background:rgba(201,168,76,0.15); color:#C9A84C; border:1px solid rgba(201,168,76,0.3); }
+    .urg-monitor { background:rgba(74,100,144,0.15); color:#7FA0C8; border:1px solid rgba(74,100,144,0.3); }
+    .asset-tag { font-size:9px; padding:2px 7px; border-radius:3px; background:var(--com-dim); color:var(--com-light); font-family:'JetBrains Mono',monospace; display:inline-block; }
+
+    .pagination { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-top:1px solid var(--border); font-size:12px; color:var(--text3); }
+    .page-btns { display:flex; gap:4px; }
+    .page-btn { padding:5px 10px; border:1px solid var(--border); border-radius:4px; background:transparent; color:var(--text3); font-size:11px; cursor:pointer; font-family:'Outfit',sans-serif; transition:all .15s; }
+    .page-btn.active, .page-btn:hover { border-color:var(--com); color:var(--com-light); background:var(--com-dim); }
+    .no-results { padding:60px; text-align:center; color:var(--text3); font-size:14px; }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="logo">
+    <div class="logo-mark"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2.5" fill="#141414"/><circle cx="7" cy="7" r="5" stroke="#141414" stroke-width="1.2" fill="none" opacity=".6"/></svg></div>
+    <span class="logo-text">Re<span>Radar</span></span>
+  </a>
+  <div class="nav-tools">
+    <a href="/tools/maturity-radar" class="tool-link active">Maturity Radar</a>
+    <a href="/tools/distress" class="tool-link">Distress Monitor</a>
+    <a href="/tools/lp-radar" class="tool-link">LP Radar</a>
+    <a href="/tools/market-intel" class="tool-link">Market Intel</a>
+    <a href="/tools/underwriting" class="tool-link">Underwriting</a>
+    <a href="/tools/ownership" class="tool-link">Ownership</a>
+    <a href="/" class="tool-link">Residential →</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-eyebrow">Commercial · CMBS Intelligence</div>
+  <div class="page-title">CMBS Maturity Radar</div>
+  <p class="page-sub">Screen loans maturing in the next 0–24 months across all asset classes, nationally. Identify refinancing needs before they become distress events.</p>
+
+  <div class="filter-bar">
+    <div class="filter-group">
+      <div class="filter-label">Maturity window</div>
+      <select class="filter-select" id="fWindow">
+        <option value="0">All maturities</option>
+        <option value="3">Within 3 months</option>
+        <option value="6" selected>Within 6 months</option>
+        <option value="12">Within 12 months</option>
+        <option value="24">Within 24 months</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <div class="filter-label">Asset class</div>
+      <select class="filter-select" id="fAsset">
+        <option value="">All asset classes</option>
+        <option value="Multifamily">Multifamily</option>
+        <option value="Office">Office</option>
+        <option value="Industrial">Industrial</option>
+        <option value="Retail">Retail</option>
+        <option value="Hotel">Hotel</option>
+        <option value="Mixed Use">Mixed Use</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <div class="filter-label">Market</div>
+      <select class="filter-select" id="fMarket">
+        <option value="">All markets</option>
+        <option>New York</option><option>Los Angeles</option><option>Chicago</option>
+        <option>Dallas</option><option>Houston</option><option>Atlanta</option>
+        <option>Phoenix</option><option>Denver</option><option>Seattle</option>
+        <option>Miami</option><option>San Francisco</option><option>Boston</option>
+        <option>Nashville</option><option>Charlotte</option><option>Minneapolis</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <div class="filter-label">Min loan size</div>
+      <select class="filter-select" id="fSize">
+        <option value="0">Any size</option>
+        <option value="5">$5M+</option>
+        <option value="10">$10M+</option>
+        <option value="25">$25M+</option>
+        <option value="50">$50M+</option>
+        <option value="100">$100M+</option>
+      </select>
+    </div>
+    <button class="filter-btn" onclick="applyFilters()">Apply filters</button>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat-card"><div class="sc-label">Loans matching</div><div class="sc-value" id="statCount" style="color:var(--com-light)">—</div></div>
+    <div class="stat-card"><div class="sc-label">Total balance</div><div class="sc-value" id="statBalance">—</div></div>
+    <div class="stat-card"><div class="sc-label">Critical (≤ 3 mo)</div><div class="sc-value" id="statCritical" style="color:#C87A7A">—</div></div>
+    <div class="stat-card"><div class="sc-label">Avg loan size</div><div class="sc-value" id="statAvg">—</div></div>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-header">
+      <div class="th" onclick="sortBy('name')">Property ↕</div>
+      <div class="th" onclick="sortBy('asset')">Asset</div>
+      <div class="th" onclick="sortBy('market')">Market</div>
+      <div class="th" onclick="sortBy('balance')">Balance ↕</div>
+      <div class="th" onclick="sortBy('rate')">Rate</div>
+      <div class="th" onclick="sortBy('monthsOut')">Maturity ↕</div>
+      <div class="th">Status</div>
+    </div>
+    <div id="tableBody"></div>
+    <div class="pagination">
+      <div id="pageInfo"></div>
+      <div class="page-btns" id="pageBtns"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ASSETS=['Multifamily','Office','Industrial','Retail','Hotel','Mixed Use'];
+const MARKETS=['New York','Los Angeles','Chicago','Dallas','Houston','Atlanta','Phoenix','Denver','Seattle','Miami','San Francisco','Boston','Nashville','Charlotte','Minneapolis'];
+const SUBS={
+  'New York':['Midtown','FiDi','Brooklyn','Queens','Hudson Yards'],
+  'Los Angeles':['DTLA','Century City','Westside','South Bay','Pasadena'],
+  'Chicago':['Loop','River North','West Loop','Fulton Market','Wicker Park'],
+  'Dallas':['Uptown','Preston Center','Las Colinas','Frisco','Plano'],
+  'Houston':['Galleria','Greenway','Medical Center','Energy Corridor','Katy'],
+  'Atlanta':['Buckhead','Midtown','Perimeter','Decatur','Sandy Springs'],
+  'Phoenix':['Tempe','Scottsdale','Chandler','Mesa','Glendale'],
+  'Denver':['LoDo','Cherry Creek','Tech Center','Boulder','Greenwood Village'],
+  'Seattle':['Bellevue','South Lake Union','Capitol Hill','Eastside','Redmond'],
+  'Miami':['Brickell','Wynwood','Coral Gables','Doral','Fort Lauderdale'],
+  'San Francisco':['SoMa','FiDi','Mission Bay','Oakland','San Jose'],
+  'Boston':['Back Bay','Seaport','Cambridge','Waltham','Burlington'],
+  'Nashville':['Downtown','Gulch','Brentwood','Franklin','Cool Springs'],
+  'Charlotte':['Uptown','South End','Ballantyne','SouthPark','Concord'],
+  'Minneapolis':['Downtown','North Loop','Bloomington','Edina','St. Paul']
+};
+const NAMES=['One','The','Park','River','Harbor','Summit','Trade','Commerce','Metro','Gateway','Exchange','Tower','Civic','Pioneer','Capital'];
+const SUFFIX=['Center','Tower','Plaza','Commons','Exchange','Park','Lofts','Gateway','Square','Hub','Place','District'];
+
+function sr(s,mn,mx){const x=Math.sin(s+1)*9301;return mn+(x-Math.floor(x))*(mx-mn);}
+
+const LOANS=Array.from({length:250},(_,i)=>{
+  const s=i*4231+17;
+  const asset=ASSETS[Math.floor(sr(s,0,6))];
+  const market=MARKETS[Math.floor(sr(s*3,0,15))];
+  const subs=SUBS[market];
+  const sub=subs[Math.floor(sr(s*7,0,subs.length))];
+  const bal=Math.round(sr(s*5,4,220))*1e6;
+  const rate=(sr(s*9,3.2,7.8)).toFixed(2);
+  const mo=Math.floor(sr(s*11,0,24));
+  const now=new Date(2026,2,26); const md=new Date(now); md.setMonth(md.getMonth()+mo);
+  const matStr=md.toLocaleDateString('en-US',{month:'short',year:'numeric'});
+  const urgency=mo<=3?'critical':mo<=9?'watch':'monitor';
+  const nm=NAMES[Math.floor(sr(s*13,0,15))]+' '+sub+' '+SUFFIX[Math.floor(sr(s*17,0,12))];
+  return{id:i,name:nm,market,sub,asset,balance:bal,rate:+rate,matStr,monthsOut:mo,urgency};
+});
+
+let filtered=[...LOANS],sortField='monthsOut',sortDir=1,page=1;
+const PER=20;
+
+function applyFilters(){
+  const win=+document.getElementById('fWindow').value;
+  const ast=document.getElementById('fAsset').value;
+  const mkt=document.getElementById('fMarket').value;
+  const sz=+document.getElementById('fSize').value*1e6;
+  filtered=LOANS.filter(l=>{
+    if(win>0&&l.monthsOut>win)return false;
+    if(ast&&l.asset!==ast)return false;
+    if(mkt&&l.market!==mkt)return false;
+    if(l.balance<sz)return false;
+    return true;
+  });
+  page=1; render();
+}
+
+function sortBy(f){
+  if(sortField===f)sortDir*=-1; else{sortField=f;sortDir=1;}
+  filtered.sort((a,b)=>typeof a[f]==='string'?a[f].localeCompare(b[f])*sortDir:(a[f]-b[f])*sortDir);
+  render();
+}
+
+function render(){
+  const tot=filtered.length;
+  const totBal=filtered.reduce((s,l)=>s+l.balance,0);
+  const crit=filtered.filter(l=>l.urgency==='critical').length;
+  document.getElementById('statCount').textContent=tot.toLocaleString();
+  document.getElementById('statBalance').textContent='$'+(totBal/1e9).toFixed(1)+'B';
+  document.getElementById('statCritical').textContent=crit;
+  document.getElementById('statAvg').textContent=tot>0?'$'+((totBal/tot)/1e6).toFixed(1)+'M':'—';
+
+  const start=(page-1)*PER;
+  const pg=filtered.slice(start,start+PER);
+  const ul={critical:'urg-critical',watch:'urg-watch',monitor:'urg-monitor'};
+  const ll={critical:'Critical',watch:'Watch',monitor:'Monitor'};
+
+  document.getElementById('tableBody').innerHTML=pg.length===0
+    ?'<div class="no-results">No loans match your filters.</div>'
+    :pg.map(l=>`
+      <div class="table-row">
+        <div><div class="tr-name">${l.name}</div><div class="tr-city">${l.sub}, ${l.market}</div></div>
+        <div><span class="asset-tag">${l.asset}</span></div>
+        <div class="tr-cell">${l.market}</div>
+        <div class="tr-bold">$${(l.balance/1e6).toFixed(1)}M</div>
+        <div class="tr-cell">${l.rate}%</div>
+        <div class="tr-cell">${l.matStr}</div>
+        <div><span class="badge ${ul[l.urgency]}">${ll[l.urgency]}</span></div>
+      </div>`).join('');
+
+  const tp=Math.ceil(tot/PER);
+  document.getElementById('pageInfo').textContent=`Showing ${start+1}–${Math.min(start+PER,tot)} of ${tot.toLocaleString()} loans`;
+  let btns='';
+  for(let p=1;p<=Math.min(tp,7);p++) btns+=`<button class="page-btn ${p===page?'active':''}" onclick="goPage(${p})">${p}</button>`;
+  if(tp>7) btns+=`<span style="color:var(--text3);padding:0 6px;font-size:11px">… ${tp}</span>`;
+  document.getElementById('pageBtns').innerHTML=btns;
+}
+
+function goPage(p){page=p;render();window.scrollTo({top:0,behavior:'smooth'});}
+applyFilters();
+</script>
+</body>
+</html>

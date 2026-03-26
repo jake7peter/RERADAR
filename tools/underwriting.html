@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Deal Underwriting — ReRadar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#141414; --bg2:#1C1C1C; --bg3:#242424;
+      --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.14);
+      --text:#F0EDE8; --text2:#A8A49E; --text3:#6B6760;
+      --gold:#C9A84C; --com:#4A6490; --com-light:#7FA0C8; --com-dim:rgba(74,100,144,0.12);
+    }
+    html,body { min-height:100%; background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; }
+    nav { display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:var(--bg2); border-bottom:1px solid var(--border); }
+    .logo { display:flex; align-items:center; gap:8px; text-decoration:none; }
+    .logo-mark { width:28px; height:28px; border-radius:5px; background:var(--gold); display:flex; align-items:center; justify-content:center; }
+    .logo-text { font-family:'Playfair Display',serif; font-size:18px; color:var(--text); }
+    .logo-text span { color:var(--gold); }
+    .nav-tools { display:flex; gap:4px; }
+    .tool-link { padding:6px 12px; font-size:12px; color:var(--text3); border-radius:5px; text-decoration:none; transition:all .15s; }
+    .tool-link:hover { color:var(--text2); background:rgba(255,255,255,0.04); }
+    .tool-link.active { color:var(--com-light); background:var(--com-dim); }
+
+    .page { max-width:1100px; margin:0 auto; padding:40px; }
+    .page-eyebrow { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--com-light); text-transform:uppercase; letter-spacing:.1em; margin-bottom:10px; }
+    .page-title { font-family:'Playfair Display',serif; font-size:36px; color:var(--text); margin-bottom:8px; }
+    .page-sub { font-size:15px; color:var(--text2); font-weight:300; max-width:520px; line-height:1.7; margin-bottom:36px; }
+
+    .asset-tabs { display:flex; gap:6px; margin-bottom:28px; flex-wrap:wrap; }
+    .asset-tab { padding:8px 18px; border:1px solid var(--border); border-radius:6px; font-size:12px; color:var(--text3); background:transparent; cursor:pointer; font-family:'Outfit',sans-serif; transition:all .2s; }
+    .asset-tab:hover { color:var(--text2); border-color:var(--border2); }
+    .asset-tab.active { border-color:var(--com); color:var(--com-light); background:var(--com-dim); }
+
+    .main-grid { display:grid; grid-template-columns:380px 1fr; gap:24px; align-items:start; }
+
+    .input-panel { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:24px; }
+    .ip-section-title { font-size:11px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; margin-bottom:12px; margin-top:20px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+    .ip-section-title:first-child { margin-top:0; }
+    .ip-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .ip-label { font-size:13px; color:var(--text2); }
+    .ip-input { width:120px; padding:7px 10px; background:var(--bg3); border:1px solid var(--border); border-radius:6px; color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; text-align:right; outline:none; transition:border-color .2s; }
+    .ip-input:focus { border-color:var(--com); }
+    .calc-btn { width:100%; padding:13px; background:var(--com); color:var(--text); border:none; border-radius:8px; font-size:14px; font-weight:500; cursor:pointer; font-family:'Outfit',sans-serif; transition:all .2s; margin-top:12px; }
+    .calc-btn:hover { background:var(--com-light); color:var(--bg); }
+
+    .results { display:flex; flex-direction:column; gap:14px; }
+
+    .verdict-card { padding:22px 26px; border-radius:12px; border:1px solid; }
+    .verdict-card.strong { background:rgba(74,124,111,0.1); border-color:rgba(74,124,111,0.3); }
+    .verdict-card.moderate { background:rgba(201,168,76,0.08); border-color:rgba(201,168,76,0.25); }
+    .verdict-card.weak { background:rgba(140,74,74,0.1); border-color:rgba(140,74,74,0.3); }
+    .vc-header { display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+    .vc-signal { font-size:24px; }
+    .vc-title { font-family:'Playfair Display',serif; font-size:19px; color:var(--text); }
+    .vc-sub { font-size:13px; color:var(--text2); line-height:1.6; }
+
+    .metrics-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+    .metric-card { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+    .mc-label { font-size:10px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+    .mc-value { font-size:20px; font-weight:500; }
+    .mc-value.good { color:#7FB3A6; }
+    .mc-value.ok { color:var(--gold); }
+    .mc-value.bad { color:#B37A7A; }
+    .mc-bench { font-size:10px; color:var(--text3); margin-top:3px; }
+
+    .waterfall { background:var(--bg2); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+    .wf-title { padding:14px 20px; border-bottom:1px solid var(--border); font-size:11px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; }
+    .wf-row { display:flex; justify-content:space-between; padding:10px 20px; border-bottom:1px solid var(--border); font-size:13px; }
+    .wf-row:last-child { border-bottom:none; }
+    .wf-label { color:var(--text2); }
+    .wf-value { font-family:'JetBrains Mono',monospace; }
+    .wf-value.pos { color:#7FB3A6; }
+    .wf-value.neg { color:#B37A7A; }
+    .wf-row.subtotal { background:rgba(255,255,255,0.02); }
+    .wf-row.subtotal .wf-label, .wf-row.subtotal .wf-value { color:var(--text); font-weight:500; }
+    .wf-row.total { background:var(--bg3); }
+    .wf-row.total .wf-label, .wf-row.total .wf-value { color:var(--text); font-weight:500; font-size:14px; }
+
+    .returns-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .ret-card { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:18px 20px; }
+    .rc-title { font-size:11px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; margin-bottom:14px; }
+    .rc-row { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--border); font-size:12px; }
+    .rc-row:last-child { border-bottom:none; }
+    .rc-label { color:var(--text3); }
+    .rc-value { font-family:'JetBrains Mono',monospace; color:var(--text); }
+
+    .placeholder { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:60px 40px; text-align:center; }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="logo">
+    <div class="logo-mark"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2.5" fill="#141414"/><circle cx="7" cy="7" r="5" stroke="#141414" stroke-width="1.2" fill="none" opacity=".6"/></svg></div>
+    <span class="logo-text">Re<span>Radar</span></span>
+  </a>
+  <div class="nav-tools">
+    <a href="/tools/maturity-radar" class="tool-link">Maturity Radar</a>
+    <a href="/tools/distress" class="tool-link">Distress Monitor</a>
+    <a href="/tools/lp-radar" class="tool-link">LP Radar</a>
+    <a href="/tools/market-intel" class="tool-link">Market Intel</a>
+    <a href="/tools/underwriting" class="tool-link active">Underwriting</a>
+    <a href="/tools/ownership" class="tool-link">Ownership</a>
+    <a href="/" class="tool-link">Residential →</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-eyebrow">Commercial · Deal Analysis</div>
+  <div class="page-title">Deal Underwriting</div>
+  <p class="page-sub">Quick IRR, NOI, debt sizing, and returns modeling for any commercial asset class. Enter your assumptions and get institutional-grade output in seconds.</p>
+
+  <div class="asset-tabs">
+    <button class="asset-tab active" onclick="setAsset('MF',this)">Multifamily</button>
+    <button class="asset-tab" onclick="setAsset('OFF',this)">Office</button>
+    <button class="asset-tab" onclick="setAsset('IND',this)">Industrial</button>
+    <button class="asset-tab" onclick="setAsset('RTL',this)">Retail</button>
+    <button class="asset-tab" onclick="setAsset('HTL',this)">Hotel</button>
+    <button class="asset-tab" onclick="setAsset('MXD',this)">Mixed Use</button>
+  </div>
+
+  <div class="main-grid">
+    <div class="input-panel">
+      <div class="ip-section-title">Acquisition</div>
+      <div class="ip-row"><span class="ip-label">Purchase price</span><input class="ip-input" id="iPrice" value="12500000" type="number"/></div>
+      <div class="ip-row"><span class="ip-label">Equity %</span><input class="ip-input" id="iEquity" value="35" type="number"/></div>
+      <div class="ip-row"><span class="ip-label">Closing costs</span><input class="ip-input" id="iClose" value="250000" type="number"/></div>
+      <div class="ip-row"><span class="ip-label">CapEx / value-add</span><input class="ip-input" id="iCapex" value="500000" type="number"/></div>
+
+      <div class="ip-section-title">Debt</div>
+      <div class="ip-row"><span class="ip-label">Loan-to-value %</span><input class="ip-input" id="iLTV" value="65" type="number"/></div>
+      <div class="ip-row"><span class="ip-label">Interest rate %</span><input class="ip-input" id="iRate" value="6.75" type="number" step="0.05"/></div>
+      <div class="ip-row"><span class="ip-label">Amortization (yrs)</span><input class="ip-input" id="iAmort" value="30" type="number"/></div>
+      <div class="ip-row"><span class="ip-label">IO period (yrs)</span><input class="ip-input" id="iIO" value="2" type="number"/></div>
+
+      <div class="ip-section-title">Income</div>
+      <div class="ip-row"><span class="ip-label">Year 1 NOI</span><input class="ip-input" id="iNOI" value="780000" type="number"/></div>
+      <div class="ip-row"><span class="ip-label">NOI growth %/yr</span><input class="ip-input" id="iGrowth" value="3.0" type="number" step="0.5"/></div>
+      <div class="ip-row"><span class="ip-label">Vacancy allowance %</span><input class="ip-input" id="iVac" value="5" type="number"/></div>
+
+      <div class="ip-section-title">Exit</div>
+      <div class="ip-row"><span class="ip-label">Hold period (yrs)</span><input class="ip-input" id="iHold" value="5" type="number"/></div>
+      <div class="ip-row"><span class="ip-label">Exit cap rate %</span><input class="ip-input" id="iExitCap" value="6.25" type="number" step="0.25"/></div>
+      <div class="ip-row"><span class="ip-label">Disposition costs %</span><input class="ip-input" id="iDisp" value="2.0" type="number" step="0.5"/></div>
+
+      <button class="calc-btn" onclick="underwrite()">Underwrite deal</button>
+    </div>
+
+    <div class="results" id="results">
+      <div class="placeholder">
+        <div style="font-size:36px;opacity:.25;margin-bottom:16px">◈</div>
+        <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--text2);margin-bottom:8px">Enter deal assumptions</div>
+        <p style="font-size:14px;color:var(--text3);line-height:1.6">Fill in acquisition, debt, income, and exit assumptions — then click Underwrite to get full returns analysis including IRR, equity multiple, and cash-on-cash.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentAsset = 'MF';
+function setAsset(a, btn) {
+  currentAsset = a;
+  document.querySelectorAll('.asset-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function fmt(n) { return '$' + Math.abs(Math.round(n)).toLocaleString(); }
+function fmtM(n) { return n>=1e6 ? '$'+(n/1e6).toFixed(2)+'M' : fmt(n); }
+function fmtSign(n) { return (n>=0?'+':'-')+'$'+Math.abs(Math.round(n)).toLocaleString(); }
+function pct(n,d=2) { return n.toFixed(d)+'%'; }
+
+function underwrite() {
+  const price = +document.getElementById('iPrice').value||0;
+  const equityPct = +document.getElementById('iEquity').value/100;
+  const closing = +document.getElementById('iClose').value||0;
+  const capex = +document.getElementById('iCapex').value||0;
+  const ltvPct = +document.getElementById('iLTV').value/100;
+  const rate = +document.getElementById('iRate').value/100;
+  const amort = +document.getElementById('iAmort').value||30;
+  const ioPeriod = +document.getElementById('iIO').value||0;
+  const noi1 = +document.getElementById('iNOI').value||0;
+  const growth = +document.getElementById('iGrowth').value/100;
+  const vacPct = +document.getElementById('iVac').value/100;
+  const holdYrs = +document.getElementById('iHold').value||5;
+  const exitCap = +document.getElementById('iExitCap').value/100;
+  const dispCosts = +document.getElementById('iDisp').value/100;
+
+  const loanAmt = price * ltvPct;
+  const equityAmt = price * equityPct;
+  const totalEquity = equityAmt + closing + capex;
+  const entryCap = (noi1 / price * 100).toFixed(2);
+
+  const mr = rate/12;
+  const n = amort*12;
+  const fullMortgage = mr>0 ? loanAmt*(mr*Math.pow(1+mr,n))/(Math.pow(1+mr,n)-1) : 0;
+  const interestOnly = loanAmt * rate / 12;
+
+  // Build cash flows
+  const cashFlows = [-totalEquity];
+  let remainingBalance = loanAmt;
+  let noiArr = [];
+  for (let yr=1; yr<=holdYrs; yr++) {
+    const noi = noi1 * Math.pow(1+growth, yr-1) * (1-vacPct);
+    noiArr.push(noi);
+    const debtService = yr <= ioPeriod ? interestOnly*12 : fullMortgage*12;
+    const cf = noi - debtService;
+    cashFlows.push(cf);
+  }
+
+  const exitNOI = noi1 * Math.pow(1+growth, holdYrs) * (1-vacPct);
+  const grossSalePrice = exitNOI / exitCap;
+  const netSalePrice = grossSalePrice * (1-dispCosts);
+  // Estimate remaining balance
+  let bal = loanAmt;
+  for (let m=1; m<=(holdYrs-ioPeriod)*12; m++) {
+    const interest = bal*mr;
+    const principal = fullMortgage - interest;
+    bal = Math.max(0, bal - principal);
+  }
+  const remainBal = ioPeriod >= holdYrs ? loanAmt : bal;
+  const netProceeds = netSalePrice - remainBal;
+  cashFlows[cashFlows.length-1] += netProceeds;
+
+  // IRR (Newton's method)
+  function irr(cfs) {
+    let r = 0.1;
+    for (let i=0; i<1000; i++) {
+      let npv=0, dnpv=0;
+      cfs.forEach((c,t) => { npv += c/Math.pow(1+r,t); dnpv -= t*c/Math.pow(1+r,t+1); });
+      const nr = r - npv/dnpv;
+      if (Math.abs(nr-r) < 1e-8) { r=nr; break; }
+      r = nr;
+    }
+    return r;
+  }
+
+  const irrVal = irr(cashFlows) * 100;
+  const totalInvested = totalEquity;
+  const totalReturns = cashFlows.slice(1).reduce((a,b)=>a+b,0);
+  const equityMultiple = (totalReturns + totalEquity) / totalEquity;
+  const avgCoCash = cashFlows.slice(1,holdYrs+1).reduce((a,b,i)=>a+(b/totalEquity*100),0)/holdYrs;
+  const dscr = fullMortgage*12 > 0 ? (noi1/fullMortgage/12).toFixed(2) : '∞';
+
+  const verdict = irrVal > 15 ? 'strong' : irrVal > 10 ? 'moderate' : 'weak';
+  const vmap = {
+    strong:{ signal:'✦', title:'Strong return profile', sub:`This deal underwrites to a ${pct(irrVal)} IRR and ${equityMultiple.toFixed(2)}x equity multiple over ${holdYrs} years — above typical institutional thresholds for this asset class.` },
+    moderate:{ signal:'◈', title:'Moderate returns', sub:`This deal underwrites to a ${pct(irrVal)} IRR and ${equityMultiple.toFixed(2)}x equity multiple. Returns are in-range but not exceptional — assess downside sensitivity carefully.` },
+    weak:{ signal:'◇', title:'Returns below threshold', sub:`At ${pct(irrVal)} IRR and ${equityMultiple.toFixed(2)}x multiple, this deal doesn't clear typical return hurdles. Consider renegotiating the price, improving NOI, or adjusting the exit assumption.` }
+  };
+  const v = vmap[verdict];
+
+  document.getElementById('results').innerHTML = `
+    <div class="verdict-card ${verdict}">
+      <div class="vc-header"><div class="vc-signal">${v.signal}</div><div class="vc-title">${v.title}</div></div>
+      <div class="vc-sub">${v.sub}</div>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card"><div class="mc-label">Levered IRR</div><div class="mc-value ${verdict==='strong'?'good':verdict==='moderate'?'ok':'bad'}">${pct(irrVal)}</div><div class="mc-bench">Target: 12–18%+</div></div>
+      <div class="metric-card"><div class="mc-label">Equity Multiple</div><div class="mc-value ${equityMultiple>1.8?'good':equityMultiple>1.4?'ok':'bad'}">${equityMultiple.toFixed(2)}x</div><div class="mc-bench">Target: 1.8x–2.5x</div></div>
+      <div class="metric-card"><div class="mc-label">Entry Cap Rate</div><div class="mc-value">${entryCap}%</div><div class="mc-bench">Exit at ${pct(exitCap*100)}</div></div>
+      <div class="metric-card"><div class="mc-label">Yr 1 DSCR</div><div class="mc-value ${parseFloat(dscr)>=1.25?'good':parseFloat(dscr)>=1.0?'ok':'bad'}">${dscr}x</div><div class="mc-bench">Min: 1.25x</div></div>
+    </div>
+
+    <div class="waterfall">
+      <div class="wf-title">NOI & cash flow waterfall (Year 1)</div>
+      <div class="wf-row"><span class="wf-label">Gross NOI (Year 1)</span><span class="wf-value pos">${fmtM(noi1)}</span></div>
+      <div class="wf-row"><span class="wf-label">Vacancy allowance (${(vacPct*100).toFixed(0)}%)</span><span class="wf-value neg">-${fmtM(noi1*vacPct)}</span></div>
+      <div class="wf-row subtotal"><span class="wf-label">Effective NOI</span><span class="wf-value">${fmtM(noi1*(1-vacPct))}</span></div>
+      <div class="wf-row"><span class="wf-label">Debt service ${ioPeriod>0?'(interest only Yr1)':''}</span><span class="wf-value neg">-${fmtM(ioPeriod>0?interestOnly*12:fullMortgage*12)}</span></div>
+      <div class="wf-row total"><span class="wf-label">Year 1 cash flow after debt</span><span class="wf-value ${cashFlows[1]>=0?'pos':'neg'}">${fmtM(cashFlows[1])}</span></div>
+    </div>
+
+    <div class="returns-grid">
+      <div class="ret-card">
+        <div class="rc-title">Capital structure</div>
+        <div class="rc-row"><span class="rc-label">Purchase price</span><span class="rc-value">${fmtM(price)}</span></div>
+        <div class="rc-row"><span class="rc-label">Loan amount (${(ltvPct*100).toFixed(0)}% LTV)</span><span class="rc-value">${fmtM(loanAmt)}</span></div>
+        <div class="rc-row"><span class="rc-label">Equity + closing + CapEx</span><span class="rc-value">${fmtM(totalEquity)}</span></div>
+        <div class="rc-row"><span class="rc-label">Interest rate</span><span class="rc-value">${pct(rate*100)}</span></div>
+        <div class="rc-row"><span class="rc-label">Annual debt service</span><span class="rc-value">${fmtM(fullMortgage*12)}</span></div>
+      </div>
+      <div class="ret-card">
+        <div class="rc-title">Exit analysis (Year ${holdYrs})</div>
+        <div class="rc-row"><span class="rc-label">Exit year NOI</span><span class="rc-value">${fmtM(exitNOI)}</span></div>
+        <div class="rc-row"><span class="rc-label">Exit cap rate</span><span class="rc-value">${pct(exitCap*100)}</span></div>
+        <div class="rc-row"><span class="rc-label">Gross sale price</span><span class="rc-value">${fmtM(grossSalePrice)}</span></div>
+        <div class="rc-row"><span class="rc-label">Remaining loan balance</span><span class="rc-value">-${fmtM(remainBal)}</span></div>
+        <div class="rc-row"><span class="rc-label">Net sale proceeds</span><span class="rc-value">${fmtM(netProceeds)}</span></div>
+      </div>
+    </div>`;
+}
+
+underwrite();
+</script>
+</body>
+</html>

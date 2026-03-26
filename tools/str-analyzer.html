@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>STR vs LTR — ReRadar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#141414; --bg2:#1C1C1C; --bg3:#242424;
+      --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.14);
+      --text:#F0EDE8; --text2:#A8A49E; --text3:#6B6760;
+      --gold:#C9A84C; --res:#4A7C6F; --res-light:#7FB3A6; --res-dim:rgba(74,124,111,0.12);
+      --str:#7C4A8C; --str-light:#B37AC8; --str-dim:rgba(124,74,140,0.12);
+    }
+    html,body { min-height:100%; background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; }
+    nav { display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:var(--bg2); border-bottom:1px solid var(--border); }
+    .logo { display:flex; align-items:center; gap:8px; text-decoration:none; }
+    .logo-mark { width:28px; height:28px; border-radius:5px; background:var(--gold); display:flex; align-items:center; justify-content:center; }
+    .logo-text { font-family:'Playfair Display',serif; font-size:18px; color:var(--text); }
+    .logo-text span { color:var(--gold); }
+    .nav-tools { display:flex; gap:4px; }
+    .tool-link { padding:6px 12px; font-size:12px; color:var(--text3); border-radius:5px; text-decoration:none; transition:all .15s; }
+    .tool-link:hover { color:var(--text2); background:rgba(255,255,255,0.04); }
+    .tool-link.active { color:var(--res-light); background:var(--res-dim); }
+
+    .page { max-width:1100px; margin:0 auto; padding:40px; }
+    .page-eyebrow { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--res-light); text-transform:uppercase; letter-spacing:.1em; margin-bottom:10px; }
+    .page-title { font-family:'Playfair Display',serif; font-size:36px; color:var(--text); margin-bottom:8px; }
+    .page-sub { font-size:15px; color:var(--text2); font-weight:300; max-width:560px; line-height:1.7; margin-bottom:36px; }
+
+    .main-grid { display:grid; grid-template-columns:340px 1fr; gap:24px; align-items:start; }
+
+    .input-panel { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:24px; }
+    .ip-section-title { font-size:11px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; margin-bottom:12px; margin-top:20px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+    .ip-section-title:first-child { margin-top:0; }
+    .ip-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .ip-label { font-size:13px; color:var(--text2); }
+    .ip-input { width:110px; padding:7px 10px; background:var(--bg3); border:1px solid var(--border); border-radius:6px; color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; text-align:right; outline:none; transition:border-color .2s; }
+    .ip-input:focus { border-color:var(--res); }
+    .ip-sub { font-size:11px; color:var(--text3); margin-bottom:12px; }
+    .calc-btn { width:100%; padding:13px; background:var(--res); color:var(--text); border:none; border-radius:8px; font-size:14px; font-weight:500; cursor:pointer; font-family:'Outfit',sans-serif; transition:all .2s; margin-top:12px; }
+    .calc-btn:hover { background:var(--res-light); color:var(--bg); }
+
+    .results { display:flex; flex-direction:column; gap:14px; }
+
+    .winner-banner {
+      display:grid; grid-template-columns:1fr 1fr; gap:0;
+      border-radius:14px; overflow:hidden; border:1px solid var(--border);
+    }
+    .winner-side { padding:24px 28px; }
+    .winner-side.str { background:linear-gradient(135deg,rgba(124,74,140,0.15),rgba(124,74,140,0.05)); }
+    .winner-side.ltr { background:linear-gradient(135deg,rgba(74,124,111,0.15),rgba(74,124,111,0.05)); }
+    .winner-side.winner { border:2px solid; }
+    .winner-side.str.winner { border-color:var(--str); }
+    .winner-side.ltr.winner { border-color:var(--res); }
+    .ws-badge { display:inline-block; font-size:9px; padding:3px 8px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-weight:500; text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px; }
+    .ws-badge.str { background:var(--str-dim); color:var(--str-light); border:1px solid rgba(124,74,140,0.3); }
+    .ws-badge.ltr { background:var(--res-dim); color:var(--res-light); border:1px solid rgba(74,124,111,0.3); }
+    .ws-badge.winner-badge { background:var(--gold); color:var(--bg); border:none; }
+    .ws-type { font-family:'Playfair Display',serif; font-size:20px; color:var(--text); margin-bottom:4px; }
+    .ws-income { font-size:32px; font-weight:500; color:var(--text); }
+    .ws-income.str-color { color:var(--str-light); }
+    .ws-income.ltr-color { color:var(--res-light); }
+    .ws-sub { font-size:12px; color:var(--text3); margin-top:4px; }
+    .ws-cf { font-size:20px; font-weight:500; margin-top:12px; }
+    .ws-cf.good { color:#7FB3A6; }
+    .ws-cf.ok { color:var(--gold); }
+    .ws-cf.bad { color:#B37A7A; }
+    .ws-cf-label { font-size:11px; color:var(--text3); margin-top:2px; }
+
+    .comparison-table { background:var(--bg2); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+    .ct-header { display:grid; grid-template-columns:2fr 1fr 1fr; padding:12px 20px; border-bottom:1px solid var(--border); }
+    .ct-header span { font-size:10px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; }
+    .ct-header span:last-child { text-align:right; color:var(--str-light); }
+    .ct-header span:nth-child(2) { text-align:right; color:var(--res-light); }
+    .ct-row { display:grid; grid-template-columns:2fr 1fr 1fr; padding:10px 20px; border-bottom:1px solid var(--border); font-size:13px; }
+    .ct-row:last-child { border-bottom:none; }
+    .ct-row.highlight { background:var(--bg3); }
+    .ct-row span:first-child { color:var(--text2); }
+    .ct-row span:nth-child(2) { text-align:right; font-family:'JetBrains Mono',monospace; color:var(--text); }
+    .ct-row span:last-child { text-align:right; font-family:'JetBrains Mono',monospace; color:var(--text); }
+    .ct-row.total span { font-weight:500; color:var(--text); }
+
+    .considerations { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .con-card { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:20px; }
+    .con-title { font-size:13px; font-weight:500; color:var(--text); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+    .con-dot { width:8px; height:8px; border-radius:50%; }
+    .con-dot.str { background:var(--str-light); }
+    .con-dot.ltr { background:var(--res-light); }
+    .con-list { list-style:none; }
+    .con-list li { font-size:12px; color:var(--text2); padding:6px 0; border-bottom:1px solid var(--border); line-height:1.5; }
+    .con-list li:last-child { border-bottom:none; }
+    .con-list li::before { content:'· '; color:var(--text3); }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="logo">
+    <div class="logo-mark"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2.5" fill="#141414"/><circle cx="7" cy="7" r="5" stroke="#141414" stroke-width="1.2" fill="none" opacity=".6"/></svg></div>
+    <span class="logo-text">Re<span>Radar</span></span>
+  </a>
+  <div class="nav-tools">
+    <a href="/tools/property-lookup" class="tool-link">Property Lookup</a>
+    <a href="/tools/deal-analyzer" class="tool-link">Deal Analyzer</a>
+    <a href="/tools/brrrr" class="tool-link">BRRRR Calc</a>
+    <a href="/tools/str-analyzer" class="tool-link active">STR vs LTR</a>
+    <a href="/tools/neighborhood" class="tool-link">Neighborhood</a>
+    <a href="/tools/market-timing" class="tool-link">Market Timing</a>
+    <a href="/tools/maturity-radar" class="tool-link">Commercial →</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-eyebrow">Residential · Strategy</div>
+  <div class="page-title">STR vs Long-Term Rental</div>
+  <p class="page-sub">Should you list on Airbnb or find a long-term tenant? Enter your numbers for both scenarios and see which strategy actually puts more money in your pocket.</p>
+
+  <div class="main-grid">
+    <div class="input-panel">
+      <div class="ip-section-title">Property & Financing</div>
+      <div class="ip-row"><span class="ip-label">Purchase price</span><input class="ip-input" id="pPrice" value="520000" type="number"/></div>
+      <div class="ip-row"><span class="ip-label">Down payment %</span><input class="ip-input" id="pDown" value="25" type="number"/></div>
+      <div class="ip-row"><span class="ip-label">Interest rate %</span><input class="ip-input" id="pRate" value="7.5" type="number" step="0.1"/></div>
+      <div class="ip-row"><span class="ip-label">Property taxes / mo</span><input class="ip-input" id="pTax" value="520" type="number"/></div>
+      <div class="ip-row"><span class="ip-label">Insurance / mo</span><input class="ip-input" id="pIns" value="140" type="number"/></div>
+
+      <div class="ip-section-title">Short-Term Rental (STR)</div>
+      <div class="ip-sub">Airbnb / VRBO assumptions</div>
+      <div class="ip-row"><span class="ip-label">Avg nightly rate</span><input class="ip-input" id="sNightly" value="185" type="number"/></div>
+      <div class="ip-row"><span class="ip-label">Occupancy rate %</span><input class="ip-input" id="sOcc" value="68" type="number"/></div>
+      <div class="ip-row"><span class="ip-label">Cleaning fee / stay</span><input class="ip-input" id="sCleaning" value="120" type="number"/></div>
+      <div class="ip-row"><span class="ip-label">Avg stays per month</span><input class="ip-input" id="sStays" value="6" type="number"/></div>
+      <div class="ip-row"><span class="ip-label">Platform fee %</span><input class="ip-input" id="sPlatform" value="3" type="number"/></div>
+      <div class="ip-row"><span class="ip-label">Mgmt / supplies / mo</span><input class="ip-input" id="sMgmt" value="400" type="number"/></div>
+      <div class="ip-row"><span class="ip-label">Furnishing (amortized)</span><input class="ip-input" id="sFurnish" value="150" type="number"/></div>
+
+      <div class="ip-section-title">Long-Term Rental (LTR)</div>
+      <div class="ip-row"><span class="ip-label">Monthly rent</span><input class="ip-input" id="lRent" value="2800" type="number"/></div>
+      <div class="ip-row"><span class="ip-label">Vacancy rate %</span><input class="ip-input" id="lVacancy" value="5" type="number"/></div>
+      <div class="ip-row"><span class="ip-label">Mgmt fee %</span><input class="ip-input" id="lMgmt" value="8" type="number"/></div>
+      <div class="ip-row"><span class="ip-label">Maintenance / mo</span><input class="ip-input" id="lMaint" value="220" type="number"/></div>
+
+      <button class="calc-btn" onclick="compare()">Compare strategies</button>
+    </div>
+
+    <div class="results" id="results">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:60px 40px;text-align:center;">
+        <div style="font-size:36px;opacity:.25;margin-bottom:16px">⇄</div>
+        <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--text2);margin-bottom:8px">Compare your strategies</div>
+        <p style="font-size:14px;color:var(--text3);line-height:1.6">Fill in your STR and LTR assumptions and click Compare to see which strategy generates more income and cash flow for your specific property.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function fmt(n) { return '$' + Math.abs(Math.round(n)).toLocaleString(); }
+function fmtSign(n) { return (n>=0?'+':'-') + '$' + Math.abs(Math.round(n)).toLocaleString(); }
+
+function compare() {
+  const price = +document.getElementById('pPrice').value||0;
+  const downPct = +document.getElementById('pDown').value/100;
+  const rate = +document.getElementById('pRate').value/100;
+  const tax = +document.getElementById('pTax').value||0;
+  const ins = +document.getElementById('pIns').value||0;
+
+  const loanAmt = price*(1-downPct);
+  const mr = rate/12; const n=360;
+  const mortgage = mr>0 ? Math.round(loanAmt*(mr*Math.pow(1+mr,n))/(Math.pow(1+mr,n)-1)) : 0;
+  const sharedExp = tax + ins + mortgage;
+
+  // STR
+  const nightly = +document.getElementById('sNightly').value||0;
+  const occ = +document.getElementById('sOcc').value/100;
+  const cleaning = +document.getElementById('sCleaning').value||0;
+  const stays = +document.getElementById('sStays').value||0;
+  const platform = +document.getElementById('sPlatform').value/100;
+  const strMgmt = +document.getElementById('sMgmt').value||0;
+  const furnish = +document.getElementById('sFurnish').value||0;
+
+  const strGrossNightly = nightly * 30 * occ;
+  const strGrossCleaning = cleaning * stays;
+  const strGross = strGrossNightly + strGrossCleaning;
+  const strPlatformFee = strGross * platform;
+  const strSpecificExp = strMgmt + furnish + strPlatformFee;
+  const strNOI = strGross - strSpecificExp;
+  const strCashflow = strNOI - sharedExp;
+
+  // LTR
+  const ltrRent = +document.getElementById('lRent').value||0;
+  const vacPct = +document.getElementById('lVacancy').value/100;
+  const ltrMgmtPct = +document.getElementById('lMgmt').value/100;
+  const ltrMaint = +document.getElementById('lMaint').value||0;
+
+  const ltrEffective = ltrRent*(1-vacPct);
+  const ltrMgmtAmt = ltrRent*ltrMgmtPct;
+  const ltrSpecificExp = ltrMgmtAmt + ltrMaint;
+  const ltrNOI = ltrEffective - ltrSpecificExp;
+  const ltrCashflow = ltrNOI - sharedExp;
+
+  const strWins = strCashflow > ltrCashflow;
+  const diff = Math.abs(strCashflow - ltrCashflow);
+  const downAmt = price*downPct;
+  const strCoC = downAmt>0 ? (strCashflow*12/downAmt*100).toFixed(1) : 0;
+  const ltrCoC = downAmt>0 ? (ltrCashflow*12/downAmt*100).toFixed(1) : 0;
+
+  document.getElementById('results').innerHTML = `
+    <div class="winner-banner">
+      <div class="winner-side str ${strWins?'winner':''}">
+        ${strWins ? '<span class="ws-badge winner-badge">★ Winner</span>' : '<span class="ws-badge str">Short-term rental</span>'}
+        <div class="ws-type">Short-Term Rental</div>
+        <div class="ws-income str-color">${fmt(strGross)}/mo</div>
+        <div class="ws-sub">Gross income (${(occ*100).toFixed(0)}% occupancy)</div>
+        <div class="ws-cf ${strCashflow>=0?'good':'bad'}">${fmtSign(strCashflow)}/mo</div>
+        <div class="ws-cf-label">Net cash flow · ${strCoC}% CoC</div>
+      </div>
+      <div class="winner-side ltr ${!strWins?'winner':''}">
+        ${!strWins ? '<span class="ws-badge winner-badge">★ Winner</span>' : '<span class="ws-badge ltr">Long-term rental</span>'}
+        <div class="ws-type">Long-Term Rental</div>
+        <div class="ws-income ltr-color">${fmt(ltrEffective)}/mo</div>
+        <div class="ws-sub">Effective income (${((1-vacPct)*100).toFixed(0)}% occupied)</div>
+        <div class="ws-cf ${ltrCashflow>=0?'good':'bad'}">${fmtSign(ltrCashflow)}/mo</div>
+        <div class="ws-cf-label">Net cash flow · ${ltrCoC}% CoC</div>
+      </div>
+    </div>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px 20px;font-size:13px;color:var(--text2);line-height:1.6">
+      ${strWins
+        ? `<strong style="color:var(--str-light)">STR wins</strong> by ${fmt(diff)}/month (${fmt(diff*12)}/year). The higher nightly rate and cleaning fees overcome the extra management costs and vacancy risk — assuming you can maintain ${(occ*100).toFixed(0)}% occupancy.`
+        : `<strong style="color:var(--res-light)">LTR wins</strong> by ${fmt(diff)}/month (${fmt(diff*12)}/year). The simplicity, stability, and lower operating costs make long-term rental the better choice at these numbers. STR would need higher nightly rates or occupancy to compete.`
+      }
+    </div>
+
+    <div class="comparison-table">
+      <div class="ct-header"><span>Monthly breakdown</span><span>LTR</span><span>STR</span></div>
+      <div class="ct-row"><span>Gross income</span><span>${fmt(ltrRent)}</span><span>${fmt(strGross)}</span></div>
+      <div class="ct-row"><span>Vacancy / platform fees</span><span>-${fmt(ltrRent*vacPct)}</span><span>-${fmt(strPlatformFee)}</span></div>
+      <div class="ct-row"><span>Management costs</span><span>-${fmt(ltrMgmtAmt)}</span><span>-${fmt(strMgmt)}</span></div>
+      <div class="ct-row"><span>Maintenance / cleaning / furnishing</span><span>-${fmt(ltrMaint)}</span><span>-${fmt(cleaning*stays+furnish)}</span></div>
+      <div class="ct-row highlight"><span>Net operating income</span><span>${fmt(ltrNOI)}</span><span>${fmt(strNOI)}</span></div>
+      <div class="ct-row"><span>Shared: taxes + insurance + mortgage</span><span>-${fmt(sharedExp)}</span><span>-${fmt(sharedExp)}</span></div>
+      <div class="ct-row total highlight"><span>Net cash flow</span><span style="color:${ltrCashflow>=0?'#7FB3A6':'#B37A7A'}">${fmtSign(ltrCashflow)}</span><span style="color:${strCashflow>=0?'#7FB3A6':'#B37A7A'}">${fmtSign(strCashflow)}</span></div>
+    </div>
+
+    <div class="considerations">
+      <div class="con-card">
+        <div class="con-title"><span class="con-dot str"></span>STR considerations</div>
+        <ul class="con-list">
+          <li>Higher income ceiling — but heavily dependent on occupancy</li>
+          <li>Significant time investment managing turnovers and guests</li>
+          <li>Check local STR regulations — many cities restrict them</li>
+          <li>Higher wear and tear, more frequent repairs</li>
+          <li>Income is less predictable — seasonal swings can be significant</li>
+          <li>Furnishing and setup costs add to initial investment</li>
+        </ul>
+      </div>
+      <div class="con-card">
+        <div class="con-title"><span class="con-dot ltr"></span>LTR considerations</div>
+        <ul class="con-list">
+          <li>Stable, predictable monthly income</li>
+          <li>Lower management burden with a good tenant</li>
+          <li>Easier to finance — lenders prefer LTR income</li>
+          <li>Lower operating costs and wear on the property</li>
+          <li>Tenant can be difficult to remove if problems arise</li>
+          <li>Less flexibility to use the property yourself</li>
+        </ul>
+      </div>
+    </div>`;
+}
+compare();
+</script>
+</body>
+</html>
