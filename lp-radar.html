@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Outreach CRM — ReRadar</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ink:#0F1117;--ink2:#374151;--muted:#6B7280;--border:#E5E7EB;--bg:#F9FAFB;--white:#FFFFFF;--accent:#1B4FD8;--green:#065F46;--green-bg:#ECFDF5;--green-bd:#A7F3D0;--red:#991B1B;--red-bg:#FEF2F2;--red-bd:#FECACA;--amber:#92400E;--amber-bg:#FFFBEB;--amber-bd:#FDE68A;--blue-bg:#EFF6FF;--blue-bd:#BFDBFE;}
+    html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:var(--white);border-bottom:1px solid var(--border);}
+    .logo{display:flex;align-items:baseline;gap:2px;text-decoration:none;}
+    .logo-cap{font-size:18px;color:var(--ink);font-weight:500;}.logo-lens{font-size:18px;color:var(--accent);font-weight:500;}
+    .logo-ai{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);background:var(--blue-bg);padding:2px 5px;border-radius:3px;margin-left:3px;}
+    .nav-tools{display:flex;gap:4px;}
+    .tool-link{padding:6px 14px;font-size:12px;color:var(--muted);border-radius:5px;text-decoration:none;transition:all .15s;}
+    .tool-link:hover{background:var(--bg);color:var(--ink);}.tool-link.active{background:var(--blue-bg);color:var(--accent);}
+    .shell{display:flex;flex-direction:column;height:calc(100vh - 49px);}
+    .topbar{padding:12px 20px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+    .tb-title{font-size:13px;font-weight:500;}.tb-sub{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;}
+    .add-btn{padding:7px 16px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
+    .pipeline{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+    .pipe-col{background:var(--white);padding:10px 14px;}
+    .pc-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:'DM Mono',monospace;margin-bottom:3px;}
+    .pc-count{font-size:18px;font-weight:500;}.pc-hot{color:#DC2626;}.pc-sub{font-size:10px;color:var(--muted);margin-top:1px;}
+    .content{display:grid;grid-template-columns:1fr 380px;flex:1;overflow:hidden;}
+    .contact-list{overflow-y:auto;border-right:1px solid var(--border);}
+    .list-hdr{padding:8px 16px;border-bottom:1px solid var(--border);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:'DM Mono',monospace;display:grid;grid-template-columns:2fr 1fr 1fr 100px 80px;background:var(--white);position:sticky;top:0;}
+    .contact-row{display:grid;grid-template-columns:2fr 1fr 1fr 100px 80px;padding:11px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;align-items:center;}
+    .contact-row:hover{background:#F9FAFB;}.contact-row.selected{background:var(--blue-bg);border-left:2px solid var(--accent);}
+    .cr-main{display:flex;align-items:center;min-width:0;gap:8px;}
+    .cr-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0;}
+    .cr-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .cr-role{font-size:10px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .cr-cell{font-size:11px;}
+    .stage-pill{display:inline-block;padding:3px 8px;border-radius:4px;font-size:9px;font-family:'DM Mono',monospace;font-weight:500;white-space:nowrap;}
+    .sp-hot{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd);}
+    .sp-engaged{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd);}
+    .sp-warm{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-bd);}
+    .sp-outreach_sent{background:var(--blue-bg);color:#1E40AF;border:1px solid var(--blue-bd);}
+    .sp-prospect{background:var(--bg);color:var(--muted);border:1px solid var(--border);}
+    .flag-due{color:#DC2626;font-size:10px;}.flag-soon{color:#D97706;font-size:10px;}.flag-ok{color:var(--muted);font-size:10px;}
+    .detail{display:flex;flex-direction:column;background:var(--white);overflow-y:auto;}
+    .detail-empty{flex:1;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center;padding:40px;flex-direction:column;gap:8px;}
+    .dh{padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px;}
+    .dh-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;flex-shrink:0;}
+    .dh-name{font-size:15px;font-weight:500;}.dh-role{font-size:11px;color:var(--muted);margin-top:2px;}.dh-contact{font-size:11px;color:var(--accent);margin-top:4px;}
+    .d-stage-row{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+    .stage-select{font-size:11px;border:1px solid var(--border);border-radius:4px;padding:4px 8px;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--white);cursor:pointer;}
+    .d-notes{padding:12px 16px;border-bottom:1px solid var(--border);font-size:11px;color:var(--ink2);line-height:1.6;background:#FAFAFA;}
+    .activity-log{padding:12px 16px;flex:1;}
+    .al-header{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:'DM Mono',monospace;margin-bottom:10px;}
+    .activity-item{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start;}
+    .ai-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+    .ai-email{background:#1E40AF;}.ai-call{background:#059669;}.ai-meeting{background:#7C3AED;}.ai-follow_up{background:#D97706;}.ai-note{background:#9CA3AF;}
+    .ai-type{font-size:9px;font-family:'DM Mono',monospace;text-transform:uppercase;color:var(--muted);letter-spacing:.06em;}
+    .ai-text{font-size:11px;color:var(--ink2);margin-top:1px;line-height:1.4;}.ai-date{font-size:10px;color:var(--muted);margin-top:1px;font-family:'DM Mono',monospace;}
+    .ai-pending{opacity:.6;font-style:italic;}
+    .log-input{padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:6px;}
+    .log-type{font-size:11px;border:1px solid var(--border);border-radius:4px;padding:5px 8px;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--white);}
+    .log-text{flex:1;font-size:11px;border:1px solid var(--border);border-radius:4px;padding:5px 8px;font-family:'DM Sans',sans-serif;color:var(--ink);outline:none;}
+    .log-text:focus{border-color:var(--accent);}
+    .log-btn{padding:5px 12px;background:var(--accent);color:#fff;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+    ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="logo"><span class="logo-cap">Re</span><span class="logo-lens">Radar</span></a>
+  <div class="nav-tools">
+    <a href="/tools/maturity-radar" class="tool-link">Maturity Radar</a>
+    <a href="/tools/distress" class="tool-link">Distress Monitor</a>
+    <a href="/tools/lp-radar" class="tool-link">LP Radar</a>
+    <a href="/tools/market-intel" class="tool-link">Market Intel</a>
+    <a href="/tools/crm" class="tool-link active">Outreach CRM</a>
+  </div>
+</nav>
+<div class="shell">
+  <div class="topbar">
+    <div><div class="tb-title">Outreach CRM</div><div class="tb-sub">Pipeline tracker · Activity log · Follow-up triggers</div></div>
+    <button class="add-btn" onclick="alert('Connect Vercel Postgres to enable live contact creation.')">+ Add contact</button>
+  </div>
+  <div class="pipeline">
+    <div class="pipe-col"><div class="pc-label">Hot</div><div class="pc-count pc-hot" id="pHot">1</div><div class="pc-sub">Follow up today</div></div>
+    <div class="pipe-col"><div class="pc-label">Engaged</div><div class="pc-count" id="pEngaged">1</div><div class="pc-sub">Active conversations</div></div>
+    <div class="pipe-col"><div class="pc-label">Warm</div><div class="pc-count" id="pWarm">2</div><div class="pc-sub">In progress</div></div>
+    <div class="pipe-col"><div class="pc-label">Outreach sent</div><div class="pc-count" id="pOutreach">1</div><div class="pc-sub">Awaiting reply</div></div>
+    <div class="pipe-col"><div class="pc-label">Follow-ups due</div><div class="pc-count pc-hot" id="pDue">2</div><div class="pc-sub">This week</div></div>
+  </div>
+  <div class="content">
+    <div class="contact-list">
+      <div class="list-hdr"><div>Contact / Company</div><div>Market</div><div>Asset</div><div>Stage</div><div>Follow-up</div></div>
+      <div id="contactRows"></div>
+    </div>
+    <div class="detail" id="detailPanel"><div class="detail-empty">◎<div style="margin-top:8px">Select a contact to view deal context + activity log</div></div></div>
+  </div>
+</div>
+<script>
+const contacts=[
+  {id:"c1",name:"Michael Torres",company:"Westbrook Partners",role:"VP Acquisitions",email:"m.torres@westbrook.com",phone:"(310) 555-0182",asset:"Mixed",market:"San Diego",stage:"warm",followUp:"Apr 1",followUpStatus:"ok",notes:"Decision maker for SoCal deals $50M+. Met at NAIOP March 2026. Interested in value-add office and industrial.",color:"#7C3AED",initials:"MT"},
+  {id:"c2",name:"Sarah Kim",company:"Blackstone RE Partners",role:"Managing Director",email:"s.kim@blackstone.com",phone:"(212) 555-0241",asset:"Office",market:"San Diego",stage:"hot",followUp:"Mar 28",followUpStatus:"due",notes:"Sorrento Valley office — in special servicing. Needs refi solution urgently. Sending mezz term sheet comparison.",color:"#DC2626",initials:"SK"},
+  {id:"c3",name:"David Chen",company:"Fairfield Residential",role:"CFO",email:"d.chen@fairfield.com",phone:"(415) 555-0317",asset:"Multifamily",market:"Mission Valley",stage:"warm",followUp:"Apr 15",followUpStatus:"ok",notes:"Mission Valley Phase II matures Mar 2027. Starting refi process. Interested in agency vs CMBS comparison.",color:"#1B4FD8",initials:"DC"},
+  {id:"c4",name:"Jennifer Walsh",company:"Prologis",role:"SVP Capital Markets",email:"j.walsh@prologis.com",phone:"(415) 555-0428",asset:"Industrial",market:"Miramar",stage:"outreach_sent",followUp:"Apr 5",followUpStatus:"soon",notes:"Miramar industrial portfolio — $203M. Very institutional. Lead with market intel on life co pricing. No hard sell.",color:"#059669",initials:"JW"},
+  {id:"c5",name:"Robert Sandoval",company:"Pacific Realty Trust",role:"President",email:"r.sandoval@pacificrealty.com",phone:"(619) 555-0519",asset:"Retail",market:"Pacific Beach",stage:"engaged",followUp:"Mar 29",followUpStatus:"due",notes:"Pacific Beach strip — $14M. Extension granted. Actively refi shopping. Show competitive quotes.",color:"#D97706",initials:"RS"},
+];
+const activities={
+  c1:[{type:"meeting",text:"Coffee at NAIOP event. Discussed SoCal office market outlook.",date:"Mar 15",done:true},{type:"follow_up",text:"Send Westfield UTC case study",date:"Apr 1",done:false}],
+  c2:[{type:"email",text:"Sent initial outreach re: Sorrento Valley special servicing",date:"Mar 18",done:true},{type:"call",text:"30-min call. Confirmed need for refi solution.",date:"Mar 20",done:true},{type:"follow_up",text:"Send mezz term sheet comparison from 3 lenders",date:"Mar 28",done:false}],
+  c3:[{type:"email",text:"Sent market update on Mission Valley multifamily debt",date:"Mar 10",done:true},{type:"follow_up",text:"Schedule 20-min options walkthrough call",date:"Apr 15",done:false}],
+  c4:[{type:"email",text:"Sent life co pricing intel on Miramar industrial",date:"Mar 8",done:true},{type:"follow_up",text:"Follow up if no reply by Apr 5",date:"Apr 5",done:false}],
+  c5:[{type:"email",text:"Sent market intel on PB retail lending landscape",date:"Mar 22",done:true},{type:"call",text:"Brief call — confirmed actively shopping rates",date:"Mar 23",done:true},{type:"follow_up",text:"Send rate quotes from 3 lenders",date:"Mar 29",done:false}],
+};
+let selectedId=null;
+const stageClass={hot:'sp-hot',engaged:'sp-engaged',warm:'sp-warm',outreach_sent:'sp-outreach_sent',prospect:'sp-prospect'};
+const stageLabel={hot:'Hot',engaged:'Engaged',warm:'Warm',outreach_sent:'Outreach sent',prospect:'Prospect'};
+const actDot={email:'ai-email',call:'ai-call',meeting:'ai-meeting',follow_up:'ai-follow_up',note:'ai-note'};
+const flagClass={due:'flag-due',soon:'flag-soon',ok:'flag-ok'};
+const flagIcon={due:'⚡',soon:'○',ok:'·'};
+function renderRows(){
+  document.getElementById('contactRows').innerHTML=contacts.map(c=>`
+    <div class="contact-row ${selectedId===c.id?'selected':''}" onclick="selectContact('${c.id}')">
+      <div class="cr-main"><div class="cr-avatar" style="background:${c.color}22;color:${c.color}">${c.initials}</div><div><div class="cr-name">${c.name}</div><div class="cr-role">${c.company}</div></div></div>
+      <div class="cr-cell">${c.market}</div>
+      <div class="cr-cell">${c.asset}</div>
+      <div><span class="stage-pill ${stageClass[c.stage]}">${stageLabel[c.stage]}</span></div>
+      <div class="${flagClass[c.followUpStatus]}">${flagIcon[c.followUpStatus]} ${c.followUp}</div>
+    </div>`).join('');
+}
+function selectContact(id){
+  selectedId=id;renderRows();
+  const c=contacts.find(x=>x.id===id);
+  const acts=activities[id]||[];
+  document.getElementById('detailPanel').innerHTML=`
+    <div class="dh"><div class="dh-avatar" style="background:${c.color}22;color:${c.color}">${c.initials}</div><div><div class="dh-name">${c.name}</div><div class="dh-role">${c.role} · ${c.company}</div><div class="dh-contact">${c.email} · ${c.phone}</div></div></div>
+    <div class="d-stage-row"><span style="font-size:11px;color:var(--muted)">Stage</span><select class="stage-select" onchange="updateStage('${id}',this.value)">${Object.entries(stageLabel).map(([k,v])=>`<option value="${k}"${k===c.stage?' selected':''}>${v}</option>`).join('')}</select></div>
+    <div class="d-notes">${c.notes}</div>
+    <div class="activity-log">
+      <div class="al-header">Activity log</div>
+      ${acts.map(a=>`<div class="activity-item ${a.done?'':'ai-pending'}"><span class="ai-dot ${actDot[a.type]||'ai-note'}"></span><div><div class="ai-type">${a.type.replace('_',' ')}</div><div class="ai-text">${a.text}</div><div class="ai-date">${a.date}${a.done?'':' · Pending'}</div></div></div>`).join('')}
+    </div>
+    <div class="log-input">
+      <select class="log-type" id="logType"><option value="email">Email</option><option value="call">Call</option><option value="meeting">Meeting</option><option value="follow_up">Follow-up</option><option value="note">Note</option></select>
+      <input class="log-text" id="logText" placeholder="Log activity..." onkeydown="if(event.key==='Enter')logActivity('${id}')">
+      <button class="log-btn" onclick="logActivity('${id}')">Log</button>
+    </div>`;
+}
+function updateStage(id,newStage){const c=contacts.find(x=>x.id===id);if(c)c.stage=newStage;renderRows();updatePipeline();}
+function logActivity(contactId){
+  const type=document.getElementById('logType').value;
+  const text=document.getElementById('logText').value.trim();
+  if(!text)return;
+  if(!activities[contactId])activities[contactId]=[];
+  const now=new Date();
+  activities[contactId].push({type,text,date:now.toLocaleDateString('en-US',{month:'short',day:'numeric'}),done:true});
+  document.getElementById('logText').value='';
+  selectContact(contactId);
+}
+function updatePipeline(){
+  document.getElementById('pHot').textContent=contacts.filter(c=>c.stage==='hot').length;
+  document.getElementById('pEngaged').textContent=contacts.filter(c=>c.stage==='engaged').length;
+  document.getElementById('pWarm').textContent=contacts.filter(c=>c.stage==='warm').length;
+  document.getElementById('pOutreach').textContent=contacts.filter(c=>c.stage==='outreach_sent').length;
+  document.getElementById('pDue').textContent=contacts.filter(c=>c.followUpStatus==='due'||c.followUpStatus==='soon').length;
+}
+renderRows();selectContact('c2');
+</script>
+</body>
+</html>

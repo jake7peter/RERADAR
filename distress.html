@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Market Intel — ReRadar</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ink:#0F1117;--ink2:#374151;--muted:#6B7280;--border:#E5E7EB;--bg:#F9FAFB;--white:#FFFFFF;--accent:#1B4FD8;--green:#065F46;--green-bg:#ECFDF5;--green-bd:#A7F3D0;--red:#991B1B;--red-bg:#FEF2F2;--red-bd:#FECACA;--amber:#92400E;--amber-bg:#FFFBEB;--amber-bd:#FDE68A;--blue-bg:#EFF6FF;--blue-bd:#BFDBFE;}
+    html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:var(--white);border-bottom:1px solid var(--border);}
+    .logo{display:flex;align-items:baseline;gap:2px;text-decoration:none;}
+    .logo-cap{font-size:18px;color:var(--ink);font-weight:500;}.logo-lens{font-size:18px;color:var(--accent);font-weight:500;}
+    .logo-ai{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);background:var(--blue-bg);padding:2px 5px;border-radius:3px;margin-left:3px;}
+    .nav-tools{display:flex;gap:4px;}
+    .tool-link{padding:6px 14px;font-size:12px;color:var(--muted);border-radius:5px;text-decoration:none;transition:all .15s;}
+    .tool-link:hover{background:var(--bg);color:var(--ink);}.tool-link.active{background:var(--blue-bg);color:var(--accent);}
+    .topbar{padding:12px 20px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+    .tb-title{font-size:13px;font-weight:500;}.tb-sub{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;}
+    .market-tabs{display:flex;gap:4px;flex-wrap:wrap;}
+    .m-tab{padding:6px 14px;font-size:11px;border:1px solid var(--border);border-radius:5px;background:var(--white);color:var(--muted);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
+    .m-tab:hover,.m-tab.active{border-color:var(--accent);color:var(--accent);background:var(--blue-bg);}
+    .macro-strip{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+    .mac-card{background:var(--white);padding:10px 14px;}
+    .mac-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:'DM Mono',monospace;margin-bottom:3px;}
+    .mac-val{font-size:16px;font-weight:500;}.mac-sub{font-size:9px;color:var(--muted);margin-top:1px;}
+    .body{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border);}
+    .panel{padding:16px;border-right:1px solid var(--border);}
+    .panel:last-child{border-right:none;}
+    .panel-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:'DM Mono',monospace;margin-bottom:12px;}
+    .asset-tabs{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap;}
+    .a-tab{padding:4px 10px;font-size:10px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+    .a-tab:hover,.a-tab.active{border-color:var(--accent);color:var(--accent);background:var(--blue-bg);}
+    .metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .m-card{background:var(--bg);border-radius:6px;padding:10px 12px;border:1px solid var(--border);}
+    .mc-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:'DM Mono',monospace;margin-bottom:4px;}
+    .mc-val{font-size:18px;font-weight:500;}.mc-delta{font-size:10px;margin-top:2px;}
+    .delta-up{color:#DC2626;}.delta-dn{color:#059669;}.delta-flat{color:var(--muted);}
+    .chart-wrap{position:relative;width:100%;height:180px;margin-top:12px;}
+    .supply-list,.txn-list{display:flex;flex-direction:column;gap:6px;}
+    .supply-row,.txn-row{padding:8px 10px;border-radius:6px;border:1px solid var(--border);display:flex;gap:10px;align-items:flex-start;}
+    .txn-row{justify-content:space-between;}
+    .su-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+    .su-uc{background:#1B4FD8;}.su-pm{background:#D97706;}.su-pl{background:#9CA3AF;}
+    .su-main{flex:1;min-width:0;}.su-name{font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .su-detail{font-size:10px;color:var(--muted);margin-top:2px;}
+    .su-right{text-align:right;flex-shrink:0;}
+    .su-delivery{font-size:10px;font-family:'DM Mono',monospace;}.su-type{font-size:9px;color:var(--muted);}
+    .txn-name{font-size:11px;font-weight:500;}.txn-detail{font-size:10px;color:var(--muted);margin-top:2px;}
+    .txn-right{text-align:right;}.txn-price{font-size:12px;font-weight:500;}.txn-cap{font-size:10px;color:var(--muted);margin-top:2px;}
+    .type-chip{display:inline-block;padding:2px 6px;border-radius:3px;font-size:9px;font-family:'DM Mono',monospace;margin-left:4px;}
+    .chip-mf{background:var(--blue-bg);color:#1E40AF;}.chip-ind{background:var(--green-bg);color:var(--green);}
+    .chip-off{background:var(--amber-bg);color:var(--amber);}.chip-ret{background:var(--red-bg);color:var(--red);}
+    ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="logo"><span class="logo-cap">Re</span><span class="logo-lens">Radar</span></a>
+  <div class="nav-tools">
+    <a href="/tools/maturity-radar" class="tool-link">Maturity Radar</a>
+    <a href="/tools/distress" class="tool-link">Distress Monitor</a>
+    <a href="/tools/lp-radar" class="tool-link">LP Radar</a>
+    <a href="/tools/market-intel" class="tool-link active">Market Intel</a>
+    <a href="/tools/crm" class="tool-link">Outreach CRM</a>
+  </div>
+</nav>
+<div class="topbar">
+  <div><div class="tb-title">Market Intel</div><div class="tb-sub">California CRE · Cap rates, supply pipeline, transactions</div></div>
+  <div class="market-tabs">
+    <button class="m-tab active" onclick="setMarket('san-diego',this)">San Diego</button>
+    <button class="m-tab" onclick="setMarket('los-angeles',this)">Los Angeles</button>
+    <button class="m-tab" onclick="setMarket('san-francisco',this)">San Francisco</button>
+    <button class="m-tab" onclick="setMarket('orange-county',this)">Orange County</button>
+    <button class="m-tab" onclick="setMarket('inland-empire',this)">Inland Empire</button>
+    <button class="m-tab" onclick="setMarket('sacramento',this)">Sacramento</button>
+  </div>
+</div>
+<div class="macro-strip">
+  <div class="mac-card"><div class="mac-label">10-Yr Treasury</div><div class="mac-val">4.58%</div><div class="mac-sub">↑ +18bps MTD</div></div>
+  <div class="mac-card"><div class="mac-label">SOFR</div><div class="mac-val">4.32%</div><div class="mac-sub">Fed funds 4.50%</div></div>
+  <div class="mac-card"><div class="mac-label">CMBS spread</div><div class="mac-val">+162bps</div><div class="mac-sub">Over 10-yr</div></div>
+  <div class="mac-card"><div class="mac-label">CPI</div><div class="mac-val">3.1%</div><div class="mac-sub">Feb 2026</div></div>
+  <div class="mac-card"><div class="mac-label">Unemployment</div><div class="mac-val">4.2%</div><div class="mac-sub">National</div></div>
+  <div class="mac-card"><div class="mac-label">GDP growth</div><div class="mac-val">2.4%</div><div class="mac-sub">Q4 2025</div></div>
+</div>
+<div class="body">
+  <div class="panel">
+    <div class="panel-title">Cap rates & fundamentals</div>
+    <div class="asset-tabs">
+      <button class="a-tab active" onclick="setAsset('multifamily',this)">Multifamily</button>
+      <button class="a-tab" onclick="setAsset('industrial',this)">Industrial</button>
+      <button class="a-tab" onclick="setAsset('office',this)">Office</button>
+      <button class="a-tab" onclick="setAsset('retail',this)">Retail</button>
+    </div>
+    <div class="metric-grid" id="metricGrid"></div>
+    <div class="chart-wrap"><canvas id="capChart"></canvas></div>
+  </div>
+  <div class="panel" style="border-right:none;">
+    <div class="panel-title" style="margin-bottom:8px">Supply pipeline</div>
+    <div class="supply-list" id="supplyList"></div>
+    <div class="panel-title" style="margin-top:16px;margin-bottom:8px">Recent transactions</div>
+    <div class="txn-list" id="txnList"></div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const DATA={
+  "san-diego":{
+    multifamily:{capRate:4.8,capRateDelta:-.1,rentGrowth:3.2,vacancy:4.8,avgRent:"$2,340/mo"},
+    industrial:{capRate:4.1,capRateDelta:+.2,rentGrowth:6.8,vacancy:2.1,avgRent:"$18.40/sf"},
+    office:{capRate:6.9,capRateDelta:+1.2,rentGrowth:-2.1,vacancy:18.4,avgRent:"$38.20/sf"},
+    retail:{capRate:5.6,capRateDelta:+.3,rentGrowth:1.8,vacancy:5.9,avgRent:"$28.60/sf"},
+    supply:[
+      {name:"Mission Valley TOD",type:"MF",detail:"420 units",delivery:"Q3 2026",status:"uc"},
+      {name:"Otay Ranch Phase 3",type:"MF",detail:"310 units",delivery:"Q1 2027",status:"pm"},
+      {name:"Miramar Logistics Hub",type:"IND",detail:"840,000 sf",delivery:"Q4 2026",status:"uc"},
+      {name:"Little Italy Mixed-Use",type:"RTL",detail:"42,000 sf",delivery:"Q2 2027",status:"pl"},
+    ],
+    transactions:[
+      {name:"Rancho Bernardo Office Park",type:"off",price:"$48M",cap:"6.8%",date:"Mar 2026",buyer:"Undisclosed"},
+      {name:"Kearny Mesa Industrial",type:"ind",price:"$31M",cap:"4.2%",date:"Feb 2026",buyer:"Rexford"},
+      {name:"Mission Valley Apts",type:"mf",price:"$64M",cap:"4.9%",date:"Feb 2026",buyer:"Greystar"},
+      {name:"Gaslamp Retail Center",type:"ret",price:"$22M",cap:"5.4%",date:"Jan 2026",buyer:"Private"},
+    ],
+    capHistory:[5.2,5.1,5.0,4.9,4.8,4.8],
+  },
+  "los-angeles":{
+    multifamily:{capRate:4.4,capRateDelta:-.2,rentGrowth:2.8,vacancy:4.2,avgRent:"$2,680/mo"},
+    industrial:{capRate:3.8,capRateDelta:+.4,rentGrowth:5.2,vacancy:3.8,avgRent:"$21.60/sf"},
+    office:{capRate:7.2,capRateDelta:+1.6,rentGrowth:-4.2,vacancy:22.1,avgRent:"$42.00/sf"},
+    retail:{capRate:5.2,capRateDelta:+.1,rentGrowth:.9,vacancy:6.8,avgRent:"$32.40/sf"},
+    supply:[{name:"Metropolis Phase II",type:"MF",detail:"660 units",delivery:"Q2 2026",status:"uc"},{name:"City of Industry Warehouse",type:"IND",detail:"1.2M sf",delivery:"Q3 2026",status:"uc"}],
+    transactions:[{name:"El Segundo Industrial",type:"ind",price:"$124M",cap:"3.9%",date:"Mar 2026",buyer:"Prologis"},{name:"Koreatown Multifamily",type:"mf",price:"$88M",cap:"4.6%",date:"Mar 2026",buyer:"Essex"}],
+    capHistory:[5.0,4.8,4.6,4.5,4.4,4.4],
+  },
+  "san-francisco":{
+    multifamily:{capRate:4.2,capRateDelta:+.3,rentGrowth:1.4,vacancy:6.8,avgRent:"$3,120/mo"},
+    industrial:{capRate:4.5,capRateDelta:+.5,rentGrowth:3.1,vacancy:5.2,avgRent:"$24.80/sf"},
+    office:{capRate:8.1,capRateDelta:+2.4,rentGrowth:-8.6,vacancy:31.2,avgRent:"$62.00/sf"},
+    retail:{capRate:6.1,capRateDelta:+.8,rentGrowth:-1.2,vacancy:9.4,avgRent:"$36.00/sf"},
+    supply:[{name:"Transbay Block 4",type:"MF",detail:"280 units",delivery:"Q4 2026",status:"uc"},{name:"Dogpatch Conversion",type:"OFF",detail:"320,000 sf",delivery:"Q1 2027",status:"pl"}],
+    transactions:[{name:"SoMa Office Tower",type:"off",price:"$92M",cap:"8.2%",date:"Feb 2026",buyer:"Undisclosed"}],
+    capHistory:[5.1,5.4,5.8,6.2,6.8,8.1],
+  },
+  "orange-county":{
+    multifamily:{capRate:4.6,capRateDelta:-.1,rentGrowth:3.8,vacancy:3.9,avgRent:"$2,490/mo"},
+    industrial:{capRate:4.0,capRateDelta:+.3,rentGrowth:7.2,vacancy:1.8,avgRent:"$19.80/sf"},
+    office:{capRate:6.4,capRateDelta:+.9,rentGrowth:-1.8,vacancy:16.2,avgRent:"$35.40/sf"},
+    retail:{capRate:5.4,capRateDelta:+.2,rentGrowth:2.4,vacancy:5.1,avgRent:"$30.20/sf"},
+    supply:[{name:"Irvine Spectrum Phase 5",type:"IND",detail:"420,000 sf",delivery:"Q3 2026",status:"uc"},{name:"Newport Center Mixed-Use",type:"MF",detail:"180 units",delivery:"Q2 2027",status:"pm"}],
+    transactions:[{name:"Anaheim Industrial Park",type:"ind",price:"$68M",cap:"4.1%",date:"Mar 2026",buyer:"Rexford"},{name:"Irvine Apartments",type:"mf",price:"$74M",cap:"4.7%",date:"Feb 2026",buyer:"UDR"}],
+    capHistory:[4.9,4.8,4.7,4.7,4.6,4.6],
+  },
+  "inland-empire":{
+    multifamily:{capRate:5.2,capRateDelta:+.1,rentGrowth:4.1,vacancy:5.2,avgRent:"$1,980/mo"},
+    industrial:{capRate:4.4,capRateDelta:+.6,rentGrowth:9.4,vacancy:3.2,avgRent:"$14.60/sf"},
+    office:{capRate:7.1,capRateDelta:+.8,rentGrowth:-.4,vacancy:14.8,avgRent:"$26.00/sf"},
+    retail:{capRate:5.9,capRateDelta:+.4,rentGrowth:2.1,vacancy:6.4,avgRent:"$24.80/sf"},
+    supply:[{name:"Ontario Logistics Center",type:"IND",detail:"2.1M sf",delivery:"Q2 2026",status:"uc"},{name:"Redlands Multifamily",type:"MF",detail:"240 units",delivery:"Q4 2026",status:"pm"}],
+    transactions:[{name:"Fontana Warehouse",type:"ind",price:"$142M",cap:"4.3%",date:"Mar 2026",buyer:"Prologis"},{name:"Riverside Apts",type:"mf",price:"$42M",cap:"5.3%",date:"Feb 2026",buyer:"Equity Residential"}],
+    capHistory:[4.8,4.9,5.0,5.1,5.2,4.4],
+  },
+  "sacramento":{
+    multifamily:{capRate:5.0,capRateDelta:+.2,rentGrowth:3.6,vacancy:5.8,avgRent:"$1,820/mo"},
+    industrial:{capRate:4.8,capRateDelta:+.4,rentGrowth:6.4,vacancy:4.1,avgRent:"$12.40/sf"},
+    office:{capRate:6.8,capRateDelta:+.7,rentGrowth:-1.2,vacancy:17.6,avgRent:"$28.40/sf"},
+    retail:{capRate:6.0,capRateDelta:+.3,rentGrowth:1.6,vacancy:7.2,avgRent:"$22.00/sf"},
+    supply:[{name:"Natomas Mixed-Use",type:"MF",detail:"310 units",delivery:"Q1 2027",status:"pm"},{name:"Rancho Cordova Industrial",type:"IND",detail:"600,000 sf",delivery:"Q3 2026",status:"uc"}],
+    transactions:[{name:"Downtown Sacramento Office",type:"off",price:"$38M",cap:"7.1%",date:"Feb 2026",buyer:"Undisclosed"},{name:"Elk Grove Apartments",type:"mf",price:"$54M",cap:"5.1%",date:"Jan 2026",buyer:"Essex"}],
+    capHistory:[4.8,4.9,4.9,5.0,5.0,5.0],
+  },
+};
+let currentMarket='san-diego',currentAsset='multifamily',capChart=null;
+const typeChip={mf:'chip-mf',ind:'chip-ind',off:'chip-off',ret:'chip-ret'};
+const typeLabel={mf:'MF',ind:'IND',off:'OFF',ret:'RTL'};
+const statusDot={uc:'su-uc',pm:'su-pm',pl:'su-pl'};
+const statusLabel={uc:'Under construction',pm:'Permitted',pl:'Planning'};
+function setMarket(m,btn){currentMarket=m;document.querySelectorAll('.m-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}
+function setAsset(a,btn){currentAsset=a;document.querySelectorAll('.a-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderMetrics();renderChart();}
+function deltaHtml(d){if(d>0)return `<span class="mc-delta delta-up">↑ +${(d*100).toFixed(0)}bps YoY</span>`;if(d<0)return `<span class="mc-delta delta-dn">↓ ${(d*100).toFixed(0)}bps YoY</span>`;return `<span class="mc-delta delta-flat">Flat YoY</span>`;}
+function rentDelta(r){if(r>0)return `<span class="mc-delta delta-dn">↑ +${r.toFixed(1)}% YoY</span>`;return `<span class="mc-delta delta-up">↓ ${Math.abs(r).toFixed(1)}% YoY</span>`;}
+function renderMetrics(){
+  const d=DATA[currentMarket][currentAsset];
+  document.getElementById('metricGrid').innerHTML=`
+    <div class="m-card"><div class="mc-label">Cap rate</div><div class="mc-val">${d.capRate.toFixed(1)}%</div>${deltaHtml(d.capRateDelta)}</div>
+    <div class="m-card"><div class="mc-label">Avg rent</div><div class="mc-val" style="font-size:14px">${d.avgRent}</div><div class="mc-delta delta-flat">${currentAsset==='multifamily'?'Per month':'Per sf/yr'}</div></div>
+    <div class="m-card"><div class="mc-label">Rent growth</div><div class="mc-val">${d.rentGrowth>0?'+':''}${d.rentGrowth.toFixed(1)}%</div>${rentDelta(d.rentGrowth)}</div>
+    <div class="m-card"><div class="mc-label">Vacancy</div><div class="mc-val">${d.vacancy.toFixed(1)}%</div><div class="mc-delta delta-flat">Current</div></div>`;
+}
+function renderChart(){
+  const hist=DATA[currentMarket].capHistory;
+  const labels=['Q3 24','Q4 24','Q1 25','Q2 25','Q3 25','Q4 25'];
+  const ctx=document.getElementById('capChart').getContext('2d');
+  if(capChart)capChart.destroy();
+  capChart=new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Cap rate %',data:hist,borderColor:'#1B4FD8',backgroundColor:'rgba(27,79,216,0.06)',tension:.4,pointRadius:3,pointBackgroundColor:'#1B4FD8',fill:true,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:Math.min(...hist)-.3,max:Math.max(...hist)+.3,ticks:{callback:v=>v.toFixed(1)+'%',font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'}},x:{ticks:{font:{size:10}},grid:{display:false}}}}});
+}
+function renderSupply(){
+  const items=DATA[currentMarket].supply;
+  document.getElementById('supplyList').innerHTML=items.map(s=>`
+    <div class="supply-row"><span class="su-dot ${statusDot[s.status]}"></span><div class="su-main"><div class="su-name">${s.name}</div><div class="su-detail">${statusLabel[s.status]} · ${s.detail}</div></div><div class="su-right"><div class="su-delivery">${s.delivery}</div><div class="su-type">${s.type}</div></div></div>`).join('');
+}
+function renderTransactions(){
+  const items=DATA[currentMarket].transactions;
+  document.getElementById('txnList').innerHTML=items.map(t=>`
+    <div class="txn-row"><div><div class="txn-name">${t.name}<span class="type-chip ${typeChip[t.type]}">${typeLabel[t.type]}</span></div><div class="txn-detail">${t.buyer} · ${t.date}</div></div><div class="txn-right"><div class="txn-price">${t.price}</div><div class="txn-cap">${t.cap} cap</div></div></div>`).join('');
+}
+function render(){renderMetrics();renderChart();renderSupply();renderTransactions();}
+render();
+</script>
+</body>
+</html>

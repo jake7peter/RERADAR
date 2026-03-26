@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maturity Radar — ReRadar</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ink:#0F1117;--ink2:#374151;--muted:#6B7280;--border:#E5E7EB;--bg:#F9FAFB;--white:#FFFFFF;--accent:#1B4FD8;--red:#991B1B;--red-bg:#FEF2F2;--red-bd:#FECACA;--amber:#92400E;--amber-bg:#FFFBEB;--amber-bd:#FDE68A;--blue:#1E40AF;--blue-bg:#EFF6FF;--blue-bd:#BFDBFE;--green:#065F46;--green-bg:#ECFDF5;}
+    html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:var(--white);border-bottom:1px solid var(--border);}
+    .logo{display:flex;align-items:baseline;gap:2px;text-decoration:none;}
+    .logo-cap{font-size:18px;color:var(--ink);font-weight:500;}
+    .logo-lens{font-size:18px;color:var(--accent);font-weight:500;}
+    .logo-ai{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);background:var(--blue-bg);padding:2px 5px;border-radius:3px;margin-left:3px;}
+    .nav-tools{display:flex;gap:4px;}
+    .tool-link{padding:6px 14px;font-size:12px;color:var(--muted);border-radius:5px;text-decoration:none;transition:all .15s;}
+    .tool-link:hover{background:var(--bg);color:var(--ink);}
+    .tool-link.active{background:var(--blue-bg);color:var(--accent);}
+    .shell{display:flex;flex-direction:column;height:calc(100vh - 49px);}
+    .topbar{padding:12px 20px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+    .tb-title{font-size:13px;font-weight:500;}
+    .tb-sub{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .ctrl-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+    select,input[type=number]{background:var(--white);border:1px solid var(--border);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:11px;padding:5px 8px;border-radius:5px;outline:none;}
+    input[type=number]{width:60px;}
+    .run-btn{padding:6px 16px;background:rgba(27,79,216,.12);border:1px solid var(--accent);color:var(--accent);font-family:'DM Mono',monospace;font-size:10px;border-radius:4px;cursor:pointer;transition:all .15s;}
+    .run-btn:hover{background:rgba(27,79,216,.22);}
+    .run-btn:disabled{opacity:.4;cursor:not-allowed;}
+    .filter-bar{padding:10px 20px;border-bottom:1px solid var(--border);display:flex;gap:6px;background:var(--white);}
+    .f-btn{padding:4px 12px;font-size:11px;border:1px solid var(--border);border-radius:20px;background:var(--white);color:var(--muted);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
+    .f-btn:hover,.f-btn.active{border-color:var(--accent);color:var(--accent);background:var(--blue-bg);}
+    .content{display:grid;grid-template-columns:1fr 390px;flex:1;overflow:hidden;}
+    .prospect-list{overflow-y:auto;border-right:1px solid var(--border);}
+    .list-header{padding:8px 16px;border-bottom:1px solid var(--border);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:'DM Mono',monospace;display:grid;grid-template-columns:2fr 1fr 1fr 80px 70px;background:var(--white);position:sticky;top:0;}
+    .prospect-row{display:grid;grid-template-columns:2fr 1fr 1fr 80px 70px;padding:10px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;align-items:center;}
+    .prospect-row:hover{background:#F9FAFB;}
+    .prospect-row.active{background:var(--blue-bg);border-left:2px solid var(--accent);}
+    .prop-name{font-size:12px;font-weight:500;}
+    .prop-sub{font-size:10px;color:var(--muted);margin-top:2px;}
+    .prop-cell{font-size:11px;}
+    .badge{padding:3px 8px;border-radius:3px;font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;display:inline-block;}
+    .badge-hot{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd);}
+    .badge-warm{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-bd);}
+    .badge-watch{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-bd);}
+    .detail{display:flex;flex-direction:column;overflow-y:auto;background:var(--white);}
+    .empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center;padding:40px;gap:8px;}
+    .dh{padding:16px;border-bottom:1px solid var(--border);}
+    .dh-type{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:'DM Mono',monospace;margin-bottom:6px;}
+    .dh-name{font-size:15px;font-weight:500;margin-bottom:3px;}
+    .dh-borrower{font-size:11px;color:var(--muted);}
+    .mb{margin:12px 16px;}
+    .mb-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:'DM Mono',monospace;margin-bottom:6px;}
+    .mb-track{height:4px;background:var(--border);border-radius:2px;position:relative;}
+    .mb-fill{height:4px;border-radius:2px;transition:width .5s;}
+    .mb-dot{position:absolute;top:-3px;width:10px;height:10px;border-radius:50%;border:2px solid var(--white);transform:translateX(-50%);}
+    .metrics{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+    .metric{padding:10px 14px;background:var(--white);}
+    .metric-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:'DM Mono',monospace;margin-bottom:3px;}
+    .metric-value{font-size:14px;font-weight:500;}
+    .metric-value.red{color:#DC2626;}
+    .metric-value.amber{color:#D97706;}
+    .metric-value.green{color:#059669;}
+    .outreach{padding:14px;}
+    .oh{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;}
+    .ai-chip{background:var(--amber-bg);color:var(--amber);padding:2px 6px;border-radius:3px;font-size:8px;border:1px solid var(--amber-bd);}
+    .email-box{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;font-size:10px;line-height:1.75;white-space:pre-wrap;min-height:160px;font-family:'DM Mono',monospace;}
+    .email-subject{color:var(--accent);font-weight:500;margin-bottom:10px;font-size:11px;}
+    .spinner{display:inline-block;width:12px;height:12px;border:1.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .action-row{display:flex;gap:8px;margin-top:10px;}
+    .act-btn{flex:1;padding:8px;font-size:11px;border:1px solid var(--border);border-radius:5px;background:var(--white);color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+    .act-btn:hover{border-color:#9CA3AF;color:var(--ink);}
+    .act-btn.primary{border-color:var(--accent);color:var(--accent);background:var(--blue-bg);}
+    .status-bar{padding:6px 24px;border-top:1px solid var(--border);font-size:9px;color:var(--muted);display:flex;gap:24px;align-items:center;background:var(--white);}
+    .sdot{width:6px;height:6px;border-radius:50%;background:#059669;display:inline-block;margin-right:4px;}
+    .sdot.loading{background:#D97706;animation:pulse 1s ease-in-out infinite;}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    ::-webkit-scrollbar{width:4px;}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="logo"><span class="logo-cap">Re</span><span class="logo-lens">Radar</span></a>
+  <div class="nav-tools">
+    <a href="/tools/maturity-radar" class="tool-link active">Maturity Radar</a>
+    <a href="/tools/distress" class="tool-link">Distress Monitor</a>
+    <a href="/tools/lp-radar" class="tool-link">LP Radar</a>
+    <a href="/tools/market-intel" class="tool-link">Market Intel</a>
+    <a href="/tools/crm" class="tool-link">Outreach CRM</a>
+  </div>
+</nav>
+<div class="shell">
+  <div class="topbar">
+    <div><div class="tb-title">CMBS Maturity Radar</div><div class="tb-sub" id="tbSub">San Diego · Ready to scan</div></div>
+    <div class="controls">
+      <span class="ctrl-label">Window</span>
+      <select id="months"><option value="6">6 months</option><option value="12">12 months</option><option value="24" selected>24 months</option></select>
+      <span class="ctrl-label">Min $M</span>
+      <input type="number" id="minBalance" value="5" min="1" max="500" />
+      <button class="run-btn" id="runBtn" onclick="runScan()">▶ Run Scan</button>
+    </div>
+  </div>
+  <div class="filter-bar">
+    <button class="f-btn active" onclick="setFilter('all',this)">All</button>
+    <button class="f-btn" onclick="setFilter('MF',this)">Multifamily</button>
+    <button class="f-btn" onclick="setFilter('RTL',this)">Retail</button>
+    <button class="f-btn" onclick="setFilter('OFF',this)">Office</button>
+    <button class="f-btn" onclick="setFilter('IND',this)">Industrial</button>
+  </div>
+  <div class="content">
+    <div class="prospect-list">
+      <div class="list-header"><div>Property / Borrower</div><div>Balance</div><div>Maturity</div><div>Urgency</div><div>Mo. Left</div></div>
+      <div id="rows"><div class="empty-state" style="margin-top:60px">◎<div style="margin-top:8px">Hit "Run Scan" to pull San Diego CMBS loans</div></div></div>
+    </div>
+    <div class="detail" id="detail"><div class="empty-state">◎<div style="margin-top:8px">Select a prospect to view deal details + AI outreach</div></div></div>
+  </div>
+  <div class="status-bar"><span><span class="sdot" id="sdot"></span><span id="stext">Ready</span></span><span id="smeta"></span></div>
+</div>
+<script>
+let allProspects=[],currentFilter='all',selectedId=null;
+async function runScan(){
+  const btn=document.getElementById('runBtn');
+  btn.disabled=true;btn.textContent='⟳ Scanning...';
+  setStatus('loading','Pulling CMBS data...','');
+  const months=document.getElementById('months').value;
+  const minBalance=document.getElementById('minBalance').value;
+  try{
+    const resp=await fetch(`/api/prospects?months=${months}&min_balance=${minBalance}`);
+    const data=await resp.json();
+    allProspects=data.prospects||[];
+    renderRows();
+    const vol=(allProspects.reduce((s,p)=>s+p.balance,0)/1e9).toFixed(1);
+    setStatus('ready',`${allProspects.length} prospects found`,`$${vol}B in maturing loans`);
+    document.getElementById('tbSub').textContent=`San Diego · ${allProspects.length} prospects · $${vol}B volume`;
+  }catch(e){setStatus('ready','Error: '+e.message,'');}
+  btn.disabled=false;btn.textContent='▶ Run Scan';
+}
+function setFilter(t,btn){currentFilter=t;document.querySelectorAll('.f-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderRows();}
+function getFiltered(){return currentFilter==='all'?allProspects:allProspects.filter(p=>p.asset_type===currentFilter);}
+function urgencyBadge(u){const c=u==='hot'?'badge-hot':u==='warm'?'badge-warm':'badge-watch';return `<span class="badge ${c}">${u}</span>`;}
+function renderRows(){
+  const list=getFiltered();
+  if(!list.length){document.getElementById('rows').innerHTML='<div class="empty-state" style="margin-top:60px">◎<div style="margin-top:8px">No prospects match this filter</div></div>';return;}
+  document.getElementById('rows').innerHTML=list.map(p=>`
+    <div class="prospect-row ${selectedId===p.id?'active':''}" onclick="selectProspect('${p.id}')">
+      <div><div class="prop-name">${p.property_name}</div><div class="prop-sub">${p.asset_type} · ${p.submarket}</div></div>
+      <div class="prop-cell">${p.balance_display}</div>
+      <div class="prop-cell">${p.maturity_display}</div>
+      <div>${urgencyBadge(p.urgency)}</div>
+      <div class="prop-cell" style="color:var(--muted);font-size:10px">${p.months_left}mo</div>
+    </div>`).join('');
+}
+async function selectProspect(id){
+  selectedId=id;renderRows();
+  const p=allProspects.find(x=>x.id===id);
+  const pct=Math.max(5,Math.min(95,100-(p.months_left/24*100)));
+  const barColor=p.urgency==='hot'?'#DC2626':p.urgency==='warm'?'#D97706':'#2563EB';
+  const ltvClass=p.ltv>75?'red':p.ltv>65?'amber':'green';
+  const dscrClass=p.dscr<1.2?'red':p.dscr<1.4?'amber':'green';
+  document.getElementById('detail').innerHTML=`
+    <div class="dh"><div class="dh-type">${p.asset_type} · ${p.submarket} · ${p.originator||''}</div><div class="dh-name">${p.property_name}</div><div class="dh-borrower">${p.borrower}</div></div>
+    <div class="mb"><div class="mb-label">Time to maturity — ${p.months_left} months</div><div class="mb-track"><div class="mb-fill" style="width:${pct}%;background:${barColor}"></div><div class="mb-dot" style="left:${pct}%;background:${barColor}"></div></div></div>
+    <div class="metrics">
+      <div class="metric"><div class="metric-label">Loan balance</div><div class="metric-value">${p.balance_display}</div></div>
+      <div class="metric"><div class="metric-label">Current rate</div><div class="metric-value">${p.interest_rate.toFixed(2)}%</div></div>
+      <div class="metric"><div class="metric-label">LTV</div><div class="metric-value ${ltvClass}">${p.ltv.toFixed(0)}%</div></div>
+      <div class="metric"><div class="metric-label">DSCR</div><div class="metric-value ${dscrClass}">${p.dscr.toFixed(2)}x</div></div>
+    </div>
+    <div class="outreach">
+      <div class="oh">AI-Generated Outreach <span class="ai-chip">Claude</span></div>
+      <div class="email-box" id="emailBox"><span class="spinner"></span> Generating email...</div>
+      <div id="riskNote"></div>
+      <div class="action-row" id="actionRow" style="display:none">
+        <button class="act-btn primary" id="copyBtn">Copy email</button>
+        <button class="act-btn" onclick="regenEmail('${p.id}')">Regenerate</button>
+        <button class="act-btn" onclick="window.location='/tools/crm'">Add to CRM</button>
+      </div>
+    </div>`;
+  loadEmail(p);
+}
+async function loadEmail(p){
+  try{
+    const resp=await fetch('/api/outreach',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});
+    const data=await resp.json();
+    const box=document.getElementById('emailBox');
+    if(data.subject&&data.body){
+      box.innerHTML=`<div class="email-subject">Subject: ${data.subject}</div>${data.body}`;
+      if(p.risk_flags?.length) document.getElementById('riskNote').innerHTML=`<div style="margin-top:8px;font-size:9px;color:var(--muted);padding:6px 10px;background:var(--bg);border-radius:4px;border:1px solid var(--border)">◈ ${p.risk_flags.join(' · ')}</div>`;
+      document.getElementById('actionRow').style.display='flex';
+      document.getElementById('copyBtn').onclick=()=>{
+        navigator.clipboard.writeText(`Subject: ${data.subject}\n\n${data.body}`).catch(()=>{});
+        document.getElementById('copyBtn').textContent='Copied ✓';
+        setTimeout(()=>document.getElementById('copyBtn').textContent='Copy email',1500);
+      };
+    }else{box.textContent='Could not generate email.';}
+  }catch(e){document.getElementById('emailBox').textContent='Error: '+e.message;}
+}
+async function regenEmail(id){
+  const p=allProspects.find(x=>x.id===id);if(!p)return;
+  document.getElementById('emailBox').innerHTML='<span class="spinner"></span> Regenerating...';
+  document.getElementById('actionRow').style.display='none';
+  await loadEmail(p);
+}
+function setStatus(state,text,meta){
+  const dot=document.getElementById('sdot');
+  dot.className='sdot'+(state==='loading'?' loading':'');
+  document.getElementById('stext').textContent=text;
+  document.getElementById('smeta').textContent=meta;
+}
+</script>
+</body>
+</html>
