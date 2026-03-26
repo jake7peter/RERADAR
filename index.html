@@ -2,206 +2,254 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ReRadar — California CRE Capital Markets Intelligence</title>
+  <title>ReRadar — Real Estate Intelligence Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
-    *{box-sizing:border-box;margin:0;padding:0;}
-    :root{--ink:#0F1117;--ink2:#2C2F3A;--muted:#6B7280;--border:#E5E7EB;--bg:#FAFAF8;--white:#FFFFFF;--accent:#1B4FD8;--accent-light:#EEF2FF;--accent-mid:#3B6FFF;--green:#0D7E5A;--green-bg:#ECFDF5;--amber:#92500A;--amber-bg:#FFFBEB;--blue-bg:#EFF6FF;}
-    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;}
-    nav{display:flex;align-items:center;justify-content:space-between;padding:18px 48px;background:var(--white);border-bottom:1px solid var(--border);}
-    .logo{display:flex;align-items:baseline;gap:2px;}
-    .logo-cap{font-family:'Instrument Serif',serif;font-size:22px;color:var(--ink);}
-    .logo-lens{font-family:'Instrument Serif',serif;font-size:22px;color:var(--accent);}
-    .logo-ai{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);background:var(--accent-light);padding:2px 6px;border-radius:4px;margin-left:4px;align-self:center;}
-    .nav-links{display:flex;align-items:center;gap:28px;}
-    .nav-link{font-size:13px;color:var(--muted);text-decoration:none;transition:color .15s;}
-    .nav-link:hover{color:var(--ink);}
-    .nav-cta{padding:8px 18px;background:var(--accent);color:#fff;border-radius:6px;font-size:13px;font-weight:500;text-decoration:none;transition:background .15s;}
-    .nav-cta:hover{background:var(--accent-mid);}
-    .hero{padding:90px 48px 80px;max-width:860px;margin:0 auto;text-align:center;}
-    .hero-eyebrow{display:inline-flex;align-items:center;gap:6px;background:var(--accent-light);border:1px solid #C7D7FD;border-radius:20px;padding:4px 14px;font-size:12px;color:var(--accent);font-weight:500;margin-bottom:28px;font-family:'DM Mono',monospace;letter-spacing:.04em;}
-    .eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--accent-mid);}
-    h1{font-family:'Instrument Serif',serif;font-size:54px;line-height:1.1;color:var(--ink);margin-bottom:20px;letter-spacing:-.5px;}
-    h1 em{font-style:italic;color:var(--accent);}
-    .hero-sub{font-size:17px;color:var(--muted);max-width:560px;margin:0 auto 36px;line-height:1.7;font-weight:300;}
-    .hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
-    .btn-primary{padding:12px 26px;background:var(--accent);color:#fff;border-radius:7px;font-size:14px;font-weight:500;text-decoration:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s;}
-    .btn-primary:hover{background:var(--accent-mid);}
-    .btn-ghost{padding:12px 26px;background:var(--white);color:var(--ink2);border-radius:7px;font-size:14px;font-weight:500;text-decoration:none;border:1px solid var(--border);cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color .15s;}
-    .btn-ghost:hover{border-color:#9CA3AF;}
-    .stats{display:flex;justify-content:center;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--white);}
-    .stat-item{padding:22px 48px;text-align:center;border-right:1px solid var(--border);flex:1;max-width:220px;}
-    .stat-item:last-child{border-right:none;}
-    .stat-num{font-family:'Instrument Serif',serif;font-size:32px;color:var(--accent);}
-    .stat-label{font-size:12px;color:var(--muted);margin-top:2px;}
-    .market-strip{background:var(--white);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:20px 48px;}
-    .market-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
-    .market-label{font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;}
-    .market-tags{display:flex;gap:8px;flex-wrap:wrap;}
-    .market-tag{padding:5px 12px;background:var(--bg);border:1px solid var(--border);border-radius:20px;font-size:12px;color:var(--ink2);}
-    .market-tag.active{background:var(--accent-light);border-color:#C7D7FD;color:var(--accent);}
-    section{padding:72px 48px;max-width:1100px;margin:0 auto;}
-    .section-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px;}
-    h2{font-family:'Instrument Serif',serif;font-size:36px;color:var(--ink);margin-bottom:12px;letter-spacing:-.3px;}
-    .section-sub{font-size:15px;color:var(--muted);max-width:520px;line-height:1.7;margin-bottom:48px;}
-    .tool-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;}
-    .tool-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:24px;transition:border-color .2s;cursor:pointer;position:relative;overflow:hidden;text-decoration:none;display:block;color:inherit;}
-    .tool-card:hover{border-color:#9CA3AF;}
-    .tool-card.live:hover{border-color:var(--accent);}
-    .tool-icon{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
-    .icon-blue{background:var(--blue-bg);}.icon-green{background:var(--green-bg);}.icon-amber{background:var(--amber-bg);}.icon-red{background:#FEF2F2;}.icon-purple{background:#F5F3FF;}
-    .tool-name{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:6px;}
-    .tool-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px;}
-    .tool-meta{display:flex;align-items:center;justify-content:space-between;}
-    .live-badge{font-size:10px;font-family:'DM Mono',monospace;padding:3px 8px;border-radius:4px;font-weight:500;letter-spacing:.04em;}
-    .badge-live{background:var(--green-bg);color:var(--green);}
-    .badge-soon{background:#F3F4F6;color:#6B7280;}
-    .tool-arrow{font-size:16px;color:var(--border);}
-    .tool-card.live .tool-arrow{color:var(--accent);}
-    .tool-tag{position:absolute;top:0;right:0;background:var(--accent);color:#fff;font-size:9px;font-family:'DM Mono',monospace;padding:4px 10px;border-radius:0 12px 0 8px;letter-spacing:.06em;}
-    .how-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--white);}
-    .how-step{padding:28px 24px;border-right:1px solid var(--border);}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --bg:#141414;--bg2:#1C1C1C;--bg3:#242424;
+      --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+      --text:#F0EDE8;--text2:#A8A49E;--text3:#6B6760;
+      --gold:#C9A84C;--gold2:#E8C97A;--gold-dim:rgba(201,168,76,0.1);
+      --res:#4A7C6F;--res-light:#7FB3A6;--res-dim:rgba(74,124,111,0.12);
+      --com:#4A6490;--com-light:#7FA0C8;--com-dim:rgba(74,100,144,0.12);
+    }
+    html{scroll-behavior:smooth;}
+    body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;}
+    nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:20px 60px;background:rgba(20,20,20,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+    .logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+    .logo-mark{width:32px;height:32px;border-radius:6px;background:var(--gold);display:flex;align-items:center;justify-content:center;}
+    .logo-text{font-family:'Playfair Display',serif;font-size:20px;color:var(--text);}
+    .logo-text span{color:var(--gold);}
+    .nav-links{display:flex;align-items:center;gap:8px;}
+    .nav-link{padding:8px 16px;font-size:13px;color:var(--text2);text-decoration:none;border-radius:6px;transition:all .2s;}
+    .nav-link:hover{color:var(--text);background:rgba(255,255,255,0.05);}
+    .nav-btn{padding:9px 20px;font-size:13px;font-weight:500;color:var(--bg);background:var(--gold);border:none;border-radius:6px;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;text-decoration:none;}
+    .nav-btn:hover{background:var(--gold2);}
+    .hero{min-height:88vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 60px;position:relative;overflow:hidden;}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(201,168,76,0.06) 0%,transparent 70%);pointer-events:none;}
+    .hero-tag{display:inline-flex;align-items:center;gap:8px;background:var(--gold-dim);border:1px solid rgba(201,168,76,0.25);border-radius:20px;padding:5px 16px;font-size:11px;font-weight:500;color:var(--gold);font-family:'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;margin-bottom:36px;animation:fadeUp .6s ease both;}
+    .hero-tag-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s ease-in-out infinite;}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    h1{font-family:'Playfair Display',serif;font-size:clamp(42px,6vw,72px);line-height:1.08;letter-spacing:-1px;color:var(--text);max-width:820px;margin-bottom:24px;animation:fadeUp .6s .1s ease both;}
+    h1 em{font-style:italic;color:var(--gold);}
+    .hero-sub{font-size:17px;font-weight:300;color:var(--text2);max-width:560px;line-height:1.75;margin-bottom:48px;animation:fadeUp .6s .2s ease both;}
+    .hero-entries{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:720px;width:100%;animation:fadeUp .6s .3s ease both;}
+    .entry-card{position:relative;overflow:hidden;padding:32px 28px;border-radius:14px;border:1px solid var(--border);text-decoration:none;text-align:left;transition:all .3s;cursor:pointer;display:flex;flex-direction:column;gap:12px;}
+    .entry-card.res{background:linear-gradient(135deg,rgba(74,124,111,0.15) 0%,rgba(74,124,111,0.05) 100%);}
+    .entry-card.res:hover{border-color:var(--res);background:rgba(74,124,111,0.18);transform:translateY(-2px);}
+    .entry-card.com{background:linear-gradient(135deg,rgba(74,100,144,0.15) 0%,rgba(74,100,144,0.05) 100%);}
+    .entry-card.com:hover{border-color:var(--com);background:rgba(74,100,144,0.18);transform:translateY(-2px);}
+    .entry-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
+    .entry-icon.res{background:var(--res-dim);}
+    .entry-icon.com{background:var(--com-dim);}
+    .entry-label{font-size:11px;font-weight:500;font-family:'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;}
+    .entry-label.res{color:var(--res-light);}
+    .entry-label.com{color:var(--com-light);}
+    .entry-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--text);line-height:1.2;}
+    .entry-desc{font-size:13px;color:var(--text2);line-height:1.6;}
+    .entry-tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+    .entry-tool{font-size:10px;padding:3px 8px;border-radius:4px;font-family:'JetBrains Mono',monospace;}
+    .entry-tool.res{background:var(--res-dim);color:var(--res-light);}
+    .entry-tool.com{background:var(--com-dim);color:var(--com-light);}
+    .entry-arrow{position:absolute;bottom:24px;right:24px;font-size:18px;opacity:.3;transition:all .2s;}
+    .entry-card:hover .entry-arrow{opacity:1;transform:translate(2px,-2px);}
+    .stats-strip{border-top:1px solid var(--border);border-bottom:1px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);background:var(--bg2);}
+    .stat{padding:28px 40px;text-align:center;border-right:1px solid var(--border);}
+    .stat:last-child{border-right:none;}
+    .stat-num{font-family:'Playfair Display',serif;font-size:36px;color:var(--gold);line-height:1;}
+    .stat-label{font-size:12px;color:var(--text3);margin-top:6px;text-transform:uppercase;letter-spacing:.06em;}
+    .section{padding:80px 60px;max-width:1200px;margin:0 auto;}
+    .section-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px;}
+    h2{font-family:'Playfair Display',serif;font-size:clamp(28px,3vw,42px);color:var(--text);margin-bottom:14px;line-height:1.15;letter-spacing:-.5px;}
+    h2 em{font-style:italic;color:var(--gold);}
+    .section-sub{font-size:16px;color:var(--text2);max-width:540px;line-height:1.7;font-weight:300;margin-bottom:52px;}
+    .split-section{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+    .split-col{padding:48px 40px;border-right:1px solid var(--border);}
+    .split-col:last-child{border-right:none;}
+    .split-col.res{background:linear-gradient(180deg,rgba(74,124,111,0.08) 0%,transparent 40%);}
+    .split-col.com{background:linear-gradient(180deg,rgba(74,100,144,0.08) 0%,transparent 40%);}
+    .split-header{display:flex;align-items:center;gap:12px;margin-bottom:28px;}
+    .split-icon{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .split-icon.res{background:var(--res-dim);}
+    .split-icon.com{background:var(--com-dim);}
+    .split-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--text);}
+    .split-subtitle{font-size:12px;color:var(--text3);margin-top:2px;}
+    .tool-list{display:flex;flex-direction:column;gap:2px;}
+    .tool-item{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;border-radius:10px;transition:background .2s;cursor:pointer;text-decoration:none;}
+    .tool-item:hover{background:rgba(255,255,255,0.04);}
+    .tool-item-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+    .tool-item-icon.res{background:var(--res-dim);}
+    .tool-item-icon.com{background:var(--com-dim);}
+    .tool-item-name{font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px;}
+    .tool-item-desc{font-size:12px;color:var(--text3);line-height:1.5;}
+    .tool-badge{margin-left:auto;flex-shrink:0;align-self:flex-start;margin-top:2px;font-size:9px;padding:3px 7px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-weight:500;text-transform:uppercase;letter-spacing:.06em;}
+    .badge-live{background:rgba(74,124,111,0.2);color:#7FB3A6;border:1px solid rgba(74,124,111,0.3);}
+    .badge-soon{background:rgba(255,255,255,0.05);color:var(--text3);border:1px solid var(--border);}
+    .how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--bg2);}
+    .how-step{padding:32px 28px;border-right:1px solid var(--border);}
     .how-step:last-child{border-right:none;}
-    .step-num{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);margin-bottom:12px;letter-spacing:.08em;}
-    .step-title{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:8px;}
-    .step-desc{font-size:12px;color:var(--muted);line-height:1.6;}
-    .cta-band{margin:0 48px 72px;border-radius:16px;background:var(--ink);padding:56px 64px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;}
-    .cta-text h3{font-family:'Instrument Serif',serif;font-size:30px;color:#fff;margin-bottom:8px;}
-    .cta-text p{font-size:14px;color:#9CA3AF;line-height:1.6;}
-    .cta-actions{display:flex;gap:12px;flex-shrink:0;flex-wrap:wrap;}
-    .btn-white{padding:12px 24px;background:#fff;color:var(--ink);border-radius:7px;font-size:14px;font-weight:500;text-decoration:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
-    .btn-outline-white{padding:12px 24px;background:transparent;color:#fff;border-radius:7px;font-size:14px;font-weight:500;text-decoration:none;border:1px solid rgba(255,255,255,.25);cursor:pointer;font-family:'DM Sans',sans-serif;}
-    footer{border-top:1px solid var(--border);padding:28px 48px;display:flex;align-items:center;justify-content:space-between;background:var(--white);}
-    .footer-logo{font-family:'Instrument Serif',serif;font-size:16px;color:var(--ink);}
-    .footer-logo span{color:var(--accent);}
-    .footer-copy{font-size:12px;color:var(--muted);}
-    .footer-links{display:flex;gap:20px;}
-    .footer-link{font-size:12px;color:var(--muted);text-decoration:none;}
-    .footer-link:hover{color:var(--ink);}
-    @media(max-width:768px){nav{padding:14px 20px;}.nav-links{gap:12px;}h1{font-size:36px;}.hero{padding:60px 24px;}.stats{flex-wrap:wrap;}.stat-item{min-width:50%;border-right:none;border-bottom:1px solid var(--border);}.tool-grid{grid-template-columns:1fr;}.how-grid{grid-template-columns:1fr 1fr;}.cta-band{margin:0 20px 40px;padding:32px;}.footer{padding:20px;flex-direction:column;gap:12px;text-align:center;}}
+    .how-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:.1em;margin-bottom:14px;}
+    .how-title{font-size:15px;font-weight:500;color:var(--text);margin-bottom:8px;}
+    .how-desc{font-size:12px;color:var(--text3);line-height:1.65;}
+    .audience-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+    .audience-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:28px 24px;transition:border-color .2s;}
+    .audience-card:hover{border-color:var(--border2);}
+    .audience-icon{width:40px;height:40px;border-radius:8px;background:var(--gold-dim);display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
+    .audience-title{font-size:15px;font-weight:500;color:var(--text);margin-bottom:8px;}
+    .audience-desc{font-size:13px;color:var(--text3);line-height:1.6;}
+    .cta-section{margin:0 60px 80px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:64px;display:flex;align-items:center;justify-content:space-between;gap:40px;flex-wrap:wrap;position:relative;overflow:hidden;}
+    .cta-section::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse 60% 80% at 20% 50%,rgba(201,168,76,0.05) 0%,transparent 60%);pointer-events:none;}
+    .cta-text h3{font-family:'Playfair Display',serif;font-size:32px;color:var(--text);margin-bottom:10px;line-height:1.2;}
+    .cta-text h3 em{font-style:italic;color:var(--gold);}
+    .cta-text p{font-size:15px;color:var(--text2);font-weight:300;line-height:1.6;}
+    .cta-actions{display:flex;gap:12px;flex-shrink:0;}
+    .cta-btn-res{padding:13px 28px;border-radius:7px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif;text-decoration:none;transition:all .2s;background:var(--res);color:var(--text);border:none;}
+    .cta-btn-res:hover{background:var(--res-light);color:var(--bg);}
+    .cta-btn-com{padding:13px 28px;border-radius:7px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif;text-decoration:none;transition:all .2s;background:transparent;color:var(--text);border:1px solid var(--border2);}
+    .cta-btn-com:hover{border-color:var(--com-light);color:var(--com-light);}
+    footer{border-top:1px solid var(--border);padding:32px 60px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+    .footer-logo{font-family:'Playfair Display',serif;font-size:16px;color:var(--text2);}
+    .footer-logo span{color:var(--gold);}
+    .footer-links{display:flex;gap:24px;}
+    .footer-link{font-size:12px;color:var(--text3);text-decoration:none;transition:color .2s;}
+    .footer-link:hover{color:var(--text2);}
+    .footer-copy{font-size:12px;color:var(--text3);}
+    .divider{border:none;border-top:1px solid var(--border);margin:0 60px;}
+    @media(max-width:900px){
+      nav{padding:16px 24px;}.nav-links{display:none;}
+      .hero{padding:60px 24px;}.hero-entries{grid-template-columns:1fr;max-width:440px;}
+      .stats-strip{grid-template-columns:repeat(2,1fr);}
+      .section{padding:60px 24px;}
+      .split-section{grid-template-columns:1fr;}
+      .split-col{border-right:none;border-bottom:1px solid var(--border);}
+      .how-grid{grid-template-columns:1fr 1fr;}
+      .audience-grid{grid-template-columns:1fr;}
+      .cta-section{margin:0 24px 60px;padding:40px 28px;flex-direction:column;}
+      footer{padding:24px;flex-direction:column;text-align:center;}
+      .divider{margin:0 24px;}
+    }
   </style>
 </head>
 <body>
 <nav>
-  <div class="logo"><span class="logo-cap">Re</span><span class="logo-lens">Radar</span></div>
+  <a href="/" class="logo">
+    <div class="logo-mark"><svg viewBox="0 0 18 18" fill="none" width="18" height="18"><circle cx="9" cy="9" r="3" fill="#141414"/><circle cx="9" cy="9" r="6" stroke="#141414" stroke-width="1.5" fill="none" opacity=".6"/><circle cx="9" cy="9" r="8.5" stroke="#141414" stroke-width="1" fill="none" opacity=".3"/></svg></div>
+    <span class="logo-text">Re<span>Radar</span></span>
+  </a>
   <div class="nav-links">
     <a href="#tools" class="nav-link">Tools</a>
     <a href="#how" class="nav-link">How it works</a>
-    <a href="/tools/maturity-radar" class="nav-cta">Launch app</a>
+    <a href="#who" class="nav-link">Who it's for</a>
+    <a href="/tools/maturity-radar" class="nav-btn">Launch app</a>
   </div>
 </nav>
 
-<div class="hero">
-  <div class="hero-eyebrow"><span class="eyebrow-dot"></span>AI-powered · California capital markets</div>
-  <h1>Radar for the<br><em>real estate capital stack</em></h1>
-  <p class="hero-sub">ReRadar gives debt & equity brokers, analysts, and investors a real-time intelligence layer across California's CRE capital markets — from maturing CMBS loans to LP prospecting.</p>
-  <div class="hero-actions">
-    <a href="/tools/maturity-radar" class="btn-primary">Launch Maturity Radar</a>
-    <a href="#tools" class="btn-ghost">View all tools</a>
+<section class="hero">
+  <div class="hero-tag"><span class="hero-tag-dot"></span>Real estate intelligence · National coverage</div>
+  <h1>The data layer for<br><em>every real estate decision</em></h1>
+  <p class="hero-sub">ReRadar gives investors, brokers, and analysts the intelligence they need — whether you're buying your first rental or underwriting a $200M commercial deal.</p>
+  <div class="hero-entries">
+    <a href="/tools/property-lookup" class="entry-card res">
+      <div class="entry-icon res"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 10L11 3L19 10V19H14V14H8V19H3V10Z" stroke="#7FB3A6" stroke-width="1.5" stroke-linejoin="round" fill="none"/></svg></div>
+      <div><div class="entry-label res">Residential</div><div class="entry-title">Property Analysis & Investment Tools</div></div>
+      <div class="entry-desc">Look up any property, model cash flows, analyze deals, and find the right market — whether you're new to investing or a seasoned pro.</div>
+      <div class="entry-tools"><span class="entry-tool res">Property Lookup</span><span class="entry-tool res">Deal Analyzer</span><span class="entry-tool res">BRRRR Calc</span><span class="entry-tool res">STR vs LTR</span></div>
+      <span class="entry-arrow">↗</span>
+    </a>
+    <a href="/tools/maturity-radar" class="entry-card com">
+      <div class="entry-icon com"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="5" width="16" height="14" rx="1.5" stroke="#7FA0C8" stroke-width="1.5" fill="none"/><path d="M7 5V3H15V5" stroke="#7FA0C8" stroke-width="1.5" stroke-linecap="round" fill="none"/><line x1="7" y1="10" x2="15" y2="10" stroke="#7FA0C8" stroke-width="1"/><line x1="7" y1="13" x2="15" y2="13" stroke="#7FA0C8" stroke-width="1"/></svg></div>
+      <div><div class="entry-label com">Commercial</div><div class="entry-title">Capital Markets Intelligence</div></div>
+      <div class="entry-desc">CMBS maturity tracking, distress monitoring, LP radar, market intel, and deal underwriting — for brokers, principals, and debt professionals.</div>
+      <div class="entry-tools"><span class="entry-tool com">Maturity Radar</span><span class="entry-tool com">Distress Monitor</span><span class="entry-tool com">LP Radar</span><span class="entry-tool com">Underwriting</span></div>
+      <span class="entry-arrow">↗</span>
+    </a>
   </div>
+</section>
+
+<div class="stats-strip">
+  <div class="stat"><div class="stat-num">50</div><div class="stat-label">States covered</div></div>
+  <div class="stat"><div class="stat-num">$2.4B+</div><div class="stat-label">CMBS loans tracked</div></div>
+  <div class="stat"><div class="stat-num">12</div><div class="stat-label">Intelligence tools</div></div>
+  <div class="stat"><div class="stat-num">Free</div><div class="stat-label">Always to start</div></div>
 </div>
 
-<div class="stats">
-  <div class="stat-item"><div class="stat-num">$2.4B</div><div class="stat-label">Loans tracked in California</div></div>
-  <div class="stat-item"><div class="stat-num">5</div><div class="stat-label">Intelligence tools</div></div>
-  <div class="stat-item"><div class="stat-num">24mo</div><div class="stat-label">Maturity look-ahead window</div></div>
-  <div class="stat-item"><div class="stat-num">AI</div><div class="stat-label">Outreach generated per deal</div></div>
-</div>
-
-<div class="market-strip">
-  <div class="market-inner">
-    <span class="market-label">Markets covered</span>
-    <div class="market-tags">
-      <span class="market-tag active">San Diego</span>
-      <span class="market-tag active">Los Angeles</span>
-      <span class="market-tag active">San Francisco</span>
-      <span class="market-tag active">Orange County</span>
-      <span class="market-tag active">Inland Empire</span>
-      <span class="market-tag active">Sacramento</span>
-      <span class="market-tag" style="background:var(--amber-bg);border-color:#FDE68A;color:var(--amber);">+ more coming</span>
+<section class="section" id="tools">
+  <div class="section-eyebrow">Tool suite</div>
+  <h2>Every tool you need,<br><em>nothing you don't</em></h2>
+  <p class="section-sub">ReRadar is built around real workflows — not feature checklists. Every tool solves a specific problem that real estate professionals face every day.</p>
+  <div class="split-section">
+    <div class="split-col res">
+      <div class="split-header">
+        <div class="split-icon res"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 9L10 2L18 9V18H13V13H7V18H2V9Z" stroke="#7FB3A6" stroke-width="1.5" stroke-linejoin="round" fill="none"/></svg></div>
+        <div><div class="split-title">Residential</div><div class="split-subtitle">For investors at every level</div></div>
+      </div>
+      <div class="tool-list">
+        <a href="/tools/property-lookup" class="tool-item"><div class="tool-item-icon res"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#7FB3A6" stroke-width="1.3" fill="none"/><line x1="11" y1="11" x2="14" y2="14" stroke="#7FB3A6" stroke-width="1.3" stroke-linecap="round"/></svg></div><div><div class="tool-item-name">Property Lookup & Analysis</div><div class="tool-item-desc">Search any address. Plain-English view for beginners, full cash flow model for pros.</div></div><span class="tool-badge badge-live">Live</span></a>
+        <a href="/tools/deal-analyzer" class="tool-item"><div class="tool-item-icon res"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="#7FB3A6" stroke-width="1.3" fill="none"/><path d="M5 9l2 2 4-4" stroke="#7FB3A6" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="tool-item-name">Deal Analyzer</div><div class="tool-item-desc">Cap rate, cash-on-cash, GRM, DSCR, and a plain-English verdict on any deal.</div></div><span class="tool-badge badge-live">Live</span></a>
+        <a href="/tools/brrrr" class="tool-item"><div class="tool-item-icon res"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13V6l5-4 5 4v7" stroke="#7FB3A6" stroke-width="1.3" stroke-linejoin="round" fill="none"/><rect x="6" y="9" width="4" height="4" rx=".5" stroke="#7FB3A6" stroke-width="1.3" fill="none"/></svg></div><div><div class="tool-item-name">BRRRR Calculator</div><div class="tool-item-desc">Model the full Buy, Rehab, Rent, Refinance, Repeat cycle with infinite return detection.</div></div><span class="tool-badge badge-live">Live</span></a>
+        <a href="/tools/str-analyzer" class="tool-item"><div class="tool-item-icon res"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 5h12M2 8h8M2 11h6" stroke="#7FB3A6" stroke-width="1.3" stroke-linecap="round"/></svg></div><div><div class="tool-item-name">STR vs Long-Term Rental</div><div class="tool-item-desc">Which strategy pencils better — Airbnb or traditional rental? Side-by-side comparison.</div></div><span class="tool-badge badge-live">Live</span></a>
+        <a href="/tools/neighborhood" class="tool-item"><div class="tool-item-icon res"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#7FB3A6" stroke-width="1.3" fill="none"/><path d="M8 5v3l2 2" stroke="#7FB3A6" stroke-width="1.3" stroke-linecap="round"/></svg></div><div><div class="tool-item-name">Neighborhood Scorecard</div><div class="tool-item-desc">Crime, schools, walkability, job growth, and rent trends for any address.</div></div><span class="tool-badge badge-live">Live</span></a>
+        <a href="/tools/market-timing" class="tool-item"><div class="tool-item-icon res"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polyline points="2,12 5,8 8,10 11,5 14,7" stroke="#7FB3A6" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div><div><div class="tool-item-name">Market Timing Dashboard</div><div class="tool-item-desc">Which zip codes nationally are heating up or cooling based on real listing data.</div></div><span class="tool-badge badge-live">Live</span></a>
+      </div>
     </div>
-  </div>
-</div>
-
-<section id="tools">
-  <div class="section-label">Tool suite</div>
-  <h2>Every lens on the capital stack</h2>
-  <p class="section-sub">Five tools built for the workflows that actually eat your day.</p>
-  <div class="tool-grid">
-    <a href="/tools/maturity-radar" class="tool-card live">
-      <span class="tool-tag">LIVE</span>
-      <div class="tool-icon icon-blue">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="3" rx="1.5" fill="#1B4FD8" opacity=".2"/><rect x="2" y="4" width="10" height="3" rx="1.5" fill="#1B4FD8"/><rect x="2" y="9" width="16" height="3" rx="1.5" fill="#1B4FD8" opacity=".2"/><rect x="2" y="9" width="6" height="3" rx="1.5" fill="#1B4FD8"/><rect x="2" y="14" width="16" height="3" rx="1.5" fill="#1B4FD8" opacity=".2"/><rect x="2" y="14" width="13" height="3" rx="1.5" fill="#1B4FD8"/></svg>
+    <div class="split-col com">
+      <div class="split-header">
+        <div class="split-icon com"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="1.5" stroke="#7FA0C8" stroke-width="1.5" fill="none"/><path d="M6 5V3H14V5" stroke="#7FA0C8" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg></div>
+        <div><div class="split-title">Commercial</div><div class="split-subtitle">For brokers, principals & debt pros</div></div>
       </div>
-      <div class="tool-name">CMBS Maturity Radar</div>
-      <div class="tool-desc">Screen CMBS loans maturing in the next 0–24 months. Filter by market, asset type, and loan size. Get AI-written outreach for every prospect.</div>
-      <div class="tool-meta"><span class="live-badge badge-live">Live</span><span class="tool-arrow">→</span></div>
-    </a>
-    <a href="/tools/distress" class="tool-card live">
-      <span class="tool-tag">LIVE</span>
-      <div class="tool-icon icon-red">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#991B1B" stroke-width="1.5" opacity=".3"/><path d="M10 6v4l3 2" stroke="#991B1B" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="10" r="2" fill="#991B1B"/></svg>
+      <div class="tool-list">
+        <a href="/tools/maturity-radar" class="tool-item"><div class="tool-item-icon com"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#7FA0C8" stroke-width="1.3" fill="none"/><circle cx="8" cy="8" r="3" stroke="#7FA0C8" stroke-width="1.3" fill="none"/><circle cx="8" cy="8" r="1" fill="#7FA0C8"/></svg></div><div><div class="tool-item-name">CMBS Maturity Radar</div><div class="tool-item-desc">Screen loans maturing 0–24 months out. All asset classes, all markets, nationally.</div></div><span class="tool-badge badge-live">Live</span></a>
+        <a href="/tools/distress" class="tool-item"><div class="tool-item-icon com"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v5l3 3" stroke="#7FA0C8" stroke-width="1.3" stroke-linecap="round"/><circle cx="8" cy="8" r="6" stroke="#7FA0C8" stroke-width="1.3" fill="none" opacity=".5"/></svg></div><div><div class="tool-item-name">Distress Monitor</div><div class="tool-item-desc">Special servicing, watchlist additions, DSCR breaches — national coverage.</div></div><span class="tool-badge badge-live">Live</span></a>
+        <a href="/tools/lp-radar" class="tool-item"><div class="tool-item-icon com"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="6" cy="6" r="3" stroke="#7FA0C8" stroke-width="1.3" fill="none"/><circle cx="12" cy="5" r="2" stroke="#7FA0C8" stroke-width="1.3" fill="none"/><circle cx="12" cy="12" r="2" stroke="#7FA0C8" stroke-width="1.3" fill="none"/></svg></div><div><div class="tool-item-name">LP / Capital Raising Radar</div><div class="tool-item-desc">Active funds by deployment stage. Know who has dry powder before they're in deals.</div></div><span class="tool-badge badge-live">Live</span></a>
+        <a href="/tools/market-intel" class="tool-item"><div class="tool-item-icon com"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="9" width="2" height="5" rx=".5" fill="#7FA0C8" opacity=".4"/><rect x="6" y="6" width="2" height="8" rx=".5" fill="#7FA0C8" opacity=".6"/><rect x="10" y="3" width="2" height="11" rx=".5" fill="#7FA0C8"/></svg></div><div><div class="tool-item-name">Market Intel</div><div class="tool-item-desc">Cap rates, supply pipeline, rent growth, and vacancy across every major US market.</div></div><span class="tool-badge badge-live">Live</span></a>
+        <a href="/tools/underwriting" class="tool-item"><div class="tool-item-icon com"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1.5" stroke="#7FA0C8" stroke-width="1.3" fill="none"/><path d="M5 8h6M5 5h6M5 11h4" stroke="#7FA0C8" stroke-width="1.3" stroke-linecap="round"/></svg></div><div><div class="tool-item-name">Deal Underwriting</div><div class="tool-item-desc">IRR, NOI, debt sizing, and returns modeling for any commercial asset class.</div></div><span class="tool-badge badge-live">Live</span></a>
+        <a href="/tools/ownership" class="tool-item"><div class="tool-item-icon com"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="#7FA0C8" stroke-width="1.3" fill="none"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#7FA0C8" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg></div><div><div class="tool-item-name">Property Ownership Lookup</div><div class="tool-item-desc">Who owns any commercial property — entity info from county records and public filings.</div></div><span class="tool-badge badge-live">Live</span></a>
       </div>
-      <div class="tool-name">Distress Monitor</div>
-      <div class="tool-desc">Track CMBS watchlist loans, special servicing transfers, DSCR breaches, and occupancy drops across California submarkets.</div>
-      <div class="tool-meta"><span class="live-badge badge-live">Live</span><span class="tool-arrow">→</span></div>
-    </a>
-    <a href="/tools/lp-radar" class="tool-card live">
-      <span class="tool-tag">LIVE</span>
-      <div class="tool-icon icon-green">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="7" cy="7" r="3" stroke="#0D7E5A" stroke-width="1.5"/><circle cx="14" cy="5" r="2" stroke="#0D7E5A" stroke-width="1.5"/><circle cx="14" cy="14" r="2" stroke="#0D7E5A" stroke-width="1.5"/><path d="M10 7h2M10 8.5l4 4" stroke="#0D7E5A" stroke-width="1" stroke-linecap="round"/></svg>
-      </div>
-      <div class="tool-name">LP / Capital Raising</div>
-      <div class="tool-desc">Map active California funds by deployment stage. Identify who has dry powder and needs to deploy capital before their window closes.</div>
-      <div class="tool-meta"><span class="live-badge badge-live">Live</span><span class="tool-arrow">→</span></div>
-    </a>
-    <a href="/tools/market-intel" class="tool-card live">
-      <div class="tool-icon icon-amber">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="11" width="3" height="6" rx="1" fill="#92500A" opacity=".3"/><rect x="8" y="7" width="3" height="10" rx="1" fill="#92500A" opacity=".6"/><rect x="13" y="4" width="3" height="13" rx="1" fill="#92500A"/><path d="M4 9l4-3 4 2 4-4" stroke="#92500A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-      <div class="tool-name">Market Intel</div>
-      <div class="tool-desc">Submarket cap rate trends, new supply pipelines, rent growth, and transaction comps across all California markets.</div>
-      <div class="tool-meta"><span class="live-badge badge-live">Live</span><span class="tool-arrow">→</span></div>
-    </a>
-    <a href="/tools/crm" class="tool-card live">
-      <div class="tool-icon icon-purple">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="10" rx="2" stroke="#6D28D9" stroke-width="1.5"/><path d="M6 8h8M6 11h5" stroke="#6D28D9" stroke-width="1.5" stroke-linecap="round"/><circle cx="15" cy="15" r="3" fill="#6D28D9"/><path d="M14 15h2M15 14v2" stroke="#fff" stroke-width="1" stroke-linecap="round"/></svg>
-      </div>
-      <div class="tool-name">Outreach CRM</div>
-      <div class="tool-desc">Track every borrower, LP, and lender contact. Log calls, set follow-up triggers, and never let a hot lead go cold.</div>
-      <div class="tool-meta"><span class="live-badge badge-live">Live</span><span class="tool-arrow">→</span></div>
-    </a>
-    <div class="tool-card" style="border-style:dashed;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:180px;">
-      <div style="font-size:24px;color:var(--border);margin-bottom:10px;">+</div>
-      <div style="font-size:13px;color:var(--muted);">More tools in development</div>
     </div>
   </div>
 </section>
 
-<section id="how" style="padding-top:0;">
-  <div class="section-label">How it works</div>
-  <h2>From public data to booked call</h2>
-  <p class="section-sub" style="margin-bottom:32px;">The full pipeline, automated.</p>
+<hr class="divider"/>
+
+<section class="section" id="how">
+  <div class="section-eyebrow">How it works</div>
+  <h2>Built for the way<br><em>real estate actually works</em></h2>
+  <p class="section-sub" style="margin-bottom:32px">ReRadar pulls from public data sources across the web and surfaces what matters — no CoStar subscription required.</p>
   <div class="how-grid">
-    <div class="how-step"><div class="step-num">01 — Ingest</div><div class="step-title">Public data pulled automatically</div><div class="step-desc">CMBS filings, EDGAR Form D, Census permits, and FRED macro data updated continuously.</div></div>
-    <div class="how-step"><div class="step-num">02 — Screen</div><div class="step-title">AI scores every opportunity</div><div class="step-desc">Loans ranked by urgency, risk signals, LTV, DSCR trend, and maturity proximity.</div></div>
-    <div class="how-step"><div class="step-num">03 — Generate</div><div class="step-title">Outreach written for each deal</div><div class="step-desc">Claude reads the deal details and writes a personalized first email specific to each borrower.</div></div>
-    <div class="how-step" style="border-right:none;"><div class="step-num">04 — Track</div><div class="step-title">Pipeline stays warm automatically</div><div class="step-desc">CRM tracks every contact. Follow-up triggers fire when new signals appear.</div></div>
+    <div class="how-step"><div class="how-num">01 — Search</div><div class="how-title">Enter any address or market</div><div class="how-desc">Search a property address, zip code, city, or submarket. ReRadar pulls from county records, CMBS filings, and public market sources.</div></div>
+    <div class="how-step"><div class="how-num">02 — Analyze</div><div class="how-title">Get instant intelligence</div><div class="how-desc">Simple overview for beginners. Full model for pros. Every number explained in plain English — no finance degree required.</div></div>
+    <div class="how-step"><div class="how-num">03 — Screen</div><div class="how-title">Find the opportunities</div><div class="how-desc">Monitor distress signals, maturing loans, and active buyers. Surface deals before they hit the market.</div></div>
+    <div class="how-step" style="border-right:none"><div class="how-num">04 — Decide</div><div class="how-title">Data-backed decisions</div><div class="how-desc">Whether you're buying your first rental or sourcing your next acquisition target, leave with a clear picture of the numbers.</div></div>
   </div>
 </section>
 
-<div class="cta-band">
-  <div class="cta-text"><h3>Built for California capital markets</h3><p>Free to use. All five tools are live at reradar.co.</p></div>
-  <div class="cta-actions">
-    <a href="/tools/maturity-radar" class="btn-white">Launch the tool</a>
-    <a href="/tools/distress" class="btn-outline-white">View distress signals</a>
+<hr class="divider"/>
+
+<section class="section" id="who">
+  <div class="section-eyebrow">Who it's for</div>
+  <h2>One platform,<br><em>every seat at the table</em></h2>
+  <p class="section-sub" style="margin-bottom:40px">ReRadar meets you where you are — whether you're just getting started or you've been in the market for 20 years.</p>
+  <div class="audience-grid">
+    <div class="audience-card"><div class="audience-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2a4 4 0 100 8 4 4 0 000-8zM4 18c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg></div><div class="audience-title">First-time investors</div><div class="audience-desc">ReRadar explains every number in plain English and tells you what it actually means for your investment. No finance degree needed.</div></div>
+    <div class="audience-card"><div class="audience-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="8" width="14" height="9" rx="1.5" stroke="#C9A84C" stroke-width="1.5" fill="none"/><path d="M7 8V5a3 3 0 016 0v3" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg></div><div class="audience-title">Active investors & operators</div><div class="audience-desc">Model new acquisitions, benchmark your portfolio, and find your next deal before anyone else does.</div></div>
+    <div class="audience-card"><div class="audience-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 17l4-4 4 2 6-8" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div><div class="audience-title">Brokers</div><div class="audience-desc">Surface prospecting opportunities, market data, and ownership info so you can focus on relationships, not research.</div></div>
+    <div class="audience-card"><div class="audience-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="1.5" stroke="#C9A84C" stroke-width="1.5" fill="none"/><path d="M6 5V3h8v2" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg></div><div class="audience-title">Acquisitions & principals</div><div class="audience-desc">Screen deals faster, underwrite with real market assumptions, and track distress and capital flows in one place.</div></div>
+    <div class="audience-card"><div class="audience-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#C9A84C" stroke-width="1.5" fill="none"/><path d="M7 10l2 2 4-4" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div><div class="audience-title">Debt & equity professionals</div><div class="audience-desc">Monitor the loan maturity calendar, track distress, and identify borrowers who need capital before your competitors do.</div></div>
+    <div class="audience-card"><div class="audience-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3v14M3 10h14" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="audience-title">Anyone curious about real estate</div><div class="audience-desc">Never bought a property but thinking about it? ReRadar is designed to be understood by anyone. Start with a property lookup.</div></div>
   </div>
+</section>
+
+<div class="cta-section">
+  <div class="cta-text"><h3>Start exploring<br><em>the market today</em></h3><p>Free to use. No account required.<br>All tools available at reradar.co.</p></div>
+  <div class="cta-actions"><a href="/tools/property-lookup" class="cta-btn-res">Residential tools</a><a href="/tools/maturity-radar" class="cta-btn-com">Commercial tools</a></div>
 </div>
 
 <footer>
   <div class="footer-logo">Re<span>Radar</span></div>
   <div class="footer-links"><a href="#" class="footer-link">Privacy</a><a href="#" class="footer-link">Terms</a><a href="#" class="footer-link">Contact</a></div>
-  <div class="footer-copy">© 2026 ReRadar · reradar.co · San Diego, CA</div>
+  <div class="footer-copy">© 2026 ReRadar · reradar.co</div>
 </footer>
 </body>
 </html>
