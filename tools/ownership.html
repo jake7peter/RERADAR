@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ownership Lookup — ReRadar</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../shared.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg:#141414; --bg2:#1C1C1C; --bg3:#242424;
-      --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.14);
-      --text:#F0EDE8; --text2:#A8A49E; --text3:#6B6760;
-      --gold:#C9A84C; --com:#4A6490; --com-light:#7FA0C8; --com-dim:rgba(74,100,144,0.12);
+      --bg:#F7F4EF; --bg2:#FFFFFF; --bg3:#F0EDE8;
+      --border:rgba(0,0,0,0.08); --border2:rgba(0,0,0,0.14);
+      --text:#1A1714; --text2:#6B6357; --text3:#9C9289;
+      --gold:#C9A84C; --com:#3D5478; --com-light:#5A7AAA; --com-dim:rgba(61,84,120,0.10);
     }
-    html,body { min-height:100%; background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; }
+    html,body { min-height:100%; background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; }
     nav { display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:var(--bg2); border-bottom:1px solid var(--border); }
     .logo { display:flex; align-items:center; gap:8px; text-decoration:none; }
     .logo-mark { width:28px; height:28px; border-radius:5px; background:var(--gold); display:flex; align-items:center; justify-content:center; }
@@ -33,10 +34,10 @@
     .search-box { background:var(--bg2); border:1px solid var(--border2); border-radius:12px; padding:24px 28px; margin-bottom:32px; display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; }
     .sf { flex:1; min-width:240px; }
     .sf label { font-size:11px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; display:block; margin-bottom:8px; }
-    .sf input { width:100%; padding:11px 14px; background:var(--bg3); border:1px solid var(--border); border-radius:7px; color:var(--text); font-family:'Outfit',sans-serif; font-size:14px; outline:none; transition:border-color .2s; }
+    .sf input { width:100%; padding:11px 14px; background:var(--bg3); border:1px solid var(--border); border-radius:7px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px; outline:none; transition:border-color .2s; }
     .sf input:focus { border-color:var(--com); }
     .sf input::placeholder { color:var(--text3); }
-    .search-btn { padding:11px 24px; background:var(--com); color:var(--text); border:none; border-radius:7px; font-size:14px; font-weight:500; cursor:pointer; font-family:'Outfit',sans-serif; transition:all .2s; }
+    .search-btn { padding:11px 24px; background:var(--com); color:var(--text); border:none; border-radius:7px; font-size:14px; font-weight:500; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .2s; }
     .search-btn:hover { background:var(--com-light); color:var(--bg); }
     .search-btn:disabled { opacity:.5; cursor:not-allowed; }
 
@@ -93,21 +94,17 @@
   </style>
 </head>
 <body>
-<nav>
-  <a href="/" class="logo">
-    <div class="logo-mark"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2.5" fill="#141414"/><circle cx="7" cy="7" r="5" stroke="#141414" stroke-width="1.2" fill="none" opacity=".6"/></svg></div>
-    <span class="logo-text">Re<span>Radar</span></span>
-  </a>
-  <div class="nav-tools">
-    <a href="/tools/maturity-radar" class="tool-link">Maturity Radar</a>
-    <a href="/tools/distress" class="tool-link">Distress Monitor</a>
-    <a href="/tools/lp-radar" class="tool-link">LP Radar</a>
-    <a href="/tools/market-intel" class="tool-link">Market Intel</a>
-    <a href="/tools/underwriting" class="tool-link">Underwriting</a>
-    <a href="/tools/ownership" class="tool-link active">Ownership</a>
-    <a href="/" class="tool-link">Residential →</a>
-  </div>
-</nav>
+<div class="app-shell">
+  <nav class="sidebar"></nav>
+  <div class="main-content">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-eyebrow">Commercial</div>
+        <div class="topbar-title">Ownership Lookup</div>
+      </div>
+      <div class="topbar-right"><span class="topbar-tag com">Commercial</span></div>
+    </div>
+    <div class="page-body">
 
 <div class="page">
   <div class="page-eyebrow">Commercial · Property Intelligence</div>
@@ -275,5 +272,9 @@ function renderOwnership(d) {
     </div>`;
 }
 </script>
+</div></div></div>
+<button class="sidebar-toggle">☰</button>
+<script src="../shared.js"></script>
+<script>buildSidebar("ownership");</script>
 </body>
 </html>
