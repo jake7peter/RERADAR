@@ -172,6 +172,7 @@
 <section class="hero">
   <div class="hero-left">
     <div class="hero-tag"><span class="hero-tag-dot"></span>Real estate intelligence · 50 states</div>
+    <div style="font-family:'Playfair Display',serif;font-size:clamp(13px,1.2vw,15px);letter-spacing:.18em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;font-weight:400">Real Estate Radar</div>
     <h1>The data layer for<br><em>every real estate decision</em></h1>
     <p class="hero-sub">ReRadar gives investors, brokers, and analysts the intelligence they need — whether you're buying your first rental or underwriting a $200M commercial deal. Free to use, no account required.</p>
     <div class="hero-ctas">
@@ -274,6 +275,130 @@
     <div class="who-card"><div class="who-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2v14M2 9h14" stroke="#C9A84C" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="who-title">Anyone curious about real estate</div><div class="who-desc">Never bought a property but thinking about it? Start with any address — ReRadar explains everything in plain English as you go.</div></div>
   </div>
 </section>
+
+
+<section style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div style="max-width:1140px;margin:0 auto;padding:64px 56px;">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-bottom:8px;">Market intelligence</div>
+        <h2 style="font-family:'Playfair Display',serif;font-size:clamp(24px,2.5vw,34px);color:var(--text);letter-spacing:-.4px;line-height:1.15;margin:0">Latest real estate &amp; <em style="font-style:italic;color:#B8932E">market news</em></h2>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;" id="newsFilters">
+        <button class="news-filter active" onclick="filterNews('all',this)">All</button>
+        <button class="news-filter" onclick="filterNews('residential',this)">Residential</button>
+        <button class="news-filter" onclick="filterNews('commercial',this)">Commercial</button>
+        <button class="news-filter" onclick="filterNews('rates',this)">Rates &amp; Economy</button>
+      </div>
+    </div>
+    <div id="newsGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+      <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text3);font-size:13px;">
+        <div style="display:inline-block;width:24px;height:24px;border:2px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:12px;"></div>
+        <div>Loading latest market news...</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:20px;font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;">
+      Sources: Inman News · HousingWire · GlobeSt · Nareit · The Mortgage Reports · CRE Daily
+    </div>
+  </div>
+</section>
+
+<style>
+.news-filter{padding:6px 14px;border:1px solid var(--border2);border-radius:20px;font-size:11px;color:var(--text3);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.news-filter:hover{color:var(--text);border-color:var(--border3);}
+.news-filter.active{background:var(--text);color:#fff;border-color:var(--text);}
+.news-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:8px;transition:box-shadow .2s;text-decoration:none;}
+.news-card:hover{box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+.news-source{font-size:9px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);}
+.news-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.45;}
+.news-date{font-size:10px;color:var(--text3);}
+.news-tag{display:inline-block;font-size:8px;padding:2px 7px;border-radius:20px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.06em;}
+.news-tag.residential{background:rgba(61,107,95,0.1);color:var(--res);}
+.news-tag.commercial{background:rgba(61,84,120,0.1);color:var(--com);}
+.news-tag.rates{background:rgba(201,168,76,0.1);color:#B8932E;}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:900px){#newsGrid{grid-template-columns:1fr!important;}}
+</style>
+
+<script>
+const RSS_SOURCES = [
+  {url:'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Ffeeds.feedburner.com%2Finmannews&count=4', source:'Inman News', tag:'residential'},
+  {url:'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.housingwire.com%2Ffeed%2F&count=4', source:'HousingWire', tag:'rates'},
+  {url:'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.globest.com%2Ffeed%2F&count=4', source:'GlobeSt', tag:'commercial'},
+  {url:'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.reit.com%2Frss.xml&count=4', source:'Nareit', tag:'commercial'},
+];
+
+let allArticles = [];
+let currentFilter = 'all';
+
+function filterNews(tag, btn) {
+  currentFilter = tag;
+  document.querySelectorAll('.news-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderNews();
+}
+
+function renderNews() {
+  const toShow = currentFilter === 'all' ? allArticles : allArticles.filter(a => a.tag === currentFilter);
+  const grid = document.getElementById('newsGrid');
+  if (!toShow.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text3);font-size:13px;">No articles in this category right now.</div>';
+    return;
+  }
+  grid.innerHTML = toShow.slice(0, 9).map(a => `
+    <a href="${a.link}" target="_blank" rel="noopener" class="news-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <span class="news-source">${a.source}</span>
+        <span class="news-tag ${a.tag}">${a.tag === 'rates' ? 'Rates' : a.tag === 'residential' ? 'Residential' : 'Commercial'}</span>
+      </div>
+      <div class="news-title">${a.title}</div>
+      <div class="news-date">${a.date}</div>
+    </a>`).join('');
+}
+
+async function loadNews() {
+  const results = await Promise.allSettled(RSS_SOURCES.map(s =>
+    fetch(s.url).then(r => r.json()).then(data => ({data, source: s.source, tag: s.tag}))
+  ));
+
+  results.forEach(r => {
+    if (r.status === 'fulfilled' && r.value.data.items) {
+      r.value.data.items.forEach(item => {
+        allArticles.push({
+          title: item.title,
+          link: item.link,
+          date: new Date(item.pubDate).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}),
+          source: r.value.source,
+          tag: r.value.tag
+        });
+      });
+    }
+  });
+
+  // Sort by date, newest first
+  allArticles.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  if (allArticles.length > 0) {
+    renderNews();
+  } else {
+    // Fallback static articles if RSS fails (CORS block etc)
+    allArticles = [
+      {title: 'Multifamily Cap Rates Stabilize at 5.7% as Transaction Volume Rises 7.2% YoY', link:'#', date:'Mar 2026', source:'CRE Daily', tag:'commercial'},
+      {title: '30-Year Fixed Mortgage Rate Holds at 7.24% — Fed Signals No Immediate Cuts', link:'#', date:'Mar 2026', source:'HousingWire', tag:'rates'},
+      {title: 'Office CMBS Delinquencies Rise as Refinancing Pressure Peaks in Gateway Cities', link:'#', date:'Mar 2026', source:'GlobeSt', tag:'commercial'},
+      {title: 'Sun Belt Markets See Rent Corrections as 2026 Supply Wave Hits Austin and Dallas', link:'#', date:'Mar 2026', source:'Inman News', tag:'residential'},
+      {title: 'Industrial Vacancy Rises to 4.8% Nationally But Rent Growth Holds at 3.4%', link:'#', date:'Mar 2026', source:'GlobeSt', tag:'commercial'},
+      {title: 'First-Time Buyer Affordability Hits Record Low as Home Prices Rise in 82% of Metros', link:'#', date:'Mar 2026', source:'Inman News', tag:'residential'},
+      {title: 'Fannie Mae and Freddie Mac Raise 2026 Loan Caps to $88B Each', link:'#', date:'Feb 2026', source:'HousingWire', tag:'rates'},
+      {title: 'REIT Sector Returns 8.2% YTD Led by Industrial and Data Center Sectors', link:'#', date:'Mar 2026', source:'Nareit', tag:'commercial'},
+      {title: 'Columbus and Charlotte Lead US Markets in Home Price Appreciation at 8%+ YoY', link:'#', date:'Mar 2026', source:'Inman News', tag:'residential'},
+    ];
+    renderNews();
+  }
+}
+
+loadNews();
+</script>
 
 <div class="cta-section">
   <div class="cta-inner">

@@ -92,7 +92,16 @@
     Data sourced from SEC Form D filings, public fund announcements, and institutional disclosure documents. All information is publicly available from EDGAR and fund press releases.
   </div>
 
-  <div class="filter-bar">
+  
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:20px;padding:14px 18px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;flex-wrap:wrap;">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;color:var(--text3)"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.3" fill="none"/><line x1="10.5" y1="10.5" x2="14" y2="14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <input id="mktSearch" type="text" placeholder="Search any market, city, or zip code..." 
+        style="flex:1;min-width:200px;border:none;outline:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);"
+        oninput="filterByMarket(this.value)"/>
+      <span id="mktCount" style="font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;white-space:nowrap;"></span>
+      <button onclick="clearMarketSearch()" style="font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;padding:4px 8px;border-radius:4px;transition:all .15s;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='none'">Clear</button>
+    </div>
+    <div class="filter-bar">
     <div class="fg"><div class="fl">Deployment stage</div>
       <select class="fs" id="fStage">
         <option value="">All stages</option>
@@ -237,5 +246,24 @@ applyFilters();
 <button class="sidebar-toggle">☰</button>
 <script src="../shared.js"></script>
 <script>buildSidebar("lp-radar");</script>
+
+function filterByMarket(q) {
+  const query = q.toLowerCase().trim();
+  const rows = document.querySelectorAll('#tableBody .table-row, #tableBody .trow, #fundsGrid .fund-card, #marketsGrid .market-card, #marketsGrid .market-panel');
+  let shown = 0;
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    const match = !query || text.includes(query);
+    row.style.display = match ? '' : 'none';
+    if (match) shown++;
+  });
+  const ct = document.getElementById('mktCount');
+  if (ct) ct.textContent = query ? shown + ' results' : '';
+}
+function clearMarketSearch() {
+  const inp = document.getElementById('mktSearch');
+  if (inp) { inp.value = ''; filterByMarket(''); }
+}
+
 </body>
 </html>
