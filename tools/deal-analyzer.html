@@ -2,43 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23C9A84C'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%231A1714'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%231A1714' stroke-width='2' fill='none' opacity='.6'/%3E%3Ccircle cx='16' cy='16' r='14' stroke='%231A1714' stroke-width='1.5' fill='none' opacity='.3'/%3E%3C/svg%3E"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23C9A84C'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%231A1714'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%231A1714' stroke-width='2' fill='none' opacity='.6'/%3E%3Ccircle cx='16' cy='16' r='14' stroke='%231A1714' stroke-width='1.5' fill='none' opacity='.3'/%3E%3C/svg%3E"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Deal Analyzer — ReRadar</title>
   <link rel="stylesheet" href="../shared.css"/>
-  <style>
-    .analyzer-wrap{display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start}
-    .ip-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-    .ip-label{font-size:13px;color:var(--text2)}
-    .ip-input{width:110px;padding:6px 10px;background:var(--bg);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-family:'JetBrains Mono',sans-serif;font-size:13px;text-align:right;outline:none;transition:border-color .15s}
-    .ip-input:focus{border-color:var(--res)}
-    .ip-section-title{font-size:9px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:12px;margin-top:20px}
-    .ip-section-title:first-child{margin-top:0}
-    .yr-scroll{overflow-x:auto}
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 </head>
 <body>
 <div class="app-shell">
   <nav class="sidebar"></nav>
   <div class="main-content">
+
     <div class="topbar">
-      <button class="topbar-menu-btn" onclick="toggleSidebar()" style="display:none;background:none;border:none;color:var(--text2);cursor:pointer;padding:6px 10px;font-size:20px;line-height:1;border-radius:5px;transition:background .12s;">&#9776;</button>
+      <button class="topbar-menu-btn" onclick="toggleSidebar()">&#9776;</button>
       <div class="topbar-left">
         <div class="topbar-eyebrow">Residential · Investment Analysis</div>
         <div class="topbar-title">Deal Analyzer</div>
       </div>
       <div class="topbar-right">
         <span class="topbar-tag res">Residential</span>
-        <span id="rateDisplay" style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:5px;"><span style="width:5px;height:5px;border-radius:50%;background:#4A8578;flex-shrink:0;"></span><span>Live</span></span>
+        <span id="rateDisplay" style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:5px;"><span style="width:5px;height:5px;border-radius:50%;background:#4A8578;flex-shrink:0;animation:livepulse 2s infinite;"></span><span>Live</span></span>
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:0;padding:8px 20px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text3);">
+
+    <div style="display:flex;align-items:center;padding:7px 20px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text3);">
       <span style="font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-right:10px;">Sources</span>
       <span>FRED (live rates) · Zillow Research · Redfin Data Center</span>
       <span style="margin-left:auto;color:var(--text4);">As of March 2026</span>
     </div>
+
     <div class="page-body">
-      <div class="page-hero"><p class="page-sub">Cap rate, CoC, DSCR, monthly cash flow, and 10-year projection on any deal.</p></div>
-      <div class="analyzer-wrap">
+      <div style="margin-bottom:20px;">
+        <div class="page-eyebrow">Residential · Investment Analysis</div>
+        <div class="page-title">Deal Analyzer</div>
+        <p class="page-sub">Enter any deal's numbers and instantly get cap rate, CoC, DSCR, monthly cash flow, 10-year projection, and a plain-English verdict.</p>
+      </div>
+
+<div class="analyzer-wrap">
         <div class="card">
           <div class="card-header"><div class="card-title">Deal inputs</div></div>
           <div class="card-body">
@@ -74,167 +74,93 @@
     </div>
   </div>
 </div>
+<button class="sidebar-toggle">☰</button>
+
+    </div>
+
+    <footer class="tool-footer">
+      <div class="tf-left">
+        <span class="tf-logo">Re<span>Radar</span></span>
+        <a href="/about" class="tf-link">About</a>
+        <a href="/privacy" class="tf-link">Privacy</a>
+        <a href="/terms" class="tf-link">Terms</a>
+        <a href="mailto:hello@reradar.co" class="tf-link">Contact</a>
+      </div>
+      <div class="tf-copy">© 2026 ReRadar · reradar.co</div>
+    </footer>
+
+  </div>
+</div>
+
 <script src="../shared.js"></script>
 <script>
-buildSidebar('deal-analyzer');
-fetchMortgageRate().then(r=>{document.getElementById('iRate').value=r.toFixed(2);document.getElementById('rateDisplay').textContent='30yr fixed: '+r.toFixed(2)+'% (FRED live)';});
+buildSidebar("deal-analyzer");
 
-function analyze(){
-  const price=+document.getElementById('iPrice').value||0;
-  const downPct=+document.getElementById('iDown').value/100;
-  const closing=+document.getElementById('iClose').value||0;
-  const rehab=+document.getElementById('iRehab').value||0;
-  const rate=+document.getElementById('iRate').value/100;
-  const term=+document.getElementById('iTerm').value||30;
-  const rent=+document.getElementById('iRent').value||0;
-  const other=+document.getElementById('iOther').value||0;
-  const vacPct=+document.getElementById('iVac').value/100;
-  const tax=+document.getElementById('iTax').value||0;
-  const ins=+document.getElementById('iIns').value||0;
-  const mgmtPct=+document.getElementById('iMgmt').value/100;
-  const maintPct=+document.getElementById('iMaint').value/100;
-  const capexPct=+document.getElementById('iCapex').value/100;
-  const hoa=+document.getElementById('iHoa').value||0;
-  const rentGrowth=+document.getElementById('iRentGrowth').value/100;
-  const appPct=+document.getElementById('iAppreciation').value/100;
+// Live rate
+if(typeof fetchMortgageRate==='function') fetchMortgageRate().then(function(r){
+  var el=document.getElementById('rateDisplay');
+  if(el) el.innerHTML='<span style="width:5px;height:5px;border-radius:50%;background:#4A8578;flex-shrink:0;animation:livepulse 2s infinite;"></span><span>30yr: '+r.toFixed(2)+'%</span>';
+});
 
-  const loan=price*(1-downPct);
-  const downAmt=price*downPct;
-  const totalIn=downAmt+closing+rehab;
-  const mortgage=Math.round(calcMortgage(loan,rate,term));
-  const grossIncome=rent+other;
-  const vacLoss=grossIncome*vacPct;
-  const effectiveIncome=grossIncome-vacLoss;
-  const mgmtAmt=rent*mgmtPct;
-  const maintAmt=rent*maintPct;
-  const capexAmt=rent*capexPct;
-  const totalExp=tax+ins+mgmtAmt+maintAmt+capexAmt+hoa;
-  const noiM=effectiveIncome-totalExp;
-  const cfM=noiM-mortgage;
-  const cfA=cfM*12;
-  const noiA=noiM*12;
-  const capRate=price>0?noiA/price*100:0;
-  const cocReturn=totalIn>0?cfA/totalIn*100:0;
-  const grm=grossIncome>0?price/(grossIncome*12):0;
-  const dscr=mortgage>0?noiM/mortgage:0;
-  const breakEven=totalExp+mortgage;
-  const depr=annualDepreciation(price);
-
-  // 10-year model
-  const years=[];
-  let bal=loan,cumCF=0;
-  for(let yr=1;yr<=10;yr++){
-    const rg=Math.pow(1+rentGrowth,yr-1);
-    const eg=Math.pow(1.03,yr-1);
-    const grossR=Math.round(grossIncome*12*rg);
-    const vacL=Math.round(grossR*vacPct);
-    const effI=grossR-vacL;
-    const opExp=Math.round(totalExp*12*eg);
-    const noi=effI-opExp;
-    const ds=mortgage*12;
-    const cf=noi-ds;
-    let prinYr=0;
-    for(let m=0;m<12;m++){const int=bal*rate/12;const prin=mortgage-int;prinYr+=prin;bal=Math.max(0,bal-prin);}
-    const propVal=price*Math.pow(1+appPct,yr);
-    cumCF+=cf;
-    years.push({yr,grossR,vacL,effI,opExp,noi,ds,cf,prin:Math.round(prinYr),cumCF:Math.round(cumCF),equity:Math.round(propVal-bal),depr:Math.round(depr)});
-  }
-  const exitVal=price*Math.pow(1+appPct,10);
-  const exitProceeds=exitVal*(1-0.06)-bal;
-  const irrCfs=[-totalIn,...years.map(y=>y.cf),exitProceeds];
-  const irrVal=calcIRR(irrCfs);
-
-  const verdict=cocReturn>6?'strong':cocReturn>2?'moderate':'weak';
-  const vmap={
-    strong:{cls:'strong',icon:'✦',title:'Strong deal',sub:`Generates ${fmt(cfM)}/month (${cocReturn.toFixed(1)}% CoC) on your ${fmt(totalIn)} total investment. ${irrVal.toFixed(1)}% IRR over 10 years.`},
-    moderate:{cls:'moderate',icon:'◈',title:'Marginal deal',sub:`Generates ${fmt(cfM)}/month (${cocReturn.toFixed(1)}% CoC). Works, but tight — make sure rent assumptions are conservative.`},
-    weak:{cls:'weak',icon:'◇',title:'Tough to justify',sub:`${cfM<0?'Negative cash flow of '+fmt(Math.abs(cfM))+'/month':'Near break-even'} at these numbers. Consider negotiating price down or improving rents.`}
-  };
-  const v=vmap[verdict];
-  const vc={strong:'good',moderate:'ok',weak:'bad'}[verdict];
-
-  document.getElementById('results').innerHTML=`
-    <div class="verdict ${v.cls} mb-16">
-      <div class="verdict-icon">${v.icon}</div>
-      <div><div class="verdict-title">${v.title}</div><div class="verdict-text">${v.sub}</div></div>
-    </div>
-    <div class="grid-4 mb-16">
-      <div class="metric-block"><div class="metric-label">Cap Rate</div><div class="metric-value ${vc}">${capRate.toFixed(2)}%</div><div class="metric-note">Good: 5%+</div></div>
-      <div class="metric-block"><div class="metric-label">Cash-on-Cash</div><div class="metric-value ${vc}">${cocReturn.toFixed(1)}%</div><div class="metric-note">Good: 6%+</div></div>
-      <div class="metric-block"><div class="metric-label">Monthly CF</div><div class="metric-value ${vc}">${fmtSign(cfM)}</div><div class="metric-note">After all costs</div></div>
-      <div class="metric-block"><div class="metric-label">GRM</div><div class="metric-value">${grm.toFixed(1)}x</div><div class="metric-note">Under 12x = good</div></div>
-      <div class="metric-block"><div class="metric-label">DSCR</div><div class="metric-value ${dscr>=1.25?'good':dscr>=1?'ok':'bad'}">${dscr.toFixed(2)}x</div><div class="metric-note">Lenders want 1.25x+</div></div>
-      <div class="metric-block"><div class="metric-label">10-yr IRR</div><div class="metric-value ${vc}">${irrVal.toFixed(1)}%</div><div class="metric-note">Total levered return</div></div>
-      <div class="metric-block"><div class="metric-label">Break-even Rent</div><div class="metric-value">${fmt(breakEven)}</div><div class="metric-note">Min to cover all costs</div></div>
-      <div class="metric-block"><div class="metric-label">Total Cash In</div><div class="metric-value">${fmt(totalIn)}</div><div class="metric-note">Down + closing + rehab</div></div>
-    </div>
-    <div class="card mb-16" style="overflow:hidden">
-      <div class="card-header"><div class="card-title">Monthly cash flow breakdown</div></div>
-      <table class="cf-table">
-        <tr class="cf-income"><td>Gross rental income</td><td>${fmt(grossIncome)}</td></tr>
-        <tr class="cf-expense"><td>Vacancy (${(vacPct*100).toFixed(0)}%)</td><td>−${fmt(vacLoss)}</td></tr>
-        <tr class="cf-subtotal"><td>Effective gross income</td><td>${fmt(effectiveIncome)}</td></tr>
-        <tr class="cf-section"><td colspan="2">Operating expenses</td></tr>
-        <tr class="cf-expense"><td>Property taxes</td><td>−${fmt(tax)}</td></tr>
-        <tr class="cf-expense"><td>Insurance</td><td>−${fmt(ins)}</td></tr>
-        <tr class="cf-expense"><td>Property management (${(mgmtPct*100).toFixed(0)}%)</td><td>−${fmt(mgmtAmt)}</td></tr>
-        <tr class="cf-expense"><td>Maintenance (${(maintPct*100).toFixed(0)}%)</td><td>−${fmt(maintAmt)}</td></tr>
-        <tr class="cf-expense"><td>CapEx reserve (${(capexPct*100).toFixed(0)}%)</td><td>−${fmt(capexAmt)}</td></tr>
-        ${hoa>0?`<tr class="cf-expense"><td>HOA</td><td>−${fmt(hoa)}</td></tr>`:''}
-        <tr class="cf-subtotal"><td>Net operating income</td><td>${fmt(noiM)}</td></tr>
-        <tr class="cf-section"><td colspan="2">Debt service</td></tr>
-        <tr class="cf-expense"><td>Mortgage P&I</td><td>−${fmt(mortgage)}</td></tr>
-        <tr class="cf-total"><td>Monthly cash flow</td><td style="color:var(--${cfM>=0?'res':'red'})">${fmtSign(cfM)}</td></tr>
-      </table>
-    </div>
-    <div class="card" style="overflow:hidden">
-      <div class="card-header"><div class="card-title">10-year projection (${(rentGrowth*100).toFixed(1)}% rent growth · ${(appPct*100).toFixed(1)}% appreciation)</div></div>
-      <div style="overflow-x:auto">
-        <table class="yr-table">
-          <thead><tr><th>Line item</th>${years.map(y=>`<th>Yr ${y.yr}</th>`).join('')}</tr></thead>
-          <tbody>
-            <tr class="yr-section"><td colspan="11">Income & NOI</td></tr>
-            <tr><td>Gross rent</td>${years.map(y=>`<td>${fmt(y.grossR)}</td>`).join('')}</tr>
-            <tr><td>Effective income</td>${years.map(y=>`<td>${fmt(y.effI)}</td>`).join('')}</tr>
-            <tr><td>Operating expenses</td>${years.map(y=>`<td class="neg">−${fmt(y.opExp)}</td>`).join('')}</tr>
-            <tr class="yr-highlight"><td>NOI</td>${years.map(y=>`<td>${fmt(y.noi)}</td>`).join('')}</tr>
-            <tr><td>Debt service</td>${years.map(y=>`<td class="neg">−${fmt(y.ds)}</td>`).join('')}</tr>
-            <tr class="yr-total"><td>Annual cash flow</td>${years.map(y=>`<td class="${y.cf>=0?'pos':'neg'}">${fmtSign(y.cf)}</td>`).join('')}</tr>
-            <tr class="yr-section"><td colspan="11">Wealth Building</td></tr>
-            <tr><td>Principal paydown</td>${years.map(y=>`<td class="pos">${fmt(y.prin)}</td>`).join('')}</tr>
-            <tr><td>Depreciation shield</td>${years.map(y=>`<td>${fmt(y.depr)}</td>`).join('')}</tr>
-            <tr><td>Cumulative cash flow</td>${years.map(y=>`<td class="${y.cumCF>=0?'pos':'neg'}">${fmtSign(y.cumCF)}</td>`).join('')}</tr>
-            <tr class="yr-total"><td>Total equity</td>${years.map(y=>`<td class="pos">${fmt(y.equity)}</td>`).join('')}</tr>
-          </tbody>
-        </table>
-      </div>
-    </div>`;
-}
-analyze();
-</script>
-
-<style>
-@keyframes livepulse{0%,100%{opacity:1}50%{opacity:.4}}
-@media(max-width:860px){
-  .sidebar{transform:translateX(-100%);transition:transform .25s;}
-  .sidebar.open{transform:translateX(0);}
-  .main-content{margin-left:0!important;}
-  .topbar-menu-btn{display:flex!important;align-items:center;justify-content:center;}
-  .topbar-tag{display:none;}
-}
-</style>
-<script>
+// Mobile sidebar
 function toggleSidebar(){
   var s=document.querySelector('.sidebar');
   s.classList.toggle('open');
   var ov=document.getElementById('__ov');
-  if(!ov){ov=document.createElement('div');ov.id='__ov';ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:190;';ov.onclick=function(){s.classList.remove('open');ov.style.display='none';};document.body.appendChild(ov);}
+  if(!ov){
+    ov=document.createElement('div');
+    ov.id='__ov';
+    ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:190;';
+    ov.onclick=function(){s.classList.remove('open');ov.style.display='none';};
+    document.body.appendChild(ov);
+  }
   ov.style.display=s.classList.contains('open')?'block':'none';
 }
-if(typeof fetchMortgageRate==='function')fetchMortgageRate().then(function(r){
-  var el=document.getElementById('rateDisplay');
-  if(el)el.innerHTML='<span style="width:5px;height:5px;border-radius:50%;background:#4A8578;flex-shrink:0;animation:livepulse 2s infinite"></span><span>30yr: '+r.toFixed(2)+'%</span>';
-});
+
+// Live search for commercial tools
+function liveSearchFilter(q){
+  var query=q.toLowerCase().trim();
+  var rows=document.querySelectorAll('#tableBody .table-row, #tableBody tr[class], #fundsGrid .fund-card, #marketsGrid .market-panel, #marketsGrid .market-card');
+  var n=0;
+  rows.forEach(function(r){
+    var show=!query||r.textContent.toLowerCase().includes(query);
+    r.style.display=show?'':'none';
+    if(show)n++;
+  });
+  var ct=document.getElementById('searchCount');
+  if(ct)ct.textContent=query?n+' result'+(n!==1?'s':''):'';
+  // Patch newly rendered rows after filter
+  setTimeout(function(){
+    document.querySelectorAll('#tableBody .table-row, #tableBody tr[class], #fundsGrid .fund-card, #marketsGrid .market-panel').forEach(function(r){
+      var orig=r.style.display;
+      if(!q)r.style.display='';
+    });
+  },100);
+}
+function clearLiveSearch(){
+  var inp=document.getElementById('mktSearch');
+  if(inp){inp.value='';liveSearchFilter('');}
+}
+
+// Hook into render functions so search persists after re-renders
+(function(){
+  function hookRender(name){
+    if(typeof window[name]==='function'){
+      var orig=window[name];
+      window[name]=function(){
+        orig.apply(this,arguments);
+        setTimeout(function(){
+          var q=document.getElementById('mktSearch');
+          if(q&&q.value)liveSearchFilter(q.value);
+        },80);
+      };
+    }
+  }
+  hookRender('render');hookRender('applyFilters');hookRender('renderMarkets');hookRender('loadMore');
+})();
+
+@keyframes livepulse rule moved to CSS
 </script>
+<style>@keyframes livepulse{0%,100%{opacity:1}50%{opacity:.4}}</style>
 </body>
 </html>

@@ -2,36 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23C9A84C'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%231A1714'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%231A1714' stroke-width='2' fill='none' opacity='.6'/%3E%3Ccircle cx='16' cy='16' r='14' stroke='%231A1714' stroke-width='1.5' fill='none' opacity='.3'/%3E%3C/svg%3E"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Property Lookup — ReRadar</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23C9A84C'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%231A1714'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%231A1714' stroke-width='2' fill='none' opacity='.6'/%3E%3Ccircle cx='16' cy='16' r='14' stroke='%231A1714' stroke-width='1.5' fill='none' opacity='.3'/%3E%3C/svg%3E"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Property Lookup & Analysis — ReRadar</title>
   <link rel="stylesheet" href="../shared.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 </head>
 <body>
 <div class="app-shell">
   <nav class="sidebar"></nav>
   <div class="main-content">
+
     <div class="topbar">
-      <button class="topbar-menu-btn" onclick="toggleSidebar()" style="display:none;background:none;border:none;color:var(--text2);cursor:pointer;padding:6px 10px;font-size:20px;line-height:1;border-radius:5px;transition:background .12s;">&#9776;</button>
+      <button class="topbar-menu-btn" onclick="toggleSidebar()">&#9776;</button>
       <div class="topbar-left">
         <div class="topbar-eyebrow">Residential · Property Analysis</div>
         <div class="topbar-title">Property Lookup & Analysis</div>
       </div>
       <div class="topbar-right">
         <span class="topbar-tag res">Residential</span>
-        <span id="rateDisplay" style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:5px;"><span style="width:5px;height:5px;border-radius:50%;background:#4A8578;flex-shrink:0;"></span><span>Live</span></span>
+        <span id="rateDisplay" style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:5px;"><span style="width:5px;height:5px;border-radius:50%;background:#4A8578;flex-shrink:0;animation:livepulse 2s infinite;"></span><span>Live</span></span>
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:0;padding:8px 20px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text3);">
+
+    <div style="display:flex;align-items:center;padding:7px 20px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text3);">
       <span style="font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-right:10px;">Sources</span>
       <span>Zillow Research · FRED (live rates) · Census Bureau · County public records</span>
       <span style="margin-left:auto;color:var(--text4);">As of March 2026</span>
     </div>
+
     <div class="page-body">
-      <div class="page-hero">
-        <p class="page-sub">Search any US address. Plain-English overview or full 10-year cash flow model.</p>
+      <div style="margin-bottom:20px;">
+        <div class="page-eyebrow">Residential · Property Analysis</div>
+        <div class="page-title">Property Lookup & Analysis</div>
+        <p class="page-sub">Search any US address. Plain-English overview for beginners, or the full 10-year cash flow model with IRR, depreciation, and equity buildup.</p>
       </div>
 
-      <div class="card mb-24">
+<div class="card mb-24">
         <div class="card-body" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
           <div style="flex:1;min-width:260px">
             <label class="field-label">Property address</label>
@@ -55,6 +62,7 @@
     </div>
   </div>
 </div>
+<button class="sidebar-toggle">☰</button>
 
 <style>
 .depth-btn{padding:7px 16px;font-size:12px;font-weight:500;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;color:var(--text3);background:transparent;}
@@ -81,279 +89,91 @@
 .assump-input:focus{border-color:var(--res)}
 </style>
 
+    </div>
+
+    <footer class="tool-footer">
+      <div class="tf-left">
+        <span class="tf-logo">Re<span>Radar</span></span>
+        <a href="/about" class="tf-link">About</a>
+        <a href="/privacy" class="tf-link">Privacy</a>
+        <a href="/terms" class="tf-link">Terms</a>
+        <a href="mailto:hello@reradar.co" class="tf-link">Contact</a>
+      </div>
+      <div class="tf-copy">© 2026 ReRadar · reradar.co</div>
+    </footer>
+
+  </div>
+</div>
+
 <script src="../shared.js"></script>
 <script>
-buildSidebar('property-lookup');
+buildSidebar("property-lookup");
 
-let currentDepth='beginner', currentResult=null, liveRate=7.24;
+// Live rate
+if(typeof fetchMortgageRate==='function') fetchMortgageRate().then(function(r){
+  var el=document.getElementById('rateDisplay');
+  if(el) el.innerHTML='<span style="width:5px;height:5px;border-radius:50%;background:#4A8578;flex-shrink:0;animation:livepulse 2s infinite;"></span><span>30yr: '+r.toFixed(2)+'%</span>';
+});
 
-fetchMortgageRate().then(r=>{liveRate=r;document.getElementById('rateDisplay').textContent='30yr fixed: '+r.toFixed(2)+'% (FRED live)';});
-
-function setDepth(d){
-  currentDepth=d;
-  document.getElementById('btnBeginner').classList.toggle('active',d==='beginner');
-  document.getElementById('btnPro').classList.toggle('active',d==='pro');
-  if(currentResult)renderResult(currentResult);
-}
-
-async function searchProperty(){
-  const addr=document.getElementById('addrInput').value.trim();
-  if(!addr)return;
-  const btn=document.getElementById('searchBtn');
-  btn.disabled=true;btn.textContent='Searching...';
-  document.getElementById('resultArea').innerHTML='<div class="loading-wrap"><div class="spinner"></div><div class="loading-text">Pulling property data from public records...</div></div>';
-  await new Promise(r=>setTimeout(r,1400));
-  currentResult=generateData(addr);
-  renderResult(currentResult);
-  btn.disabled=false;btn.textContent='Search Property';
-}
-
-function generateData(addr){
-  const s=addr.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
-  const r=(mn,mx)=>mn+Math.abs((s*7919+mn*31)%(mx-mn+1));
-  const price=Math.round((220000+(s%700000))/5000)*5000;
-  const beds=2+(s%3);const baths=1+(s%2)+.5;
-  const sqft=800+(s%1600);const yr=1960+(s%55);
-  const monthlyRent=Math.round(sqft*(1.3+(s%70)/100)/12);
-  const annualRent=monthlyRent*12;
-  const downPct=0.25;const downAmt=price*downPct;
-  const loanAmt=price*(1-downPct);
-  const rate=liveRate/100;
-  const mortgage=Math.round(calcMortgage(loanAmt,rate,30));
-  const taxM=Math.round(price*0.012/12);
-  const insM=Math.round(price*0.005/12);
-  const maintM=Math.round(monthlyRent*0.08);
-  const mgmtM=Math.round(monthlyRent*0.08);
-  const capexM=Math.round(monthlyRent*0.05);
-  const totalExpM=taxM+insM+maintM+mgmtM+capexM;
-  const vacLoss=Math.round(monthlyRent*0.05);
-  const effectiveM=monthlyRent-vacLoss;
-  const noiM=effectiveM-totalExpM;
-  const cfM=noiM-mortgage;
-  const noiA=noiM*12;const cfA=cfM*12;
-  const capRate=(noiA/price*100);
-  const cocReturn=(cfA/downAmt*100);
-  const grm=(price/annualRent);
-  const pricePerSf=Math.round(price/sqft);
-  const depr=annualDepreciation(price);
-  const taxBenefit=depr*0.32;
-  const verdict=cocReturn>5?'strong':cocReturn>1?'moderate':'weak';
-  const parts=addr.split(',');
-  const street=parts[0]?.trim()||addr;
-  const city=parts[1]?.trim()||'San Diego';
-  const state=parts[2]?.trim()||'CA';
-
-  // Build 10-year model
-  const years=[];
-  let bal=loanAmt,cumEquity=downAmt,cumCashflow=0;
-  for(let yr=1;yr<=10;yr++){
-    const rentGrowth=Math.pow(1.025,yr-1);
-    const expGrowth=Math.pow(1.03,yr-1);
-    const grossRent=Math.round(annualRent*rentGrowth);
-    const vacancyLoss=Math.round(grossRent*0.05);
-    const effectiveIncome=grossRent-vacancyLoss;
-    const opExp=Math.round((totalExpM*12)*expGrowth);
-    const noi=effectiveIncome-opExp;
-    const ds=mortgage*12;
-    const cf=noi-ds;
-    // Principal paydown
-    let principalYr=0;
-    for(let m=0;m<12;m++){const int=bal*rate/12;const prin=mortgage-int;principalYr+=prin;bal=Math.max(0,bal-prin);}
-    const appreciation=price*Math.pow(1.04,yr);
-    cumEquity=appreciation-bal;
-    cumCashflow+=cf;
-    years.push({yr,grossRent,vacancyLoss,effectiveIncome,opExp,noi,ds,cf,principalYr:Math.round(principalYr),cumCashflow:Math.round(cumCashflow),equity:Math.round(cumEquity),depr:Math.round(depr),taxBenefit:Math.round(taxBenefit),totalReturn:Math.round(cumCashflow+cumEquity-downAmt)});
-  }
-  const exitValue=price*Math.pow(1.04,10);
-  const exitBal=bal;
-  const exitProceeds=exitValue*(1-0.06)-exitBal;
-  const irrCfs=[-downAmt,...years.map(y=>y.cf),exitProceeds];
-  const irrVal=calcIRR(irrCfs);
-
-  return{street,city,state,price,beds,baths:baths.toString(),sqft,yr,monthlyRent,mortgage,taxM,insM,maintM,mgmtM,capexM,totalExpM,vacLoss,effectiveM,noiM,cfM,cfA,capRate,cocReturn,grm,pricePerSf,downAmt,loanAmt,rate,depr,taxBenefit,verdict,years,irrVal,exitValue,ownerName:(s%2===0?'J. Smith (Individual)':city.replace(' ','')+' Properties LLC'),lastSale:2013+(s%11),lastSalePrice:Math.round(price*(0.55+(s%35)/100)),cityAvgRent:Math.round(monthlyRent*(0.92+(s%16)/100)),cityMedianPrice:Math.round(price*(0.85+(s%30)/100)),comps:[{addr:`${12+s%80} Oak Ave`,p:Math.round(price*.97),d:'Jan 2026'},{addr:`${45+s%60} Elm St`,p:Math.round(price*1.03),d:'Feb 2026'},{addr:`${8+s%40} Pine Rd`,p:Math.round(price*.94),d:'Mar 2026'}]};
-}
-
-function renderResult(d){
-  const vc={strong:'good',moderate:'ok',weak:'bad'}[d.verdict];
-  const vmap={
-    strong:{icon:'✦',bg:'var(--res-bg)',border:'rgba(61,107,95,0.25)',title:'Solid investment',text:`This property generates an estimated ${fmt(d.cfM)}/month in profit after all expenses and mortgage — a ${d.cocReturn.toFixed(1)}% annual return on your ${fmt(d.downAmt)} down payment.`},
-    moderate:{icon:'◈',bg:'rgba(139,107,46,0.08)',border:'rgba(139,107,46,0.2)',title:'Could work — watch the numbers',text:`This property roughly breaks even or generates a small monthly profit of ${fmt(d.cfM)}. Returns depend on getting top-of-market rent and keeping vacancy low.`},
-    weak:{icon:'◇',bg:'rgba(139,58,58,0.08)',border:'rgba(139,58,58,0.2)',title:'Tough to make pencil',text:`At current pricing and market rents, this property would cost about ${fmt(Math.abs(d.cfM))}/month after all expenses and mortgage. You'd need below-market price or higher rents to make it work.`}
-  };
-  const v=vmap[d.verdict];
-
-  const beginnerHTML=`
-    <div class="bv-verdict" style="background:${v.bg};border:1px solid ${v.border}">
-      <div style="font-size:22px;flex-shrink:0">${v.icon}</div>
-      <div><div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px">${v.title}</div><div style="font-size:13px;color:var(--text2);line-height:1.6">${v.text}</div></div>
-    </div>
-    <div class="bv-nums">
-      <div class="bv-num"><div class="bv-num-label">Monthly cash flow</div><div class="bv-num-value" style="color:var(--${d.cfM>=0?'res':'red'})">${fmtSign(d.cfM)}</div><div class="bv-num-context">After mortgage, taxes, insurance, maintenance</div></div>
-      <div class="bv-num"><div class="bv-num-label">Return on down payment</div><div class="bv-num-value" style="color:var(--${vc})">${d.cocReturn.toFixed(1)}%</div><div class="bv-num-context">Cash-on-cash per year</div></div>
-      <div class="bv-num"><div class="bv-num-label">Estimated monthly rent</div><div class="bv-num-value">${fmt(d.monthlyRent)}</div><div class="bv-num-context">Based on current market rents</div></div>
-      <div class="bv-num"><div class="bv-num-label">Down payment needed</div><div class="bv-num-value">${fmt(d.downAmt)}</div><div class="bv-num-context">25% of purchase price</div></div>
-      <div class="bv-num"><div class="bv-num-label">Cap rate</div><div class="bv-num-value" style="color:var(--${vc})">${d.capRate.toFixed(2)}%</div><div class="bv-num-context">Net income ÷ purchase price</div></div>
-      <div class="bv-num"><div class="bv-num-label">10-yr IRR</div><div class="bv-num-value" style="color:var(--${vc})">${d.irrVal.toFixed(1)}%</div><div class="bv-num-context">Levered internal rate of return</div></div>
-    </div>
-    <div class="explain-box">
-      <p><strong style="color:var(--text)">What is cap rate?</strong> It measures how much income a property generates relative to its price — like a yield. This property's ${d.capRate.toFixed(2)}% cap rate means for every $100 invested, it earns $${d.capRate.toFixed(2)} in net income per year before debt.</p>
-      <p><strong style="color:var(--text)">What does IRR mean?</strong> Internal rate of return is your total annualized return including cash flow, principal paydown, and appreciation when you sell. ${d.irrVal.toFixed(1)}% IRR means this investment performs like a ${d.irrVal.toFixed(1)}% compounding annual return.</p>
-    </div>`;
-
-  const proHTML=`
-    <div class="section-label mb-8">Monthly cash flow breakdown</div>
-    <div class="card mb-16" style="overflow:hidden">
-      <table class="cf-table">
-        <tr class="cf-income"><td>Gross rental income</td><td>${fmt(d.monthlyRent)}</td></tr>
-        <tr class="cf-expense"><td>Vacancy allowance (5%)</td><td>−${fmt(d.vacLoss)}</td></tr>
-        <tr class="cf-subtotal"><td>Effective gross income</td><td>${fmt(d.effectiveM)}</td></tr>
-        <tr class="cf-section"><td colspan="2">Operating expenses</td></tr>
-        <tr class="cf-expense"><td>Property taxes (est. 1.2%)</td><td>−${fmt(d.taxM)}</td></tr>
-        <tr class="cf-expense"><td>Insurance (est. 0.5%)</td><td>−${fmt(d.insM)}</td></tr>
-        <tr class="cf-expense"><td>Property management (8%)</td><td>−${fmt(d.mgmtM)}</td></tr>
-        <tr class="cf-expense"><td>Maintenance & repairs (8%)</td><td>−${fmt(d.maintM)}</td></tr>
-        <tr class="cf-expense"><td>CapEx reserve (5%)</td><td>−${fmt(d.capexM)}</td></tr>
-        <tr class="cf-subtotal"><td>Net operating income (NOI)</td><td>${fmt(d.noiM)}</td></tr>
-        <tr class="cf-section"><td colspan="2">Debt service</td></tr>
-        <tr class="cf-expense"><td>Mortgage P&I (${(d.rate*100).toFixed(2)}%, 30yr)</td><td>−${fmt(d.mortgage)}</td></tr>
-        <tr class="cf-total"><td>Monthly cash flow</td><td style="color:var(--${d.cfM>=0?'res':'red'})">${fmtSign(d.cfM)}</td></tr>
-      </table>
-    </div>
-    <div class="grid-4 mb-16">
-      <div class="metric-block"><div class="metric-label">Cap Rate</div><div class="metric-value ${vc}">${d.capRate.toFixed(2)}%</div><div class="metric-note">NOI ÷ Price</div></div>
-      <div class="metric-block"><div class="metric-label">Cash-on-Cash</div><div class="metric-value ${vc}">${d.cocReturn.toFixed(1)}%</div><div class="metric-note">Yr 1 CF ÷ Cash in</div></div>
-      <div class="metric-block"><div class="metric-label">GRM</div><div class="metric-value">${d.grm.toFixed(1)}x</div><div class="metric-note">Price ÷ Gross rent</div></div>
-      <div class="metric-block"><div class="metric-label">10-yr IRR</div><div class="metric-value ${vc}">${d.irrVal.toFixed(1)}%</div><div class="metric-note">Levered total return</div></div>
-    </div>
-    <div class="section-label mb-8">10-year projection</div>
-    <div class="card mb-16 yr-scroll">
-      <table class="yr-table">
-        <thead><tr><th>Line item</th>${d.years.map(y=>`<th>Yr ${y.yr}</th>`).join('')}</tr></thead>
-        <tbody>
-          <tr class="yr-section"><td colspan="11">Income</td></tr>
-          <tr><td>Gross rent</td>${d.years.map(y=>`<td>${fmt(y.grossRent)}</td>`).join('')}</tr>
-          <tr><td>Vacancy (5%)</td>${d.years.map(y=>`<td class="neg">−${fmt(y.vacancyLoss)}</td>`).join('')}</tr>
-          <tr class="yr-highlight"><td>Effective income</td>${d.years.map(y=>`<td>${fmt(y.effectiveIncome)}</td>`).join('')}</tr>
-          <tr class="yr-section"><td colspan="11">Expenses & Debt</td></tr>
-          <tr><td>Operating expenses</td>${d.years.map(y=>`<td class="neg">−${fmt(y.opExp)}</td>`).join('')}</tr>
-          <tr><td>Net operating income</td>${d.years.map(y=>`<td>${fmt(y.noi)}</td>`).join('')}</tr>
-          <tr><td>Debt service</td>${d.years.map(y=>`<td class="neg">−${fmt(y.ds)}</td>`).join('')}</tr>
-          <tr class="yr-total"><td>Annual cash flow</td>${d.years.map(y=>`<td class="${y.cf>=0?'pos':'neg'}">${fmtSign(y.cf)}</td>`).join('')}</tr>
-          <tr class="yr-section"><td colspan="11">Wealth Building</td></tr>
-          <tr><td>Principal paydown</td>${d.years.map(y=>`<td class="pos">${fmt(y.principalYr)}</td>`).join('')}</tr>
-          <tr><td>Depreciation (tax)</td>${d.years.map(y=>`<td>${fmt(y.depr)}</td>`).join('')}</tr>
-          <tr><td>Est. tax benefit</td>${d.years.map(y=>`<td class="pos">${fmt(y.taxBenefit)}</td>`).join('')}</tr>
-          <tr><td>Cum. cash flow</td>${d.years.map(y=>`<td class="${y.cumCashflow>=0?'pos':'neg'}">${fmtSign(y.cumCashflow)}</td>`).join('')}</tr>
-          <tr><td>Equity (4% apprec.)</td>${d.years.map(y=>`<td>${fmt(y.equity)}</td>`).join('')}</tr>
-          <tr class="yr-total"><td>Total wealth created</td>${d.years.map(y=>`<td class="pos">${fmt(y.totalReturn)}</td>`).join('')}</tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="section-label mb-8">Adjust assumptions</div>
-    <div class="assumption-grid mb-16">
-      <div class="assump-row"><span class="assump-label">Monthly rent</span><input class="assump-input" id="aRent" value="${d.monthlyRent}" onchange="recalc()"/></div>
-      <div class="assump-row"><span class="assump-label">Down payment %</span><input class="assump-input" id="aDown" value="25" onchange="recalc()"/></div>
-      <div class="assump-row"><span class="assump-label">Interest rate %</span><input class="assump-input" id="aRate" value="${(d.rate*100).toFixed(2)}" onchange="recalc()"/></div>
-      <div class="assump-row"><span class="assump-label">Vacancy %</span><input class="assump-input" id="aVac" value="5" onchange="recalc()"/></div>
-      <div class="assump-row"><span class="assump-label">Mgmt fee %</span><input class="assump-input" id="aMgmt" value="8" onchange="recalc()"/></div>
-      <div class="assump-row"><span class="assump-label">Purchase price</span><input class="assump-input" id="aPrice" value="${d.price}" onchange="recalc()"/></div>
-    </div>`;
-
-  document.getElementById('resultArea').innerHTML=`
-    <div class="result-grid">
-      <div>
-        <div class="card mb-16">
-          <div class="card-header">
-            <div>
-              <div class="prop-address">${d.street}</div>
-              <div style="font-size:13px;color:var(--text2)">${d.city}, ${d.state}</div>
-              <div class="prop-meta">
-                <span class="prop-meta-item"><span class="pmd"></span>${d.beds} bed</span>
-                <span class="prop-meta-item"><span class="pmd"></span>${d.baths} bath</span>
-                <span class="prop-meta-item"><span class="pmd"></span>${d.sqft.toLocaleString()} sf</span>
-                <span class="prop-meta-item"><span class="pmd"></span>Built ${d.yr}</span>
-                <span class="prop-meta-item"><span class="pmd"></span>${fmt(d.price)} list</span>
-                <span class="prop-meta-item"><span class="pmd"></span>${fmt(d.pricePerSf)}/sf</span>
-              </div>
-            </div>
-          </div>
-          <div class="card-body">${currentDepth==='beginner'?beginnerHTML:proHTML}</div>
-        </div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:14px">
-        <div class="card">
-          <div class="card-header"><div class="card-title">Ownership & Records</div></div>
-          <div class="card-body" style="display:flex;flex-direction:column;gap:8px">
-            ${[['Owner',`<span style="color:var(--res);font-weight:500">${d.ownerName}</span>`],['Source','County Assessor (public)'],['Last sale',d.lastSale.toString()],['Last sale price',fmt(d.lastSalePrice)],['Est. current value',fmt(d.price)]].map(([l,v])=>`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><span style="font-size:12px;color:var(--text3)">${l}</span><span style="font-size:12px;color:var(--text);text-align:right">${v}</span></div>`).join('')}
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header"><div class="card-title">Market Context</div></div>
-          <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
-            ${[['Avg rent (city)',fmt(d.cityAvgRent)+'/mo'],['Median sale price',fmt(d.cityMedianPrice)],['Price per SF',fmt(d.pricePerSf)]].map(([l,v])=>`<div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:var(--text3)">${l}</span><span style="font-size:11px;font-family:JetBrains Mono,monospace;color:var(--text)">${v}</span></div><div style="height:3px;background:var(--bg3);border-radius:2px"><div style="height:3px;border-radius:2px;background:var(--res);width:60%"></div></div></div>`).join('')}
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header"><div class="card-title">Recent Nearby Sales</div></div>
-          <div class="card-body" style="display:flex;flex-direction:column;gap:8px">
-            ${d.comps.map(c=>`<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px;background:var(--bg);border-radius:6px"><span style="font-size:12px;color:var(--text2)">${c.addr}, ${d.city}</span><div style="text-align:right"><div style="font-size:12px;font-weight:500;font-family:JetBrains Mono,monospace;color:var(--text)">${fmt(c.p)}</div><div style="font-size:10px;color:var(--text3)">${c.d}</div></div></div>`).join('')}
-          </div>
-        </div>
-        <div class="source-note">Data sourced from FRED (live mortgage rates), Zillow Research (market rents/values), and county public records. 10-year model uses 2.5% rent growth, 3% expense growth, 4% appreciation.</div>
-      </div>
-    </div>`;
-}
-
-function recalc(){
-  if(!currentResult)return;
-  const rent=+document.getElementById('aRent').value||currentResult.monthlyRent;
-  const down=+document.getElementById('aDown').value/100||.25;
-  const rate=+document.getElementById('aRate').value/100||currentResult.rate;
-  const vac=+document.getElementById('aVac').value/100||.05;
-  const mgmt=+document.getElementById('aMgmt').value/100||.08;
-  const price=+document.getElementById('aPrice').value||currentResult.price;
-  const loan=price*(1-down);
-  const mortgage=Math.round(calcMortgage(loan,rate,30));
-  const taxM=Math.round(price*.012/12);const insM=Math.round(price*.005/12);
-  const maintM=Math.round(rent*.08);const mgmtM=Math.round(rent*mgmt);
-  const capexM=Math.round(rent*.05);
-  const totalExpM=taxM+insM+maintM+mgmtM+capexM;
-  const vacLoss=Math.round(rent*vac);const effectiveM=rent-vacLoss;
-  const noiM=effectiveM-totalExpM;const cfM=noiM-mortgage;
-  const annualRent=rent*12;const downAmt=price*down;
-  const cfA=cfM*12;const noiA=noiM*12;
-  const capRate=noiA/price*100;const cocReturn=cfA/downAmt*100;
-  const grm=price/annualRent;
-  currentResult={...currentResult,monthlyRent:rent,mortgage,taxM,insM,maintM,mgmtM,capexM,totalExpM,vacLoss,effectiveM,noiM,cfM,cfA,capRate,cocReturn,grm,price,downAmt,loanAmt:loan,rate,verdict:cocReturn>5?'strong':cocReturn>1?'moderate':'weak'};
-  renderResult(currentResult);
-  ['aRent','aDown','aRate','aVac','aMgmt','aPrice'].forEach(id=>{
-    const el=document.getElementById(id);if(el){switch(id){case 'aRent':el.value=rent;break;case 'aDown':el.value=(down*100).toFixed(0);break;case 'aRate':el.value=(rate*100).toFixed(2);break;case 'aVac':el.value=(vac*100).toFixed(0);break;case 'aMgmt':el.value=(mgmt*100).toFixed(0);break;case 'aPrice':el.value=price;break;}}
-  });
-}
-</script>
-
-<style>
-@keyframes livepulse{0%,100%{opacity:1}50%{opacity:.4}}
-@media(max-width:860px){
-  .sidebar{transform:translateX(-100%);transition:transform .25s;}
-  .sidebar.open{transform:translateX(0);}
-  .main-content{margin-left:0!important;}
-  .topbar-menu-btn{display:flex!important;align-items:center;justify-content:center;}
-  .topbar-tag{display:none;}
-}
-</style>
-<script>
+// Mobile sidebar
 function toggleSidebar(){
   var s=document.querySelector('.sidebar');
   s.classList.toggle('open');
   var ov=document.getElementById('__ov');
-  if(!ov){ov=document.createElement('div');ov.id='__ov';ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:190;';ov.onclick=function(){s.classList.remove('open');ov.style.display='none';};document.body.appendChild(ov);}
+  if(!ov){
+    ov=document.createElement('div');
+    ov.id='__ov';
+    ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:190;';
+    ov.onclick=function(){s.classList.remove('open');ov.style.display='none';};
+    document.body.appendChild(ov);
+  }
   ov.style.display=s.classList.contains('open')?'block':'none';
 }
-if(typeof fetchMortgageRate==='function')fetchMortgageRate().then(function(r){
-  var el=document.getElementById('rateDisplay');
-  if(el)el.innerHTML='<span style="width:5px;height:5px;border-radius:50%;background:#4A8578;flex-shrink:0;animation:livepulse 2s infinite"></span><span>30yr: '+r.toFixed(2)+'%</span>';
-});
+
+// Live search for commercial tools
+function liveSearchFilter(q){
+  var query=q.toLowerCase().trim();
+  var rows=document.querySelectorAll('#tableBody .table-row, #tableBody tr[class], #fundsGrid .fund-card, #marketsGrid .market-panel, #marketsGrid .market-card');
+  var n=0;
+  rows.forEach(function(r){
+    var show=!query||r.textContent.toLowerCase().includes(query);
+    r.style.display=show?'':'none';
+    if(show)n++;
+  });
+  var ct=document.getElementById('searchCount');
+  if(ct)ct.textContent=query?n+' result'+(n!==1?'s':''):'';
+  // Patch newly rendered rows after filter
+  setTimeout(function(){
+    document.querySelectorAll('#tableBody .table-row, #tableBody tr[class], #fundsGrid .fund-card, #marketsGrid .market-panel').forEach(function(r){
+      var orig=r.style.display;
+      if(!q)r.style.display='';
+    });
+  },100);
+}
+function clearLiveSearch(){
+  var inp=document.getElementById('mktSearch');
+  if(inp){inp.value='';liveSearchFilter('');}
+}
+
+// Hook into render functions so search persists after re-renders
+(function(){
+  function hookRender(name){
+    if(typeof window[name]==='function'){
+      var orig=window[name];
+      window[name]=function(){
+        orig.apply(this,arguments);
+        setTimeout(function(){
+          var q=document.getElementById('mktSearch');
+          if(q&&q.value)liveSearchFilter(q.value);
+        },80);
+      };
+    }
+  }
+  hookRender('render');hookRender('applyFilters');hookRender('renderMarkets');hookRender('loadMore');
+})();
+
+@keyframes livepulse rule moved to CSS
 </script>
+<style>@keyframes livepulse{0%,100%{opacity:1}50%{opacity:.4}}</style>
 </body>
 </html>

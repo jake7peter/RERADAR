@@ -2,128 +2,46 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23C9A84C'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%231A1714'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%231A1714' stroke-width='2' fill='none' opacity='.6'/%3E%3Ccircle cx='16' cy='16' r='14' stroke='%231A1714' stroke-width='1.5' fill='none' opacity='.3'/%3E%3C/svg%3E"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23C9A84C'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%231A1714'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%231A1714' stroke-width='2' fill='none' opacity='.6'/%3E%3Ccircle cx='16' cy='16' r='14' stroke='%231A1714' stroke-width='1.5' fill='none' opacity='.3'/%3E%3C/svg%3E"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BRRRR Calculator — ReRadar</title>
   <link rel="stylesheet" href="../shared.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg:#F7F4EF; --bg2:#FFFFFF; --bg3:#F0EDE8;
-      --border:rgba(0,0,0,0.08); --border2:rgba(0,0,0,0.14);
-      --text:#1A1714; --text2:#6B6357; --text3:#9C9289;
-      --gold:#C9A84C; --res:#3D6B5F; --res-light:#5A9085; --res-dim:rgba(61,107,95,0.10);
-    }
-    html,body { min-height:100%; background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; }
-    nav { display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:var(--bg2); border-bottom:1px solid var(--border); }
-    .logo { display:flex; align-items:center; gap:8px; text-decoration:none; }
-    .logo-mark { width:28px; height:28px; border-radius:5px; background:var(--gold); display:flex; align-items:center; justify-content:center; }
-    .logo-text { font-family:'Playfair Display',serif; font-size:18px; color:var(--text); }
-    .logo-text span { color:var(--gold); }
-    .nav-tools { display:flex; gap:4px; }
-    .tool-link { padding:6px 12px; font-size:12px; color:var(--text3); border-radius:5px; text-decoration:none; transition:all .15s; }
-    .tool-link:hover { color:var(--text2); background:rgba(255,255,255,0.04); }
-    .tool-link.active { color:var(--res-light); background:var(--res-dim); }
-
-    .page { max-width:1100px; margin:0 auto; padding:40px; }
-    .page-eyebrow { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--res-light); text-transform:uppercase; letter-spacing:.1em; margin-bottom:10px; }
-    .page-title { font-family:'Playfair Display',serif; font-size:36px; color:var(--text); margin-bottom:8px; }
-    .page-sub { font-size:15px; color:var(--text2); font-weight:300; max-width:580px; line-height:1.7; margin-bottom:12px; }
-
-    .brrrr-explain {
-      display:flex; gap:0; border:1px solid var(--border); border-radius:10px;
-      overflow:hidden; margin-bottom:36px;
-    }
-    .be-step { flex:1; padding:12px 16px; border-right:1px solid var(--border); text-align:center; }
-    .be-step:last-child { border-right:none; }
-    .be-letter { font-family:'Playfair Display',serif; font-size:22px; color:var(--gold); }
-    .be-word { font-size:10px; color:var(--text3); margin-top:2px; }
-
-    .main-grid { display:grid; grid-template-columns:360px 1fr; gap:24px; align-items:start; }
-
-    .input-panel { background:var(--bg2); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
-    .ip-tab-bar { display:flex; border-bottom:1px solid var(--border); }
-    .ip-tab { flex:1; padding:12px; font-size:12px; font-weight:500; text-align:center; cursor:pointer; border:none; background:transparent; color:var(--text3); font-family:'DM Sans',sans-serif; transition:all .15s; border-bottom:2px solid transparent; }
-    .ip-tab.active { color:var(--res-light); border-bottom-color:var(--res); background:var(--res-dim); }
-    .ip-body { padding:24px; }
-    .ip-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-    .ip-label { font-size:13px; color:var(--text2); }
-    .ip-input { width:110px; padding:7px 10px; background:var(--bg3); border:1px solid var(--border); border-radius:6px; color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; text-align:right; outline:none; transition:border-color .2s; }
-    .ip-input:focus { border-color:var(--res); }
-    .calc-btn { width:100%; padding:13px; background:var(--res); color:var(--text); border:none; border-radius:8px; font-size:14px; font-weight:500; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .2s; margin-top:8px; }
-    .calc-btn:hover { background:var(--res-light); color:var(--bg); }
-
-    .results { display:flex; flex-direction:column; gap:14px; }
-
-    .phase-flow {
-      display:grid; grid-template-columns:repeat(5,1fr); gap:0;
-      border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--bg2);
-    }
-    .phase { padding:20px 16px; border-right:1px solid var(--border); text-align:center; }
-    .phase:last-child { border-right:none; }
-    .phase-letter { font-family:'Playfair Display',serif; font-size:28px; color:var(--gold); margin-bottom:4px; }
-    .phase-name { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px; font-family:'JetBrains Mono',monospace; }
-    .phase-amount { font-size:18px; font-weight:500; color:var(--text); }
-    .phase-amount.good { color:#7FB3A6; }
-    .phase-amount.ok { color:var(--gold); }
-    .phase-sub { font-size:10px; color:var(--text3); margin-top:4px; }
-
-    .verdict-banner {
-      padding:20px 24px; border-radius:12px; border:1px solid;
-      display:flex; gap:16px; align-items:flex-start;
-    }
-    .vb-icon { font-size:28px; flex-shrink:0; }
-    .vb-title { font-size:17px; font-weight:500; color:var(--text); margin-bottom:4px; }
-    .vb-text { font-size:13px; color:var(--text2); line-height:1.6; }
-
-    .metrics-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
-    .mr-card { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
-    .mrc-label { font-size:10px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
-    .mrc-value { font-size:20px; font-weight:500; }
-    .mrc-value.good { color:#7FB3A6; }
-    .mrc-value.ok { color:var(--gold); }
-    .mrc-value.bad { color:#B37A7A; }
-    .mrc-note { font-size:10px; color:var(--text3); margin-top:3px; }
-
-    .breakdown-card { background:var(--bg2); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
-    .bc-title { padding:14px 20px; border-bottom:1px solid var(--border); font-size:11px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; }
-    .bc-row { display:flex; justify-content:space-between; padding:10px 20px; border-bottom:1px solid var(--border); font-size:13px; }
-    .bc-row:last-child { border-bottom:none; }
-    .bc-label { color:var(--text2); }
-    .bc-value { font-family:'JetBrains Mono',monospace; color:var(--text); }
-    .bc-value.good { color:#7FB3A6; }
-    .bc-value.bad { color:#B37A7A; }
-    .bc-row.highlight { background:var(--bg3); }
-    .bc-row.highlight .bc-label { color:var(--text); font-weight:500; }
-    .bc-row.highlight .bc-value { font-size:15px; font-weight:500; }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 </head>
 <body>
 <div class="app-shell">
   <nav class="sidebar"></nav>
   <div class="main-content">
+
     <div class="topbar">
-      <button class="topbar-menu-btn" onclick="toggleSidebar()" style="display:none;background:none;border:none;color:var(--text2);cursor:pointer;padding:6px 10px;font-size:20px;line-height:1;border-radius:5px;transition:background .12s;">&#9776;</button>
+      <button class="topbar-menu-btn" onclick="toggleSidebar()">&#9776;</button>
       <div class="topbar-left">
         <div class="topbar-eyebrow">Residential · Strategy</div>
         <div class="topbar-title">BRRRR Calculator</div>
       </div>
       <div class="topbar-right">
         <span class="topbar-tag res">Residential</span>
-        <span id="rateDisplay" style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:5px;"><span style="width:5px;height:5px;border-radius:50%;background:#4A8578;flex-shrink:0;"></span><span>Live</span></span>
+        <span id="rateDisplay" style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:5px;"><span style="width:5px;height:5px;border-radius:50%;background:#4A8578;flex-shrink:0;animation:livepulse 2s infinite;"></span><span>Live</span></span>
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:0;padding:8px 20px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text3);">
+
+    <div style="display:flex;align-items:center;padding:7px 20px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text3);">
       <span style="font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-right:10px;">Sources</span>
       <span>FRED (live rates) · Redfin Data Center</span>
       <span style="margin-left:auto;color:var(--text4);">As of March 2026</span>
     </div>
+
     <div class="page-body">
+      <div style="margin-bottom:20px;">
+        <div class="page-eyebrow">Residential · Strategy</div>
+        <div class="page-title">BRRRR Calculator</div>
+        <p class="page-sub">Model the full Buy-Rehab-Rent-Refinance-Repeat cycle. See exactly how much capital comes back out and whether post-refinance cash flow works.</p>
+      </div>
 
 <div class="page">
   <div class="page-eyebrow">Residential · Strategy</div>
   <div class="page-title">BRRRR Calculator</div>
-  <p class="page-sub">Model the Buy-Rehab-Rent-Refinance-Repeat cycle. See exactly how much capital you pull back.</p>
+  <p class="page-sub">Model the full Buy, Rehab, Rent, Refinance, Repeat cycle. See how much money you can pull out, what you leave in, and whether the deal actually works after the refinance.</p>
 
   <div class="brrrr-explain">
     <div class="be-step"><div class="be-letter">B</div><div class="be-word">Buy</div></div>
@@ -277,31 +195,93 @@ function pct(n) { return n.toFixed(1) + '%'; }
 calculate();
 </script>
 </div></div></div>
-<script src="../shared.js"></script>
-<script>buildSidebar("brrrr");</script>
+<button class="sidebar-toggle">☰</button>
 
-<style>
-@keyframes livepulse{0%,100%{opacity:1}50%{opacity:.4}}
-@media(max-width:860px){
-  .sidebar{transform:translateX(-100%);transition:transform .25s;}
-  .sidebar.open{transform:translateX(0);}
-  .main-content{margin-left:0!important;}
-  .topbar-menu-btn{display:flex!important;align-items:center;justify-content:center;}
-  .topbar-tag{display:none;}
-}
-</style>
+    </div>
+
+    <footer class="tool-footer">
+      <div class="tf-left">
+        <span class="tf-logo">Re<span>Radar</span></span>
+        <a href="/about" class="tf-link">About</a>
+        <a href="/privacy" class="tf-link">Privacy</a>
+        <a href="/terms" class="tf-link">Terms</a>
+        <a href="mailto:hello@reradar.co" class="tf-link">Contact</a>
+      </div>
+      <div class="tf-copy">© 2026 ReRadar · reradar.co</div>
+    </footer>
+
+  </div>
+</div>
+
+<script src="../shared.js"></script>
 <script>
+buildSidebar("brrrr");
+
+// Live rate
+if(typeof fetchMortgageRate==='function') fetchMortgageRate().then(function(r){
+  var el=document.getElementById('rateDisplay');
+  if(el) el.innerHTML='<span style="width:5px;height:5px;border-radius:50%;background:#4A8578;flex-shrink:0;animation:livepulse 2s infinite;"></span><span>30yr: '+r.toFixed(2)+'%</span>';
+});
+
+// Mobile sidebar
 function toggleSidebar(){
   var s=document.querySelector('.sidebar');
   s.classList.toggle('open');
   var ov=document.getElementById('__ov');
-  if(!ov){ov=document.createElement('div');ov.id='__ov';ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:190;';ov.onclick=function(){s.classList.remove('open');ov.style.display='none';};document.body.appendChild(ov);}
+  if(!ov){
+    ov=document.createElement('div');
+    ov.id='__ov';
+    ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:190;';
+    ov.onclick=function(){s.classList.remove('open');ov.style.display='none';};
+    document.body.appendChild(ov);
+  }
   ov.style.display=s.classList.contains('open')?'block':'none';
 }
-if(typeof fetchMortgageRate==='function')fetchMortgageRate().then(function(r){
-  var el=document.getElementById('rateDisplay');
-  if(el)el.innerHTML='<span style="width:5px;height:5px;border-radius:50%;background:#4A8578;flex-shrink:0;animation:livepulse 2s infinite"></span><span>30yr: '+r.toFixed(2)+'%</span>';
-});
+
+// Live search for commercial tools
+function liveSearchFilter(q){
+  var query=q.toLowerCase().trim();
+  var rows=document.querySelectorAll('#tableBody .table-row, #tableBody tr[class], #fundsGrid .fund-card, #marketsGrid .market-panel, #marketsGrid .market-card');
+  var n=0;
+  rows.forEach(function(r){
+    var show=!query||r.textContent.toLowerCase().includes(query);
+    r.style.display=show?'':'none';
+    if(show)n++;
+  });
+  var ct=document.getElementById('searchCount');
+  if(ct)ct.textContent=query?n+' result'+(n!==1?'s':''):'';
+  // Patch newly rendered rows after filter
+  setTimeout(function(){
+    document.querySelectorAll('#tableBody .table-row, #tableBody tr[class], #fundsGrid .fund-card, #marketsGrid .market-panel').forEach(function(r){
+      var orig=r.style.display;
+      if(!q)r.style.display='';
+    });
+  },100);
+}
+function clearLiveSearch(){
+  var inp=document.getElementById('mktSearch');
+  if(inp){inp.value='';liveSearchFilter('');}
+}
+
+// Hook into render functions so search persists after re-renders
+(function(){
+  function hookRender(name){
+    if(typeof window[name]==='function'){
+      var orig=window[name];
+      window[name]=function(){
+        orig.apply(this,arguments);
+        setTimeout(function(){
+          var q=document.getElementById('mktSearch');
+          if(q&&q.value)liveSearchFilter(q.value);
+        },80);
+      };
+    }
+  }
+  hookRender('render');hookRender('applyFilters');hookRender('renderMarkets');hookRender('loadMore');
+})();
+
+@keyframes livepulse rule moved to CSS
 </script>
+<style>@keyframes livepulse{0%,100%{opacity:1}50%{opacity:.4}}</style>
 </body>
 </html>

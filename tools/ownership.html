@@ -2,124 +2,46 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23C9A84C'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%231A1714'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%231A1714' stroke-width='2' fill='none' opacity='.6'/%3E%3Ccircle cx='16' cy='16' r='14' stroke='%231A1714' stroke-width='1.5' fill='none' opacity='.3'/%3E%3C/svg%3E"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23C9A84C'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%231A1714'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%231A1714' stroke-width='2' fill='none' opacity='.6'/%3E%3Ccircle cx='16' cy='16' r='14' stroke='%231A1714' stroke-width='1.5' fill='none' opacity='.3'/%3E%3C/svg%3E"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ownership Lookup — ReRadar</title>
   <link rel="stylesheet" href="../shared.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg:#F7F4EF; --bg2:#FFFFFF; --bg3:#F0EDE8;
-      --border:rgba(0,0,0,0.08); --border2:rgba(0,0,0,0.14);
-      --text:#1A1714; --text2:#6B6357; --text3:#9C9289;
-      --gold:#C9A84C; --com:#3D5478; --com-light:#5A7AAA; --com-dim:rgba(61,84,120,0.10);
-    }
-    html,body { min-height:100%; background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; }
-    nav { display:flex; align-items:center; justify-content:space-between; padding:16px 40px; background:var(--bg2); border-bottom:1px solid var(--border); }
-    .logo { display:flex; align-items:center; gap:8px; text-decoration:none; }
-    .logo-mark { width:28px; height:28px; border-radius:5px; background:var(--gold); display:flex; align-items:center; justify-content:center; }
-    .logo-text { font-family:'Playfair Display',serif; font-size:18px; color:var(--text); }
-    .logo-text span { color:var(--gold); }
-    .nav-tools { display:flex; gap:4px; }
-    .tool-link { padding:6px 12px; font-size:12px; color:var(--text3); border-radius:5px; text-decoration:none; transition:all .15s; }
-    .tool-link:hover { color:var(--text2); background:rgba(255,255,255,0.04); }
-    .tool-link.active { color:var(--com-light); background:var(--com-dim); }
-
-    .page { max-width:960px; margin:0 auto; padding:40px; }
-    .page-eyebrow { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--com-light); text-transform:uppercase; letter-spacing:.1em; margin-bottom:10px; }
-    .page-title { font-family:'Playfair Display',serif; font-size:36px; color:var(--text); margin-bottom:8px; }
-    .page-sub { font-size:15px; color:var(--text2); font-weight:300; max-width:520px; line-height:1.7; margin-bottom:32px; }
-
-    .source-note { background:var(--com-dim); border:1px solid rgba(74,100,144,0.25); border-radius:8px; padding:12px 16px; margin-bottom:28px; font-size:13px; color:var(--com-light); line-height:1.6; }
-
-    .search-box { background:var(--bg2); border:1px solid var(--border2); border-radius:12px; padding:24px 28px; margin-bottom:32px; display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; }
-    .sf { flex:1; min-width:240px; }
-    .sf label { font-size:11px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; display:block; margin-bottom:8px; }
-    .sf input { width:100%; padding:11px 14px; background:var(--bg3); border:1px solid var(--border); border-radius:7px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px; outline:none; transition:border-color .2s; }
-    .sf input:focus { border-color:var(--com); }
-    .sf input::placeholder { color:var(--text3); }
-    .search-btn { padding:11px 24px; background:var(--com); color:var(--text); border:none; border-radius:7px; font-size:14px; font-weight:500; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .2s; }
-    .search-btn:hover { background:var(--com-light); color:var(--bg); }
-    .search-btn:disabled { opacity:.5; cursor:not-allowed; }
-
-    .empty-state { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:60px; text-align:center; }
-    .es-icon { font-size:40px; opacity:.25; margin-bottom:16px; }
-    .es-title { font-family:'Playfair Display',serif; font-size:22px; color:var(--text2); margin-bottom:8px; }
-    .es-sub { font-size:14px; color:var(--text3); line-height:1.6; }
-
-    .result { display:flex; flex-direction:column; gap:16px; }
-
-    .prop-header { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:24px 28px; }
-    .ph-address { font-family:'Playfair Display',serif; font-size:22px; color:var(--text); margin-bottom:4px; }
-    .ph-meta { display:flex; gap:16px; flex-wrap:wrap; margin-top:8px; }
-    .ph-meta-item { font-size:12px; color:var(--text3); display:flex; align-items:center; gap:5px; }
-    .ph-meta-dot { width:4px; height:4px; border-radius:50%; background:var(--com); }
-
-    .owner-card { background:var(--bg2); border:1px solid var(--border2); border-radius:14px; overflow:hidden; }
-    .oc-header { padding:16px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
-    .oc-title { font-size:11px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; }
-    .oc-source { font-size:10px; color:var(--text3); font-family:'JetBrains Mono',monospace; }
-    .oc-body { padding:24px; }
-    .oc-name { font-family:'Playfair Display',serif; font-size:24px; color:var(--text); margin-bottom:6px; }
-    .oc-type { font-size:13px; color:var(--com-light); display:flex; align-items:center; gap:6px; }
-    .oc-type-dot { width:6px; height:6px; border-radius:50%; background:var(--com-light); }
-    .oc-details { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px; }
-    .od-item { background:var(--bg3); border-radius:8px; padding:12px 14px; }
-    .od-label { font-size:10px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.06em; margin-bottom:5px; }
-    .od-value { font-size:13px; color:var(--text); }
-    .od-value.highlight { color:var(--com-light); }
-
-    .transaction-list { background:var(--bg2); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
-    .tl-header { padding:14px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
-    .tl-title { font-size:11px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; }
-    .tl-count { font-size:11px; color:var(--text3); font-family:'JetBrains Mono',monospace; }
-    .tl-row { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:12px 20px; border-bottom:1px solid var(--border); font-size:13px; align-items:center; }
-    .tl-row:last-child { border-bottom:none; }
-    .tl-label { font-size:10px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.06em; }
-    .tl-val { color:var(--text2); }
-    .tl-price { font-family:'JetBrains Mono',monospace; color:var(--text); font-weight:500; }
-    .tl-type { font-size:10px; padding:3px 8px; border-radius:4px; display:inline-block; }
-    .tl-type.sale { background:var(--com-dim); color:var(--com-light); }
-    .tl-type.refi { background:rgba(201,168,76,0.1); color:var(--gold); }
-    .tl-type.transfer { background:rgba(255,255,255,0.06); color:var(--text3); }
-
-    .portfolio-card { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:20px 24px; }
-    .pc-title { font-size:11px; color:var(--text3); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; margin-bottom:16px; }
-    .portfolio-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
-    .pg-stat { background:var(--bg3); border-radius:8px; padding:12px 14px; text-align:center; }
-    .pgs-num { font-family:'Playfair Display',serif; font-size:22px; color:var(--com-light); }
-    .pgs-label { font-size:10px; color:var(--text3); margin-top:3px; }
-
-    .spinner { display:inline-block; width:28px; height:28px; border:2px solid var(--border); border-top-color:var(--com); border-radius:50%; animation:spin .8s linear infinite; }
-    @keyframes spin { to { transform:rotate(360deg); } }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 </head>
 <body>
 <div class="app-shell">
   <nav class="sidebar"></nav>
   <div class="main-content">
+
     <div class="topbar">
-      <button class="topbar-menu-btn" onclick="toggleSidebar()" style="display:none;background:none;border:none;color:var(--text2);cursor:pointer;padding:6px 10px;font-size:20px;line-height:1;border-radius:5px;transition:background .12s;">&#9776;</button>
+      <button class="topbar-menu-btn" onclick="toggleSidebar()">&#9776;</button>
       <div class="topbar-left">
-        <div class="topbar-eyebrow">Commercial · Property Intel</div>
+        <div class="topbar-eyebrow">Commercial · Property Intelligence</div>
         <div class="topbar-title">Ownership Lookup</div>
       </div>
       <div class="topbar-right">
         <span class="topbar-tag com">Commercial</span>
-        <span id="rateDisplay" style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:5px;"><span style="width:5px;height:5px;border-radius:50%;background:#4A8578;flex-shrink:0;"></span><span>Live</span></span>
+        <span id="rateDisplay" style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:5px;"><span style="width:5px;height:5px;border-radius:50%;background:#4A8578;flex-shrink:0;animation:livepulse 2s infinite;"></span><span>Live</span></span>
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:0;padding:8px 20px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text3);">
+
+    <div style="display:flex;align-items:center;padding:7px 20px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text3);">
       <span style="font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-right:10px;">Sources</span>
-      <span>County assessor records · SoS filings · SEC EDGAR</span>
+      <span>County assessor records · Secretary of State filings · SEC EDGAR</span>
       <span style="margin-left:auto;color:var(--text4);">As of March 2026</span>
     </div>
+
     <div class="page-body">
+      <div style="margin-bottom:20px;">
+        <div class="page-eyebrow">Commercial · Property Intelligence</div>
+        <div class="page-title">Ownership Lookup</div>
+        <p class="page-sub">Entity name, ownership structure, formation date, transaction history, and portfolio size from public county and state records.</p>
+      </div>
 
 <div class="page">
   <div class="page-eyebrow">Commercial · Property Intelligence</div>
   <div class="page-title">Property Ownership Lookup</div>
-  <p class="page-sub">Entity name, ownership structure, transaction history from public county and state records.</p>
+  <p class="page-sub">Find out who owns any commercial property — entity name, ownership structure, transaction history, and portfolio size — from public county records and SEC filings.</p>
 
   <div class="source-note">
     Data sourced from public county assessor records, secretary of state entity filings, CMBS trust documents, and SEC EDGAR. All information is publicly available — no private data is used.
@@ -283,31 +205,93 @@ function renderOwnership(d) {
 }
 </script>
 </div></div></div>
-<script src="../shared.js"></script>
-<script>buildSidebar("ownership");</script>
+<button class="sidebar-toggle">☰</button>
 
-<style>
-@keyframes livepulse{0%,100%{opacity:1}50%{opacity:.4}}
-@media(max-width:860px){
-  .sidebar{transform:translateX(-100%);transition:transform .25s;}
-  .sidebar.open{transform:translateX(0);}
-  .main-content{margin-left:0!important;}
-  .topbar-menu-btn{display:flex!important;align-items:center;justify-content:center;}
-  .topbar-tag{display:none;}
-}
-</style>
+    </div>
+
+    <footer class="tool-footer">
+      <div class="tf-left">
+        <span class="tf-logo">Re<span>Radar</span></span>
+        <a href="/about" class="tf-link">About</a>
+        <a href="/privacy" class="tf-link">Privacy</a>
+        <a href="/terms" class="tf-link">Terms</a>
+        <a href="mailto:hello@reradar.co" class="tf-link">Contact</a>
+      </div>
+      <div class="tf-copy">© 2026 ReRadar · reradar.co</div>
+    </footer>
+
+  </div>
+</div>
+
+<script src="../shared.js"></script>
 <script>
+buildSidebar("ownership");
+
+// Live rate
+if(typeof fetchMortgageRate==='function') fetchMortgageRate().then(function(r){
+  var el=document.getElementById('rateDisplay');
+  if(el) el.innerHTML='<span style="width:5px;height:5px;border-radius:50%;background:#4A8578;flex-shrink:0;animation:livepulse 2s infinite;"></span><span>30yr: '+r.toFixed(2)+'%</span>';
+});
+
+// Mobile sidebar
 function toggleSidebar(){
   var s=document.querySelector('.sidebar');
   s.classList.toggle('open');
   var ov=document.getElementById('__ov');
-  if(!ov){ov=document.createElement('div');ov.id='__ov';ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:190;';ov.onclick=function(){s.classList.remove('open');ov.style.display='none';};document.body.appendChild(ov);}
+  if(!ov){
+    ov=document.createElement('div');
+    ov.id='__ov';
+    ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:190;';
+    ov.onclick=function(){s.classList.remove('open');ov.style.display='none';};
+    document.body.appendChild(ov);
+  }
   ov.style.display=s.classList.contains('open')?'block':'none';
 }
-if(typeof fetchMortgageRate==='function')fetchMortgageRate().then(function(r){
-  var el=document.getElementById('rateDisplay');
-  if(el)el.innerHTML='<span style="width:5px;height:5px;border-radius:50%;background:#4A8578;flex-shrink:0;animation:livepulse 2s infinite"></span><span>30yr: '+r.toFixed(2)+'%</span>';
-});
+
+// Live search for commercial tools
+function liveSearchFilter(q){
+  var query=q.toLowerCase().trim();
+  var rows=document.querySelectorAll('#tableBody .table-row, #tableBody tr[class], #fundsGrid .fund-card, #marketsGrid .market-panel, #marketsGrid .market-card');
+  var n=0;
+  rows.forEach(function(r){
+    var show=!query||r.textContent.toLowerCase().includes(query);
+    r.style.display=show?'':'none';
+    if(show)n++;
+  });
+  var ct=document.getElementById('searchCount');
+  if(ct)ct.textContent=query?n+' result'+(n!==1?'s':''):'';
+  // Patch newly rendered rows after filter
+  setTimeout(function(){
+    document.querySelectorAll('#tableBody .table-row, #tableBody tr[class], #fundsGrid .fund-card, #marketsGrid .market-panel').forEach(function(r){
+      var orig=r.style.display;
+      if(!q)r.style.display='';
+    });
+  },100);
+}
+function clearLiveSearch(){
+  var inp=document.getElementById('mktSearch');
+  if(inp){inp.value='';liveSearchFilter('');}
+}
+
+// Hook into render functions so search persists after re-renders
+(function(){
+  function hookRender(name){
+    if(typeof window[name]==='function'){
+      var orig=window[name];
+      window[name]=function(){
+        orig.apply(this,arguments);
+        setTimeout(function(){
+          var q=document.getElementById('mktSearch');
+          if(q&&q.value)liveSearchFilter(q.value);
+        },80);
+      };
+    }
+  }
+  hookRender('render');hookRender('applyFilters');hookRender('renderMarkets');hookRender('loadMore');
+})();
+
+@keyframes livepulse rule moved to CSS
 </script>
+<style>@keyframes livepulse{0%,100%{opacity:1}50%{opacity:.4}}</style>
 </body>
 </html>
