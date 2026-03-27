@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8"/>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23C9A84C'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%231A1714'/%3E%3Ccircle cx='16' cy='16' r='9' stroke='%231A1714' stroke-width='2' fill='none' opacity='.6'/%3E%3Ccircle cx='16' cy='16' r='14' stroke='%231A1714' stroke-width='1.5' fill='none' opacity='.3'/%3E%3C/svg%3E"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Neighborhood Scorecard — ReRadar</title>
   <link rel="stylesheet" href="../shared.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -95,34 +96,27 @@
   <nav class="sidebar"></nav>
   <div class="main-content">
     <div class="topbar">
-      <button class="topbar-menu-btn" aria-label="Open menu">&#9776;</button>
+      <button class="topbar-menu-btn" onclick="toggleSidebar()" style="display:none;background:none;border:none;color:var(--text2);cursor:pointer;padding:6px 10px;font-size:20px;line-height:1;border-radius:5px;transition:background .12s;">&#9776;</button>
       <div class="topbar-left">
-        <div class="topbar-eyebrow">Residential · Location Intelligence</div>
+        <div class="topbar-eyebrow">Residential · Location</div>
         <div class="topbar-title">Neighborhood Scorecard</div>
       </div>
       <div class="topbar-right">
         <span class="topbar-tag res">Residential</span>
-        <div class="topbar-live" id="liveIndicator">
-          <span class="live-dot"></span>
-          <span id="liveRate">Fetching rate...</span>
-        </div>
+        <span id="rateDisplay" style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:5px;"><span style="width:5px;height:5px;border-radius:50%;background:#4A8578;flex-shrink:0;"></span><span>Live</span></span>
       </div>
     </div>
-        <div class="topbar-title">Neighborhood Scorecard</div>
-      </div>
-      <div class="topbar-right"><span class="topbar-tag res">Residential</span></div>
+    <div style="display:flex;align-items:center;gap:0;padding:8px 20px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text3);">
+      <span style="font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-right:10px;">Sources</span>
+      <span>FBI UCR Crime Data · NCES School Data · Census ACS · BLS Employment</span>
+      <span style="margin-left:auto;color:var(--text4);">As of March 2026</span>
     </div>
     <div class="page-body">
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:9px 14px;background:var(--bg3);border-radius:7px;margin-bottom:18px;border:1px solid var(--border);font-size:10px;font-family:'JetBrains Mono',monospace;">
-  <span style="color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.1em">Sources</span>
-  <span style="color:var(--text3)"><span>FBI UCR Crime Data</span><span style="width:3px;height:3px;border-radius:50%;background:var(--border3);display:inline-block;margin:0 4px;vertical-align:middle"></span><span>NCES School Data</span><span style="width:3px;height:3px;border-radius:50%;background:var(--border3);display:inline-block;margin:0 4px;vertical-align:middle"></span><span>Census ACS</span><span style="width:3px;height:3px;border-radius:50%;background:var(--border3);display:inline-block;margin:0 4px;vertical-align:middle"></span><span>BLS Employment</span></span>
-  <span style="margin-left:auto;color:var(--text4);white-space:nowrap">As of March 2026</span>
-</div>
 
 <div class="page">
   <div class="page-eyebrow">Residential · Location Intelligence</div>
   <div class="page-title">Neighborhood Scorecard</div>
-  <p class="page-sub">Get a complete picture of any neighborhood — crime, schools, walkability, job growth, and rent trends — all in one place, explained in plain English.</p>
+  <p class="page-sub">Score any neighborhood across safety, schools, walkability, employment, and rent trends.</p>
 
   <div class="search-box">
     <div class="sf">
@@ -284,17 +278,31 @@ function renderScorecard(d) {
 }
 </script>
 </div></div></div>
-<button class="sidebar-toggle">☰</button>
 <script src="../shared.js"></script>
 <script>buildSidebar("neighborhood");</script>
 
-<script>
-if(typeof fetchMortgageRate==='function'){
-  fetchMortgageRate().then(r=>{
-    const el=document.getElementById('liveRate');
-    if(el) el.textContent='30yr: '+r.toFixed(2)+'%';
-  });
+<style>
+@keyframes livepulse{0%,100%{opacity:1}50%{opacity:.4}}
+@media(max-width:860px){
+  .sidebar{transform:translateX(-100%);transition:transform .25s;}
+  .sidebar.open{transform:translateX(0);}
+  .main-content{margin-left:0!important;}
+  .topbar-menu-btn{display:flex!important;align-items:center;justify-content:center;}
+  .topbar-tag{display:none;}
 }
+</style>
+<script>
+function toggleSidebar(){
+  var s=document.querySelector('.sidebar');
+  s.classList.toggle('open');
+  var ov=document.getElementById('__ov');
+  if(!ov){ov=document.createElement('div');ov.id='__ov';ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:190;';ov.onclick=function(){s.classList.remove('open');ov.style.display='none';};document.body.appendChild(ov);}
+  ov.style.display=s.classList.contains('open')?'block':'none';
+}
+if(typeof fetchMortgageRate==='function')fetchMortgageRate().then(function(r){
+  var el=document.getElementById('rateDisplay');
+  if(el)el.innerHTML='<span style="width:5px;height:5px;border-radius:50%;background:#4A8578;flex-shrink:0;animation:livepulse 2s infinite"></span><span>30yr: '+r.toFixed(2)+'%</span>';
+});
 </script>
 </body>
 </html>

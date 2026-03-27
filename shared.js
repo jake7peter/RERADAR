@@ -1,16 +1,4 @@
-// ReRadar — shared nav, math helpers, data utilities
-
-const TOOL_FOOTER_HTML = `
-<footer class="tool-footer">
-  <div class="tf-left">
-    <span class="tf-logo">Re<span>Radar</span></span>
-    <a href="/about" class="tf-link">About</a>
-    <a href="/privacy" class="tf-link">Privacy</a>
-    <a href="/terms" class="tf-link">Terms</a>
-    <a href="mailto:hello@reradar.co" class="tf-link">Contact</a>
-  </div>
-  <div class="tf-copy">© 2026 ReRadar · reradar.co</div>
-</footer>`;
+// ReRadar shared navigation, math helpers, data utilities
 
 const RES_TOOLS = [
   { id:'property-lookup', label:'Property Lookup',    icon:'<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="5.5" cy="5.5" r="4.2" stroke="currentColor" stroke-width="1.3" fill="none"/><line x1="8.8" y1="8.8" x2="12" y2="12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>' },
@@ -20,6 +8,7 @@ const RES_TOOLS = [
   { id:'neighborhood',    label:'Neighborhood Score', icon:'<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M7 4.5v2.8l1.5 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>' },
   { id:'market-timing',   label:'Market Timing',      icon:'<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polyline points="1.5,10.5 4,7 6.5,9 9.5,4 12.5,6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>' },
 ];
+
 const COM_TOOLS = [
   { id:'maturity-radar',  label:'Maturity Radar',     icon:'<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3" fill="none"/><circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="1.3" fill="none"/><circle cx="7" cy="7" r=".9" fill="currentColor"/></svg>' },
   { id:'distress',        label:'Distress Monitor',   icon:'<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2.5v4.5l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3" fill="none" opacity=".5"/></svg>' },
@@ -30,16 +19,17 @@ const COM_TOOLS = [
 ];
 
 function buildSidebar(activeTool) {
-  const isRes = RES_TOOLS.some(t => t.id === activeTool);
   const isCom = COM_TOOLS.some(t => t.id === activeTool);
 
-  const makeLinks = (tools, comActive) => tools.map(t => `
-    <a href="/tools/${t.id}" class="sidebar-link ${t.id===activeTool?'active'+(comActive?' com-active':''):''}">
+  const makeLinks = (tools, com) => tools.map(t => `
+    <a href="/tools/${t.id}" class="sidebar-link${t.id===activeTool?' active'+(com?' com-active':''):''}">
       ${t.icon} ${t.label}
-      <span class="sl-dot"></span>
     </a>`).join('');
 
-  document.querySelector('.sidebar').innerHTML = `
+  const nav = document.querySelector('.sidebar');
+  if (!nav) return;
+
+  nav.innerHTML = `
     <a href="/" class="sidebar-logo">
       <div class="sidebar-logo-mark">
         <svg viewBox="0 0 18 18" fill="none" width="15" height="15">
@@ -64,73 +54,45 @@ function buildSidebar(activeTool) {
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Back to home
       </a>
-      <div class="sidebar-version">reradar.co · v2026.1</div>
     </div>`;
 
-  // Inject footer
+  // Inject tool footer into main-content
   const mc = document.querySelector('.main-content');
   if (mc && !mc.querySelector('.tool-footer')) {
-    mc.insertAdjacentHTML('beforeend', TOOL_FOOTER_HTML);
+    mc.insertAdjacentHTML('beforeend', `
+      <footer class="tool-footer">
+        <div class="tf-left">
+          <span class="tf-logo">Re<span>Radar</span></span>
+          <a href="/about" class="tf-link">About</a>
+          <a href="/privacy" class="tf-link">Privacy</a>
+          <a href="/terms" class="tf-link">Terms</a>
+          <a href="mailto:hello@reradar.co" class="tf-link">Contact</a>
+        </div>
+        <div class="tf-copy">© 2026 ReRadar · reradar.co</div>
+      </footer>`);
   }
-
-  // Mobile overlay
-  let overlay = document.querySelector('.sidebar-overlay');
-  if (!overlay) {
-    overlay = document.createElement('div');
-    overlay.className = 'sidebar-overlay';
-    document.body.appendChild(overlay);
-  }
-
-  // Mobile toggle — topbar menu btn
-  const menuBtn = document.querySelector('.topbar-menu-btn');
-  if (menuBtn) {
-    menuBtn.addEventListener('click', () => {
-      document.querySelector('.sidebar').classList.toggle('open');
-      overlay.classList.toggle('show');
-    });
-  }
-  overlay.addEventListener('click', () => {
-    document.querySelector('.sidebar').classList.remove('open');
-    overlay.classList.remove('show');
-  });
 }
 
-// ── DATA ATTRIBUTION BAR ──
-function dataBar(sources, date) {
-  return `<div class="data-bar">
-    <span class="data-bar-label">Sources</span>
-    <div class="data-bar-sources">
-      ${sources.map((s,i) => `${i>0?'<span class="data-bar-dot"></span>':''}<span>${s}</span>`).join('')}
-    </div>
-    <span class="data-bar-date">As of ${date || 'March 2026'}</span>
-  </div>`;
-}
-
-// ── MARKET SEARCH ──
-function buildMarketSearch(placeholder, onInput) {
-  return `<div class="market-search">
-    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" style="color:var(--text3);flex-shrink:0">
-      <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.3" fill="none"/>
-      <line x1="10.2" y1="10.2" x2="13.5" y2="13.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-    </svg>
-    <input id="mktSearch" type="text" placeholder="${placeholder||'Search any market, city, or zip...'}"
-      oninput="${onInput||'liveFilter(this.value)'}"/>
-    <span class="search-count" id="searchCount"></span>
-    <button class="search-clear" onclick="clearSearch()">Clear</button>
-  </div>`;
-}
-
+// ── SEARCH FILTER (used by all commercial tools) ──
 function liveFilter(q) {
   const query = q.toLowerCase().trim();
-  const rows = document.querySelectorAll('[data-searchable]');
-  let n = 0;
+  // Target table rows, fund cards, market panels
+  const rows = document.querySelectorAll(
+    '#tableBody .table-row, #tableBody .trow, ' +
+    '#fundsGrid .fund-card, #marketsGrid .market-panel, ' +
+    '#marketsGrid .market-card, .searchable-row'
+  );
+  let visible = 0;
   rows.forEach(r => {
-    const match = !query || r.dataset.searchable.toLowerCase().includes(query);
-    r.style.display = match ? '' : 'none';
-    if (match) n++;
+    const text = r.textContent.toLowerCase();
+    const show = !query || text.includes(query);
+    r.style.display = show ? '' : 'none';
+    if (show) visible++;
   });
   const el = document.getElementById('searchCount');
-  if (el) el.textContent = query ? `${n} result${n!==1?'s':''}` : '';
+  if (el) el.textContent = query ? `${visible} result${visible !== 1 ? 's' : ''}` : '';
+  // Also trigger any existing filter function
+  if (typeof applyFilters === 'function' && !query) applyFilters();
 }
 
 function clearSearch() {
@@ -138,26 +100,26 @@ function clearSearch() {
   if (inp) { inp.value = ''; liveFilter(''); }
 }
 
-// ── MATH HELPERS ──
+// ── MATH ──
 const fmt     = n => '$' + Math.abs(Math.round(n)).toLocaleString();
-const fmtM    = n => n>=1e9 ? '$'+(n/1e9).toFixed(2)+'B' : n>=1e6 ? '$'+(n/1e6).toFixed(2)+'M' : fmt(n);
-const fmtSign = n => (n>=0?'+':'−')+'$'+Math.abs(Math.round(n)).toLocaleString();
-const pct     = (n,d=1) => (isFinite(n)?Math.abs(n).toFixed(d):'—')+'%';
-const pctSign = (n,d=1) => (n>=0?'+':'−')+Math.abs(n).toFixed(d)+'%';
+const fmtM    = n => n >= 1e9 ? '$' + (n/1e9).toFixed(2) + 'B' : n >= 1e6 ? '$' + (n/1e6).toFixed(2) + 'M' : fmt(n);
+const fmtSign = n => (n >= 0 ? '+' : '−') + '$' + Math.abs(Math.round(n)).toLocaleString();
+const pct     = (n, d=1) => (isFinite(n) ? Math.abs(n).toFixed(d) : '—') + '%';
+const pctSign = (n, d=1) => (n >= 0 ? '+' : '−') + Math.abs(n).toFixed(d) + '%';
 
 function calcMortgage(principal, annualRate, termYears) {
   if (!annualRate) return principal / (termYears * 12);
   const r = annualRate / 12, n = termYears * 12;
-  return principal * (r * Math.pow(1+r,n)) / (Math.pow(1+r,n)-1);
+  return principal * (r * Math.pow(1+r,n)) / (Math.pow(1+r,n) - 1);
 }
 
 function calcIRR(cfs) {
   let r = 0.1;
   for (let i = 0; i < 1000; i++) {
     let npv = 0, dnpv = 0;
-    cfs.forEach((c,t) => { npv+=c/Math.pow(1+r,t); dnpv-=t*c/Math.pow(1+r,t+1); });
-    const nr = r - npv/dnpv;
-    if (Math.abs(nr-r) < 1e-8) { r=nr; break; }
+    cfs.forEach((c, t) => { npv += c/Math.pow(1+r,t); dnpv -= t*c/Math.pow(1+r,t+1); });
+    const nr = r - npv / dnpv;
+    if (Math.abs(nr - r) < 1e-8) { r = nr; break; }
     r = isFinite(nr) ? nr : r + 0.01;
   }
   return r * 100;
@@ -165,17 +127,17 @@ function calcIRR(cfs) {
 
 function annualDepreciation(price) { return (price * 0.8) / 27.5; }
 
-// ── LIVE DATA ──
+function colorClass(v, good, bad) {
+  return v >= good ? 'good' : v <= bad ? 'bad' : 'ok';
+}
+
+// ── LIVE FRED RATE ──
 async function fetchMortgageRate() {
   try {
     const r = await fetch('https://fred.stlouisfed.org/graph/fredgraph.csv?id=MORTGAGE30US');
     const t = await r.text();
     const lines = t.trim().split('\n');
-    const val = parseFloat(lines[lines.length-1].split(',')[1]);
+    const val = parseFloat(lines[lines.length - 1].split(',')[1]);
     return isFinite(val) ? val : 7.24;
   } catch { return 7.24; }
-}
-
-function colorClass(v, good, bad) {
-  return v >= good ? 'good' : v <= bad ? 'bad' : 'ok';
 }
