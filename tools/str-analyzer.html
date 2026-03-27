@@ -1,0 +1,186 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>STR vs LTR Analyzer — ReRadar</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='3' fill='%232D4A3E'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%23F5F0E8'/%3E%3Ccircle cx='16' cy='16' r='8' stroke='%23F5F0E8' stroke-width='1.5' fill='none' opacity='.6'/%3E%3C/svg%3E"/>
+<link rel="stylesheet" href="../shared.css"/>
+</head><body>
+<div class="app-shell">
+<nav class="sidebar"></nav>
+<div class="main-content">
+<div class="topbar">
+  <button class="topbar-menu" onclick="toggleSidebar()">&#9776;</button>
+  <div class="topbar-left"><div class="topbar-eyebrow">Residential · Strategy</div><div class="topbar-title">STR vs Long-Term Rental</div></div>
+  <div class="topbar-right"><span class="topbar-tag">Residential</span><div class="topbar-rate"><span class="rate-dot"></span><span id="rateLabel">Live</span></div></div>
+</div>
+<div class="source-bar"><strong>Sources</strong> AirDNA market averages · Zillow ZORI · FRED (live rates) <span>As of March 2026</span></div>
+<div class="page-body">
+  <div class="page-hero">
+    <div class="page-title">STR vs <em>Long-Term Rental</em></div>
+    <p class="page-sub">Airbnb or traditional tenant? Enter your numbers for both scenarios and get a full side-by-side monthly breakdown showing which strategy puts more money in your pocket.</p>
+  </div>
+
+  <div class="grid-2 mb-20">
+    <!-- SHARED INPUTS -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">Property &amp; Financing</span></div>
+      <div class="card-body">
+        <div class="ip-section">Property</div>
+        <div class="ip-row"><span class="ip-label">Purchase price</span><input class="ip-input" id="price" value="420000" onchange="calc()"/></div>
+        <div class="ip-row"><span class="ip-label">Down payment %</span><input class="ip-input" id="down" value="20" onchange="calc()"/></div>
+        <div class="ip-row"><span class="ip-label">Interest rate %</span><input class="ip-input" id="ir" value="7.24" onchange="calc()"/></div>
+        <div class="ip-row"><span class="ip-label">Loan term (years)</span><input class="ip-input" id="term" value="30" onchange="calc()"/></div>
+        <div class="ip-section">Shared Monthly Expenses</div>
+        <div class="ip-row"><span class="ip-label">Property taxes /mo</span><input class="ip-input" id="taxes" value="425" onchange="calc()"/></div>
+        <div class="ip-row"><span class="ip-label">Insurance /mo</span><input class="ip-input" id="ins" value="150" onchange="calc()"/></div>
+        <div class="ip-row"><span class="ip-label">HOA fees /mo</span><input class="ip-input" id="hoa" value="0" onchange="calc()"/></div>
+        <div class="ip-row"><span class="ip-label">Maintenance /mo</span><input class="ip-input" id="maint" value="200" onchange="calc()"/></div>
+        <div class="ip-section">Short-Term Rental (Airbnb)</div>
+        <div class="ip-row"><span class="ip-label">Avg nightly rate</span><input class="ip-input" id="nightly" value="185" onchange="calc()"/></div>
+        <div class="ip-row"><span class="ip-label">Occupancy rate %</span><input class="ip-input" id="occ" value="68" onchange="calc()"/></div>
+        <div class="ip-row"><span class="ip-label">Platform fee %</span><input class="ip-input" id="fee" value="3" onchange="calc()"/></div>
+        <div class="ip-row"><span class="ip-label">Cleaning /stay (avg)</span><input class="ip-input" id="clean" value="85" onchange="calc()"/></div>
+        <div class="ip-row"><span class="ip-label">Avg stays per month</span><input class="ip-input" id="stays" value="7" onchange="calc()"/></div>
+        <div class="ip-row"><span class="ip-label">STR mgmt fee %</span><input class="ip-input" id="strMgmt" value="20" onchange="calc()"/></div>
+        <div class="ip-row"><span class="ip-label">STR-specific supplies /mo</span><input class="ip-input" id="supplies" value="150" onchange="calc()"/></div>
+        <div class="ip-section">Long-Term Rental</div>
+        <div class="ip-row"><span class="ip-label">Monthly rent</span><input class="ip-input" id="ltrRent" value="2400" onchange="calc()"/></div>
+        <div class="ip-row"><span class="ip-label">Vacancy rate %</span><input class="ip-input" id="ltrVac" value="8" onchange="calc()"/></div>
+        <div class="ip-row"><span class="ip-label">Property mgmt %</span><input class="ip-input" id="ltrMgmt" value="10" onchange="calc()"/></div>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div>
+      <div id="verdictBox" class="mb-12"></div>
+      <div class="grid-2 mb-12">
+        <div class="metric-block" style="border-left:3px solid var(--gold);">
+          <div class="metric-label">STR Monthly Net</div>
+          <div class="metric-value" id="mStrNet">—</div>
+          <div class="metric-note">After all STR expenses &amp; mortgage</div>
+        </div>
+        <div class="metric-block" style="border-left:3px solid var(--green);">
+          <div class="metric-label">LTR Monthly Net</div>
+          <div class="metric-value" id="mLtrNet">—</div>
+          <div class="metric-note">After all LTR expenses &amp; mortgage</div>
+        </div>
+        <div class="metric-block">
+          <div class="metric-label">STR Annual Gross</div>
+          <div class="metric-value" id="mStrGross">—</div>
+          <div class="metric-note">Nightly × occupancy × 365</div>
+        </div>
+        <div class="metric-block">
+          <div class="metric-label">LTR Annual Gross</div>
+          <div class="metric-value" id="mLtrGross">—</div>
+          <div class="metric-note">Monthly rent × occupancy</div>
+        </div>
+      </div>
+
+      <div class="card mb-12">
+        <div class="card-header"><span class="card-title">Monthly Comparison</span></div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr style="background:var(--cream2);">
+              <th style="padding:8px 12px;text-align:left;font-size:8.5px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);border-bottom:1px solid var(--border2);">Line Item</th>
+              <th style="padding:8px 12px;text-align:right;font-size:8.5px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.09em;color:var(--gold);border-bottom:1px solid var(--border2);">STR / Airbnb</th>
+              <th style="padding:8px 12px;text-align:right;font-size:8.5px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.09em;color:var(--green);border-bottom:1px solid var(--border2);">Long-Term</th>
+            </tr></thead>
+            <tbody id="compareBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" style="background:var(--cream2);">
+        <div class="card-body" style="font-size:12.5px;color:var(--text2);line-height:1.75;font-weight:300;" id="analysis"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<script src="../shared.js"></script>
+<script>
+buildSidebar('str-analyzer');
+fetchRate().then(r=>{document.getElementById('ir').value=r.toFixed(2);document.getElementById('rateLabel').textContent='30yr: '+r.toFixed(2)+'%';calc();});
+
+function calc(){
+  const price=+document.getElementById('price').value||0;
+  const down=+document.getElementById('down').value/100;
+  const ir=+document.getElementById('ir').value/100;
+  const term=+document.getElementById('term').value;
+  const taxes=+document.getElementById('taxes').value||0;
+  const ins=+document.getElementById('ins').value||0;
+  const hoa=+document.getElementById('hoa').value||0;
+  const maint=+document.getElementById('maint').value||0;
+  const nightly=+document.getElementById('nightly').value||0;
+  const occ=+document.getElementById('occ').value/100;
+  const feePct=+document.getElementById('fee').value/100;
+  const clean=+document.getElementById('clean').value||0;
+  const stays=+document.getElementById('stays').value||0;
+  const strMgmtPct=+document.getElementById('strMgmt').value/100;
+  const supplies=+document.getElementById('supplies').value||0;
+  const ltrRent=+document.getElementById('ltrRent').value||0;
+  const ltrVacPct=+document.getElementById('ltrVac').value/100;
+  const ltrMgmtPct=+document.getElementById('ltrMgmt').value/100;
+  if(!price||!nightly||!ltrRent)return;
+
+  const loan=price*(1-down);
+  const payment=calcMortgage(loan,ir,term);
+  const sharedExp=taxes+ins+hoa+maint;
+
+  // STR
+  const strGrossMo=nightly*occ*30.4;
+  const strPlatformFee=strGrossMo*feePct;
+  const strCleanTotal=clean*stays;
+  const strMgmtFee=strGrossMo*strMgmtPct;
+  const strNet=strGrossMo-strPlatformFee-strCleanTotal-strMgmtFee-supplies-sharedExp-payment;
+
+  // LTR
+  const ltrGrossMo=ltrRent*(1-ltrVacPct);
+  const ltrMgmtFee=ltrGrossMo*ltrMgmtPct;
+  const ltrNet=ltrGrossMo-ltrMgmtFee-sharedExp-payment;
+
+  document.getElementById('mStrNet').textContent=fmt(strNet)+'/mo';
+  document.getElementById('mStrNet').className='metric-value '+(strNet>=0?'good':'bad');
+  document.getElementById('mLtrNet').textContent=fmt(ltrNet)+'/mo';
+  document.getElementById('mLtrNet').className='metric-value '+(ltrNet>=0?'good':'bad');
+  document.getElementById('mStrGross').textContent=fmt(strGrossMo*12)+'/yr';
+  document.getElementById('mLtrGross').textContent=fmt(ltrRent*12)+'/yr';
+
+  const rows=[
+    ['Gross revenue',strGrossMo,ltrGrossMo,false],
+    ['Platform / vacancy cost',strPlatformFee+strCleanTotal+strMgmtFee+supplies,ltrGrossMo-ltrGrossMo+ltrMgmtFee+(ltrRent*ltrVacPct),true],
+    ['Net revenue',strGrossMo-(strPlatformFee+strCleanTotal+strMgmtFee+supplies),ltrGrossMo-ltrMgmtFee,false],
+    ['Property taxes',taxes,taxes,true],
+    ['Insurance',ins,ins,true],
+    ['HOA',hoa,hoa,true],
+    ['Maintenance',maint,maint,true],
+    ['Mortgage payment',payment,payment,true],
+    ['Monthly net cash flow',strNet,ltrNet,false],
+  ];
+  const winner=strNet>ltrNet?'str':'ltr';
+  document.getElementById('compareBody').innerHTML=rows.map((r,i)=>{
+    const isTotal=i===rows.length-1;
+    const sStyle=isTotal?(strNet>=0?'color:var(--green-mid)':'color:var(--red)'):'';
+    const lStyle=isTotal?(ltrNet>=0?'color:var(--green-mid)':'color:var(--red)'):'';
+    return`<tr style="${isTotal?'background:var(--cream2);font-weight:600;':''}border-bottom:1px solid var(--border);">
+      <td style="padding:8px 12px;font-size:12.5px;color:var(--text2);">${r[0]}</td>
+      <td style="padding:8px 12px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:11.5px;${sStyle}">${r[3]?'−':''}${fmt(r[1])}</td>
+      <td style="padding:8px 12px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:11.5px;${lStyle}">${r[3]?'−':''}${fmt(r[2])}</td>
+    </tr>`;
+  }).join('');
+
+  const diff=Math.abs(strNet-ltrNet);
+  const winLabel=winner==='str'?'Short-Term Rental (Airbnb)':'Long-Term Rental';
+  const annualAdv=diff*12;
+  document.getElementById('analysis').innerHTML=`<strong>${winLabel}</strong> generates ${fmt(diff)}/month more — or <strong>${fmt(annualAdv)}/year</strong> — under these assumptions.<br><br>Keep in mind: STR income is less predictable, requires active management (or a manager at ${pct(strMgmtPct*100,0)}), and may be subject to local short-term rental regulations. LTR provides stable, hands-off income but caps your upside. The right choice depends on your market, your bandwidth, and whether local rules allow STR.`;
+
+  let cls,icon,title,text;
+  if(winner==='str'&&strNet>0){cls='strong';icon='★';title=`STR wins by ${fmt(diff)}/month`;text=`At ${pct(occ*100,0)} occupancy and $${nightly}/night, the short-term rental strategy generates ${fmt(strNet)}/month — ${fmt(diff)}/month more than the long-term rental. Annual advantage: ${fmt(annualAdv)}.`;}
+  else if(winner==='ltr'&&ltrNet>0){cls='strong';icon='★';title=`Long-term rental wins by ${fmt(diff)}/month`;text=`The long-term rental generates ${fmt(ltrNet)}/month in stable cash flow — ${fmt(diff)}/month more than STR under these assumptions. Unless you can significantly improve occupancy or nightly rate, traditional rental is the better play here.`;}
+  else{cls='moderate';icon='~';title='Both strategies are close — dig into the details';text=`The difference is only ${fmt(diff)}/month. At this margin, the decision should be driven by factors beyond the numbers: local STR regulations, your management bandwidth, and the stability of long-term tenancy.`;}
+  document.getElementById('verdictBox').innerHTML=`<div class="verdict ${cls}"><div class="verdict-icon">${icon}</div><div><div class="verdict-title">${title}</div><div class="verdict-text">${text}</div></div></div>`;
+}
+calc();
+</script>
+</body></html>

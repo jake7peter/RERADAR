@@ -1,0 +1,160 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>BRRRR Calculator — ReRadar</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='3' fill='%232D4A3E'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%23F5F0E8'/%3E%3Ccircle cx='16' cy='16' r='8' stroke='%23F5F0E8' stroke-width='1.5' fill='none' opacity='.6'/%3E%3C/svg%3E"/>
+<link rel="stylesheet" href="../shared.css"/>
+</head><body>
+<div class="app-shell">
+<nav class="sidebar"></nav>
+<div class="main-content">
+<div class="topbar">
+  <button class="topbar-menu" onclick="toggleSidebar()">&#9776;</button>
+  <div class="topbar-left"><div class="topbar-eyebrow">Residential · Strategy</div><div class="topbar-title">BRRRR Calculator</div></div>
+  <div class="topbar-right"><span class="topbar-tag">Residential</span><div class="topbar-rate"><span class="rate-dot"></span><span id="rateLabel">Live</span></div></div>
+</div>
+<div class="source-bar"><strong>Sources</strong> FRED (live rates) · Redfin Data Center <span>As of March 2026</span></div>
+<div class="page-body">
+  <div class="page-hero">
+    <div class="page-title">BRRRR <em>Calculator</em></div>
+    <p class="page-sub">Model the full Buy-Rehab-Rent-Refinance-Repeat cycle. See exactly how much capital you pull back out, what stays in the deal, and whether post-refinance cash flow actually works.</p>
+  </div>
+
+  <div class="grid-2 mb-20">
+    <div>
+      <div class="card mb-12">
+        <div class="card-header"><span class="card-title">Buy &amp; Rehab</span></div>
+        <div class="card-body">
+          <div class="ip-row"><span class="ip-label">Purchase price</span><input class="ip-input" id="buyPrice" value="185000" onchange="calc()"/></div>
+          <div class="ip-row"><span class="ip-label">Rehab cost</span><input class="ip-input" id="rehab" value="45000" onchange="calc()"/></div>
+          <div class="ip-row"><span class="ip-label">Closing costs (buy)</span><input class="ip-input" id="buyClose" value="4500" onchange="calc()"/></div>
+          <div class="ip-row"><span class="ip-label">Holding costs (monthly)</span><input class="ip-input" id="hold" value="1200" onchange="calc()"/></div>
+          <div class="ip-row"><span class="ip-label">Rehab timeline (months)</span><input class="ip-input" id="timeline" value="4" onchange="calc()"/></div>
+        </div>
+      </div>
+      <div class="card mb-12">
+        <div class="card-header"><span class="card-title">Refinance</span></div>
+        <div class="card-body">
+          <div class="ip-row"><span class="ip-label">After-repair value (ARV)</span><input class="ip-input" id="arv" value="280000" onchange="calc()"/></div>
+          <div class="ip-row"><span class="ip-label">Refi LTV %</span><input class="ip-input" id="ltv" value="75" onchange="calc()"/></div>
+          <div class="ip-row"><span class="ip-label">Refi interest rate %</span><input class="ip-input" id="refiRate" value="7.24" onchange="calc()"/></div>
+          <div class="ip-row"><span class="ip-label">Refi loan term (years)</span><input class="ip-input" id="refiTerm" value="30" onchange="calc()"/></div>
+          <div class="ip-row"><span class="ip-label">Refi closing costs</span><input class="ip-input" id="refiClose" value="6000" onchange="calc()"/></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Rental Income</span></div>
+        <div class="card-body">
+          <div class="ip-row"><span class="ip-label">Monthly rent</span><input class="ip-input" id="rent" value="1850" onchange="calc()"/></div>
+          <div class="ip-row"><span class="ip-label">Vacancy rate %</span><input class="ip-input" id="vac" value="8" onchange="calc()"/></div>
+          <div class="ip-row"><span class="ip-label">Operating expenses %</span><input class="ip-input" id="exp" value="35" onchange="calc()"/></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div id="verdictBox" class="mb-12"></div>
+      <div class="grid-2 mb-12">
+        <div class="metric-block"><div class="metric-label">Total Cash Invested</div><div class="metric-value" id="mTotalIn">—</div><div class="metric-note">Buy + rehab + carry</div></div>
+        <div class="metric-block"><div class="metric-label">Cash Pulled Out</div><div class="metric-value" id="mOut">—</div><div class="metric-note">Refi proceeds</div></div>
+        <div class="metric-block"><div class="metric-label">Capital Left In</div><div class="metric-value" id="mLeft">—</div><div class="metric-note">Your remaining equity at risk</div></div>
+        <div class="metric-block"><div class="metric-label">Post-Refi CoC</div><div class="metric-value" id="mCoC">—</div><div class="metric-note">On capital left in deal</div></div>
+        <div class="metric-block"><div class="metric-label">Post-Refi Cash Flow</div><div class="metric-value" id="mCF">—</div><div class="metric-note">Monthly, after debt service</div></div>
+        <div class="metric-block"><div class="metric-label">Equity Created</div><div class="metric-value" id="mEquity">—</div><div class="metric-note">ARV minus total loan</div></div>
+      </div>
+
+      <div class="card mb-12">
+        <div class="card-header"><span class="card-title">Capital Stack</span></div>
+        <div class="card-body" style="padding:0;"><table class="cf-table" id="stackTable"></table></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Post-Refinance Cash Flow</span></div>
+        <div class="card-body" style="padding:0;"><table class="cf-table" id="cfTable"></table></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<script src="../shared.js"></script>
+<script>
+buildSidebar('brrrr');
+fetchRate().then(r=>{document.getElementById('refiRate').value=r.toFixed(2);document.getElementById('rateLabel').textContent='30yr: '+r.toFixed(2)+'%';calc();});
+
+function calc(){
+  const buyPrice=+document.getElementById('buyPrice').value||0;
+  const rehab=+document.getElementById('rehab').value||0;
+  const buyClose=+document.getElementById('buyClose').value||0;
+  const holdMo=+document.getElementById('hold').value||0;
+  const months=+document.getElementById('timeline').value||0;
+  const arv=+document.getElementById('arv').value||0;
+  const ltv=+document.getElementById('ltv').value/100;
+  const refiRate=+document.getElementById('refiRate').value/100;
+  const refiTerm=+document.getElementById('refiTerm').value;
+  const refiClose=+document.getElementById('refiClose').value||0;
+  const rent=+document.getElementById('rent').value||0;
+  const vac=+document.getElementById('vac').value/100;
+  const expPct=+document.getElementById('exp').value/100;
+  if(!buyPrice||!arv||!rent)return;
+
+  const holdTotal=holdMo*months;
+  const totalIn=buyPrice+rehab+buyClose+holdTotal;
+  const refiLoan=arv*ltv;
+  const cashOut=refiLoan-refiClose;
+  const netCashOut=cashOut;
+  const leftIn=totalIn-netCashOut;
+  const payment=calcMortgage(refiLoan,refiRate,refiTerm);
+  const grossRent=rent*12;
+  const effRent=grossRent*(1-vac);
+  const noi=effRent*(1-expPct);
+  const annualDebt=payment*12;
+  const cashFlow=noi-annualDebt;
+  const equity=arv-refiLoan;
+  const coc=leftIn>0?cashFlow/leftIn:Infinity;
+  const isInfinite=leftIn<=0;
+
+  document.getElementById('mTotalIn').textContent=fmt(totalIn);
+  document.getElementById('mOut').textContent=fmt(netCashOut);
+  document.getElementById('mLeft').textContent=isInfinite?'$0 ✓':fmt(leftIn);
+  document.getElementById('mLeft').className='metric-value '+(isInfinite?'good':leftIn<totalIn*0.2?'good':'ok');
+  document.getElementById('mCoC').textContent=isInfinite?'∞':pct(coc*100);
+  document.getElementById('mCoC').className='metric-value '+(isInfinite||coc>=.08?'good':coc>=.04?'ok':'bad');
+  document.getElementById('mCF').textContent=fmt(cashFlow/12)+'/mo';
+  document.getElementById('mCF').className='metric-value '+(cashFlow>=0?'good':'bad');
+  document.getElementById('mEquity').textContent=fmt(equity);
+  document.getElementById('mEquity').className='metric-value good';
+
+  document.getElementById('stackTable').innerHTML=`
+    <tr class="cf-section"><td colspan="2">Cash deployed</td></tr>
+    <tr><td>Purchase price</td><td>${fmt(buyPrice)}</td></tr>
+    <tr><td>Rehab cost</td><td>${fmt(rehab)}</td></tr>
+    <tr><td>Buying closing costs</td><td>${fmt(buyClose)}</td></tr>
+    <tr><td>Holding costs (${months} mo × ${fmt(holdMo)})</td><td>${fmt(holdTotal)}</td></tr>
+    <tr class="cf-total"><td>Total cash in</td><td>${fmt(totalIn)}</td></tr>
+    <tr class="cf-section"><td colspan="2">Refinance</td></tr>
+    <tr><td>ARV</td><td>${fmt(arv)}</td></tr>
+    <tr><td>Refi loan (${pct(ltv*100,0)} LTV)</td><td>${fmt(refiLoan)}</td></tr>
+    <tr class="cf-neg"><td>Refi closing costs</td><td>−${fmt(refiClose)}</td></tr>
+    <tr class="cf-pos"><td>Net cash pulled out</td><td>${fmt(netCashOut)}</td></tr>
+    <tr class="${isInfinite?'cf-pos':'cf-sub'}"><td>Capital left in deal</td><td>${isInfinite?'$0 — full recycle!':fmt(leftIn)}</td></tr>`;
+
+  document.getElementById('cfTable').innerHTML=`
+    <tr class="cf-section"><td colspan="2">Post-refi annual cash flow</td></tr>
+    <tr class="cf-pos"><td>Gross rental income</td><td>${fmt(grossRent)}</td></tr>
+    <tr class="cf-neg"><td>Vacancy + operating expenses</td><td>−${fmt(grossRent-noi)}</td></tr>
+    <tr class="cf-sub"><td>Net operating income</td><td>${fmt(noi)}</td></tr>
+    <tr class="cf-neg"><td>Annual debt service</td><td>−${fmt(annualDebt)}</td></tr>
+    <tr class="cf-total"><td>Annual cash flow</td><td>${cashFlow>=0?'+':''}${fmt(cashFlow)}</td></tr>
+    <tr><td style="font-size:10px;color:var(--text4)">Monthly cash flow</td><td style="font-size:11px;">${fmt(cashFlow/12)}/mo</td></tr>`;
+
+  let cls,icon,title,text;
+  if(isInfinite){cls='strong';icon='✓';title='Infinite return — full capital recycle';text=`You pulled out more than you put in. Your capital left in this deal is $0 or less, meaning you've achieved an infinite cash-on-cash return. Post-refi cash flow of ${fmt(cashFlow/12)}/month is free money on zero invested capital. This is the BRRRR ideal.`;}
+  else if(leftIn<totalIn*0.25&&cashFlow>=0){cls='strong';icon='✓';title='Excellent BRRRR — minimal capital left in';text=`You pulled out ${pct((netCashOut/totalIn)*100)} of your invested capital. Only ${fmt(leftIn)} remains in the deal. Post-refi cash flow of ${fmt(cashFlow/12)}/month represents a ${pct(coc*100)} return on that remaining capital — well above market.`;}
+  else if(cashFlow>=0){cls='moderate';icon='~';title='Solid deal — capital still working hard';text=`${fmt(leftIn)} remains in the deal after refinancing, generating ${fmt(cashFlow/12)}/month in cash flow — a ${pct(coc*100)} return on invested capital. Not a full recycle, but the equity created (${fmt(equity)}) and ongoing cash flow make this a productive use of capital.`;}
+  else{cls='weak';icon='✗';title='Post-refi cash flow is negative';text=`After the refinance, debt service exceeds NOI by ${fmt(Math.abs(cashFlow/12))}/month. Review your rent estimate, the LTV, or the refi rate. A lower ARV assumption or higher rate may also be affecting the outcome.`;}
+  document.getElementById('verdictBox').innerHTML=`<div class="verdict ${cls}"><div class="verdict-icon">${icon}</div><div><div class="verdict-title">${title}</div><div class="verdict-text">${text}</div></div></div>`;
+}
+calc();
+</script>
+</body></html>

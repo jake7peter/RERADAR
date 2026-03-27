@@ -1,0 +1,244 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Property Lookup — ReRadar</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='3' fill='%232D4A3E'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%23F5F0E8'/%3E%3Ccircle cx='16' cy='16' r='8' stroke='%23F5F0E8' stroke-width='1.5' fill='none' opacity='.6'/%3E%3C/svg%3E"/>
+<link rel="stylesheet" href="../shared.css"/>
+</head><body>
+<div class="app-shell">
+<nav class="sidebar"></nav>
+<div class="main-content">
+<div class="topbar">
+  <button class="topbar-menu" onclick="toggleSidebar()">&#9776;</button>
+  <div class="topbar-left">
+    <div class="topbar-eyebrow">Residential · Property Analysis</div>
+    <div class="topbar-title">Property Lookup &amp; Analysis</div>
+  </div>
+  <div class="topbar-right">
+    <span class="topbar-tag">Residential</span>
+    <div class="topbar-rate"><span class="rate-dot"></span><span id="rateLabel">Live</span></div>
+  </div>
+</div>
+<div class="source-bar"><strong>Sources</strong> Zillow Research · FRED (live rates) · Census Bureau · County public records <span>As of March 2026</span></div>
+<div class="page-body">
+  <div class="page-hero">
+    <div class="page-kicker">Residential · Property Analysis</div>
+    <div class="page-title">Property Lookup &amp; <em>Analysis</em></div>
+    <p class="page-sub">Search any US address. Get a plain-English financial overview — or go deep with a full 10-year cash flow model, depreciation schedule, equity buildup, and IRR.</p>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="card mb-20">
+    <div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+      <div style="flex:1;min-width:260px;">
+        <label class="field-label">Property address</label>
+        <input class="field-input" id="addrInput" type="text" placeholder="e.g. 123 Main St, Austin, TX 78701" onkeydown="if(event.key==='Enter')analyze()"/>
+      </div>
+      <div style="width:140px;">
+        <label class="field-label">Purchase price</label>
+        <input class="field-input" id="priceInput" type="number" placeholder="450000"/>
+      </div>
+      <div style="width:140px;">
+        <label class="field-label">Monthly rent est.</label>
+        <input class="field-input" id="rentInput" type="number" placeholder="2800"/>
+      </div>
+      <button class="btn btn-primary" onclick="analyze()">Analyze Property</button>
+    </div>
+  </div>
+
+  <div id="results" style="display:none;">
+    <!-- VERDICT -->
+    <div id="verdictBox" class="mb-20"></div>
+
+    <!-- KEY METRICS -->
+    <div class="grid-4 mb-20">
+      <div class="metric-block"><div class="metric-label">Cap Rate</div><div class="metric-value" id="mCapRate">—</div><div class="metric-note">Net income ÷ purchase price</div></div>
+      <div class="metric-block"><div class="metric-label">Cash-on-Cash</div><div class="metric-value" id="mCoC">—</div><div class="metric-note">Annual cash flow ÷ cash invested</div></div>
+      <div class="metric-block"><div class="metric-label">Monthly Cash Flow</div><div class="metric-value" id="mCF">—</div><div class="metric-note">After debt service</div></div>
+      <div class="metric-block"><div class="metric-label">10-Year IRR</div><div class="metric-value" id="mIRR">—</div><div class="metric-note">Levered, with 3% appreciation</div></div>
+    </div>
+
+    <div class="grid-2 mb-20">
+      <!-- ANNUAL CASH FLOW -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Year 1 Cash Flow</span></div>
+        <div class="card-body" style="padding:0;">
+          <table class="cf-table" id="cfTable"></table>
+        </div>
+      </div>
+      <!-- ASSUMPTIONS -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Assumptions</span><button class="btn btn-ghost" style="font-size:11px;padding:4px 10px;" onclick="toggleAssumptions()">Edit</button></div>
+        <div class="card-body" id="assumCard">
+          <div class="ip-section">Financing</div>
+          <div class="ip-row"><span class="ip-label">Down payment %</span><input class="ip-input" id="aDown" value="25" onchange="reCalc()"/></div>
+          <div class="ip-row"><span class="ip-label">Interest rate %</span><input class="ip-input" id="aRate" value="7.24" onchange="reCalc()"/></div>
+          <div class="ip-row"><span class="ip-label">Loan term (years)</span><input class="ip-input" id="aTerm" value="30" onchange="reCalc()"/></div>
+          <div class="ip-section">Operating</div>
+          <div class="ip-row"><span class="ip-label">Vacancy rate %</span><input class="ip-input" id="aVac" value="8" onchange="reCalc()"/></div>
+          <div class="ip-row"><span class="ip-label">Operating expenses %</span><input class="ip-input" id="aExp" value="35" onchange="reCalc()"/></div>
+          <div class="ip-row"><span class="ip-label">Annual appreciation %</span><input class="ip-input" id="aAppx" value="3" onchange="reCalc()"/></div>
+          <div class="ip-row"><span class="ip-label">Rent growth %/yr</span><input class="ip-input" id="aRentG" value="2.5" onchange="reCalc()"/></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10-YEAR TABLE -->
+    <div class="card mb-20">
+      <div class="card-header"><span class="card-title">10-Year Projection</span><span style="font-size:10px;color:var(--text4);font-family:'JetBrains Mono',monospace;">3% appreciation · 2.5% rent growth</span></div>
+      <div style="overflow-x:auto;">
+        <table class="yr-table" id="yrTable"></table>
+      </div>
+    </div>
+
+    <!-- PLAIN ENGLISH -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">Plain English Summary</span></div>
+      <div class="card-body" id="plainEnglish" style="font-size:13.5px;color:var(--text2);line-height:1.8;font-weight:300;"></div>
+    </div>
+  </div>
+
+  <div id="emptyState" class="empty-state">
+    <div class="empty-icon">🏡</div>
+    <div class="empty-title">Search any property</div>
+    <p class="empty-sub">Enter an address above along with the purchase price and estimated rent to generate a full financial analysis.</p>
+  </div>
+</div>
+</div>
+</div>
+
+<script src="../shared.js"></script>
+<script>
+buildSidebar('property-lookup');
+fetchRate().then(r=>{LIVERATE=r;document.getElementById('rateLabel').textContent='30yr: '+r.toFixed(2)+'%';document.getElementById('aRate').value=r.toFixed(2);});
+let LIVERATE=7.24;
+
+function analyze(){
+  const addr=document.getElementById('addrInput').value.trim();
+  const price=parseFloat(document.getElementById('priceInput').value)||0;
+  const rent=parseFloat(document.getElementById('rentInput').value)||0;
+  if(!addr||!price||!rent){alert('Please enter an address, purchase price, and monthly rent.');return;}
+  document.getElementById('emptyState').style.display='none';
+  document.getElementById('results').style.display='block';
+  reCalc();
+}
+
+function reCalc(){
+  const price=parseFloat(document.getElementById('priceInput').value)||0;
+  const rent=parseFloat(document.getElementById('rentInput').value)||0;
+  const down=parseFloat(document.getElementById('aDown').value)/100;
+  const rate=parseFloat(document.getElementById('aRate').value)/100;
+  const term=parseFloat(document.getElementById('aTerm').value);
+  const vac=parseFloat(document.getElementById('aVac').value)/100;
+  const expPct=parseFloat(document.getElementById('aExp').value)/100;
+  const appx=parseFloat(document.getElementById('aAppx').value)/100;
+  const rentG=parseFloat(document.getElementById('aRentG').value)/100;
+
+  if(!price||!rent)return;
+
+  const downAmt=price*down;
+  const loan=price-downAmt;
+  const payment=calcMortgage(loan,rate,term);
+  const grossRent=rent*12;
+  const effRent=grossRent*(1-vac);
+  const opExp=effRent*expPct;
+  const noi=effRent-opExp;
+  const annualDebt=payment*12;
+  const cashFlow=noi-annualDebt;
+  const capRate=noi/price;
+  const coc=cashFlow/downAmt;
+  const depr=annualDepr(price);
+
+  // Update metrics
+  const cfClass=colorClass(cashFlow/12,200,-1);
+  const cocClass=colorClass(coc*100,7,3);
+  const capClass=colorClass(capRate*100,6,4);
+  document.getElementById('mCapRate').textContent=pct(capRate*100);
+  document.getElementById('mCapRate').className='metric-value '+capClass;
+  document.getElementById('mCoC').textContent=pct(coc*100);
+  document.getElementById('mCoC').className='metric-value '+cocClass;
+  document.getElementById('mCF').textContent=fmt(cashFlow/12)+'/mo';
+  document.getElementById('mCF').className='metric-value '+(cashFlow>=0?'good':'bad');
+  
+  // 10-year IRR
+  const exitVal=price*Math.pow(1+appx,10);
+  let loanBal=loan;
+  const cashflows=[-downAmt];
+  for(let y=1;y<=10;y++){
+    const r=rent*12*Math.pow(1+rentG,y-1);
+    const eff=r*(1-vac);
+    const exp=eff*expPct;
+    const n=eff-exp;
+    let interest=0,principal=0;
+    for(let m=0;m<12;m++){interest=loanBal*(rate/12);principal=payment-interest;loanBal-=principal;}
+    cashflows.push(y<10?n-annualDebt:n-annualDebt+exitVal-loanBal);
+  }
+  const irr=calcIRR(cashflows);
+  document.getElementById('mIRR').textContent=pct(irr);
+  document.getElementById('mIRR').className='metric-value '+colorClass(irr,10,6);
+
+  // CF Table
+  document.getElementById('cfTable').innerHTML=`
+    <tr class="cf-section"><td colspan="2">Income</td></tr>
+    <tr class="cf-pos"><td>Gross rental income</td><td>${fmt(grossRent)}</td></tr>
+    <tr class="cf-neg"><td>Vacancy (${pct(vac*100,0)})</td><td>−${fmt(grossRent*vac)}</td></tr>
+    <tr class="cf-sub"><td>Effective gross income</td><td>${fmt(effRent)}</td></tr>
+    <tr class="cf-section"><td colspan="2">Expenses</td></tr>
+    <tr class="cf-neg"><td>Operating expenses (${pct(expPct*100,0)} of EGI)</td><td>−${fmt(opExp)}</td></tr>
+    <tr class="cf-sub"><td>Net operating income</td><td>${fmt(noi)}</td></tr>
+    <tr class="cf-neg"><td>Annual debt service</td><td>−${fmt(annualDebt)}</td></tr>
+    <tr class="cf-total"><td>Annual cash flow</td><td>${cashFlow>=0?'+':''}${fmt(cashFlow)}</td></tr>
+    <tr class="cf-section"><td colspan="2">Tax benefit</td></tr>
+    <tr class="cf-pos"><td>Annual depreciation (27.5yr)</td><td>${fmt(depr)}</td></tr>
+    <tr><td style="font-size:10px;color:var(--text4);">Est. tax benefit (24% bracket)</td><td style="font-size:10.5px;color:var(--text3);">${fmt(depr*0.24)}</td></tr>`;
+
+  // 10-Year table
+  let yrHtml=`<tr><th>Year</th><th>Gross Rent</th><th>NOI</th><th>Debt Service</th><th>Cash Flow</th><th>Property Value</th><th>Equity</th><th>Cumul. CF</th></tr>`;
+  let bal=loan,cumCF=0,yrLoanBal=loan;
+  for(let y=1;y<=10;y++){
+    const r=rent*12*Math.pow(1+rentG,y-1);
+    const eff=r*(1-vac);
+    const n=eff-eff*expPct;
+    let int=0,prin=0;
+    for(let m=0;m<12;m++){int=yrLoanBal*(rate/12);prin=payment-int;yrLoanBal-=prin;}
+    const cf=n-annualDebt;
+    cumCF+=cf;
+    const propVal=price*Math.pow(1+appx,y);
+    const equity=propVal-yrLoanBal;
+    yrHtml+=`<tr class="${y===10?'yr-total':''}">
+      <td>Year ${y}</td>
+      <td>${fmt(r)}</td>
+      <td>${fmt(n)}</td>
+      <td>−${fmt(annualDebt)}</td>
+      <td class="${cf>=0?'pos':'neg'}">${cf>=0?'+':''}${fmt(cf)}</td>
+      <td>${fmt(propVal)}</td>
+      <td>${fmt(equity)}</td>
+      <td class="${cumCF>=0?'pos':'neg'}">${cumCF>=0?'+':''}${fmt(cumCF)}</td>
+    </tr>`;
+  }
+  document.getElementById('yrTable').innerHTML=yrHtml;
+
+  // Verdict
+  const addr=document.getElementById('addrInput').value.trim();
+  let cls,icon,title,text;
+  if(coc>=0.08&&capRate>=0.06){
+    cls='strong';icon='✓';title='Strong investment signal';
+    text=`At a ${pct(capRate*100)} cap rate and ${pct(coc*100)} cash-on-cash return, this property outperforms most of the current market. Monthly cash flow of ${fmt(cashFlow/12)} after debt service gives you a real cushion. The 10-year IRR of ${pct(irr)} assumes 3% annual appreciation and 2.5% rent growth — conservative for most markets.`;
+  } else if(coc>=0.04||capRate>=0.05){
+    cls='moderate';icon='~';title='Moderate — worth a closer look';
+    text=`The numbers are marginal but not bad. A ${pct(capRate*100)} cap rate and ${pct(coc*100)} cash-on-cash means you're not getting rich on day one, but the asset should appreciate and the rent coverage is workable. Consider negotiating the purchase price down or finding ways to increase rent.`;
+  } else {
+    cls='weak';icon='✗';title='Challenging at this price';
+    text=`A ${pct(capRate*100)} cap rate and ${pct(coc*100)} cash-on-cash return means this deal is working against you financially. Monthly cash flow of ${fmt(cashFlow/12)} after debt service is difficult to sustain. Unless you have a strong appreciation thesis or plan to add value, the numbers suggest passing or negotiating a lower price.`;
+  }
+  document.getElementById('verdictBox').innerHTML=`<div class="verdict ${cls}"><div class="verdict-icon">${icon}</div><div><div class="verdict-title">${title}</div><div class="verdict-text">${text}</div></div></div>`;
+
+  // Plain English
+  const monthly=cashFlow/12;
+  document.getElementById('plainEnglish').innerHTML=`
+    <p style="margin-bottom:12px;">If you buy <strong>${addr||'this property'}</strong> for <strong>${fmt(price)}</strong> with a <strong>${pct(down*100,0)} down payment (${fmt(downAmt)})</strong>, your mortgage payment will be <strong>${fmt(payment)}/month</strong> at the current 30-year rate of ${pct(rate*100)}.</p>
+    <p style="margin-bottom:12px;">At an estimated rent of <strong>${fmt(rent)}/month</strong> — after accounting for ${pct(vac*100,0)} vacancy and ${pct(expPct*100,0)} operating expenses — your net operating income is <strong>${fmt(noi)}/year (${fmt(noi/12)}/month)</strong>. After debt service, you're left with <strong style="color:var(--${monthly>=0?'green':'red'})">${monthly>=0?'+':''}${fmt(monthly)}/month</strong> in cash flow.</p>
+    <p style="margin-bottom:12px;">The <strong>cap rate of ${pct(capRate*100)}</strong> tells you what the property would yield if you paid all cash — a useful benchmark for comparing to other properties in the same market. Your <strong>cash-on-cash return of ${pct(coc*100)}</strong> measures what you're actually earning on your invested cash after financing.</p>
+    <p>At 3% annual appreciation, this property would be worth <strong>${fmt(price*Math.pow(1+appx,10))}</strong> in 10 years. Combined with rent appreciation and principal paydown, the 10-year levered IRR is approximately <strong>${pct(irr)}</strong>. Annual depreciation of <strong>${fmt(depr)}</strong> provides a tax benefit of roughly <strong>${fmt(depr*0.24)}/year</strong> (assuming a 24% tax bracket), which is not counted in the cash flow figures above.</p>`;
+}
+</script>
+</body></html>
